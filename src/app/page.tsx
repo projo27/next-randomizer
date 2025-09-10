@@ -13,9 +13,9 @@ import { Header } from "@/components/header";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+    <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
-      <main className="w-full max-w-2xl mx-auto">
+      <main className="w-full max-w-2xl mx-auto mt-12">
         <Tabs defaultValue="list" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
             <TabsTrigger
