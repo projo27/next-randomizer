@@ -21,16 +21,15 @@ export default function NumberRandomizer() {
   const [result, setResult] = useState<number | null>(null);
 
   const handleRandomize = () => {
-    const minNum = parseInt(min, 10);
-    const maxNum = parseInt(max, 10);
+    const minNum = parseFloat(min);
+    const maxNum = parseFloat(max);
 
     if (isNaN(minNum) || isNaN(maxNum) || minNum > maxNum) {
       setResult(null);
       return;
     }
 
-    const randomNumber =
-      Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
+    const randomNumber = Math.random() * (maxNum - minNum) + minNum;
 
     setResult(randomNumber);
   };
@@ -50,6 +49,7 @@ export default function NumberRandomizer() {
               type="number"
               value={min}
               onChange={(e) => setMin(e.target.value)}
+              step="any"
             />
           </div>
           <div className="grid w-full items-center gap-1.5">
@@ -59,6 +59,7 @@ export default function NumberRandomizer() {
               type="number"
               value={max}
               onChange={(e) => setMax(e.target.value)}
+              step="any"
             />
           </div>
         </div>
