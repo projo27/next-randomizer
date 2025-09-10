@@ -31,6 +31,8 @@ export default function NumberRandomizer() {
 
     const randomNumber = Math.random() * (maxNum - minNum) + minNum;
 
+    console.log(randomNumber);
+
     setResult(randomNumber);
   };
 

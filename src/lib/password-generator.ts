@@ -10,7 +10,8 @@ function getRandomChar(str: string) {
 export function generateReadablePassword(
   length: number,
   useNumbers: boolean,
-  useSymbols: boolean
+  useSymbols: boolean,
+  useUppercase: boolean
 ): string {
   let password = "";
   let charSet = "";
@@ -35,8 +36,23 @@ export function generateReadablePassword(
       continue;
     }
 
-    password += getRandomChar(charSet);
+    let char = getRandomChar(charSet);
+    if (useUppercase && Math.random() < 0.4) { // 40% chance of uppercase
+      char = char.toUpperCase();
+    }
+    password += char;
   }
+
+  // Ensure at least one uppercase letter if requested
+  if (useUppercase && !/[A-Z]/.test(password)) {
+    const randomIndex = Math.floor(Math.random() * password.length);
+    const charToReplace = password[randomIndex];
+    password =
+      password.substring(0, randomIndex) +
+      charToReplace.toUpperCase() +
+      password.substring(randomIndex + 1);
+  }
+
 
   // Ensure at least one number and one symbol if requested, if they didn't get added by chance.
   if (useNumbers && !/\d/.test(password)) {

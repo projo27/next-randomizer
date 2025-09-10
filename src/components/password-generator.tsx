@@ -21,6 +21,7 @@ export default function PasswordGenerator() {
   const [length, setLength] = useState(12);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(true);
+  const [includeUppercase, setIncludeUppercase] = useState(true);
   const [password, setPassword] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
@@ -29,7 +30,8 @@ export default function PasswordGenerator() {
     const newPassword = generateReadablePassword(
       length,
       includeNumbers,
-      includeSymbols
+      includeSymbols,
+      includeUppercase
     );
     setPassword(newPassword);
     setIsCopied(false);
@@ -38,7 +40,7 @@ export default function PasswordGenerator() {
   useEffect(() => {
     handleGenerate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [length, includeNumbers, includeSymbols]);
+  }, [length, includeNumbers, includeSymbols, includeUppercase]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(password);
@@ -87,6 +89,14 @@ export default function PasswordGenerator() {
             max={32}
             step={1}
           />
+        </div>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="uppercase"
+            checked={includeUppercase}
+            onCheckedChange={setIncludeUppercase}
+          />
+          <Label htmlFor="uppercase">Include Uppercase</Label>
         </div>
         <div className="flex items-center space-x-2">
           <Switch
