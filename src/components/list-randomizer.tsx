@@ -43,7 +43,9 @@ export default function ListRandomizer() {
       </CardHeader>
       <CardContent>
         <Textarea
-          placeholder="Apples&#10;Bananas&#10;Oranges"
+          placeholder={`Apples
+Bananas
+Oranges`}
           rows={8}
           value={choicesText}
           onChange={(e) => setChoicesText(e.target.value)}
