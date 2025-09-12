@@ -24,17 +24,42 @@ export default function NumberRandomizer() {
     const minNum = parseFloat(min);
     const maxNum = parseFloat(max);
 
-    if (isNaN(minNum) || isNaN(maxNum) || minNum > maxNum) {
+    const decimalDigit = Math.max(getDecimalDigits(minNum), getDecimalDigits(maxNum));
+
+    if (isNaN(minNum) || isNaN(maxNum)) {
       setResult(null);
       return;
     }
 
+    if(minNum > maxNum) {
+      setMin(maxNum.toString());
+      setMax(minNum.toString())
+    }
+
     const randomNumber = Math.random() * (maxNum - minNum) + minNum;
 
-    console.log(randomNumber);
+    console.log(randomNumber.toFixed(decimalDigit), "digit ", decimalDigit);
 
-    setResult(randomNumber);
+    setResult(Number(randomNumber.toFixed(decimalDigit)));
   };
+
+  function getDecimalDigits(number: number) : number {
+    // Convert the number to a string
+    const numberString = number.toString();
+  
+    // Find the index of the decimal point
+    const decimalIndex = numberString.indexOf('.');
+  
+    // If there's no decimal point, return an empty string or handle as needed
+    if (decimalIndex === -1) {
+      return 0; // Or return null, 0, etc., depending on desired behavior
+    }
+  
+    // Extract the substring after the decimal point
+    const decimalDigits = numberString.substring(decimalIndex + 1).length;
+  
+    return Number(decimalDigits);
+  }
 
   return (
     <Card className="w-full shadow-lg border-none">

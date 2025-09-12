@@ -47,16 +47,16 @@ export default function Home() {
               <span>News</span>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="list">
+          <TabsContent value="list" forceMount>
             <ListRandomizer />
           </TabsContent>
-          <TabsContent value="number">
+          <TabsContent value="number" forceMount>
             <NumberRandomizer />
           </TabsContent>
-          <TabsContent value="password">
+          <TabsContent value="password" forceMount>
             <PasswordGenerator />
           </TabsContent>
-          <TabsContent value="news">
+          <TabsContent value="news" forceMount>
             <RandomNews />
           </TabsContent>
         </Tabs>
