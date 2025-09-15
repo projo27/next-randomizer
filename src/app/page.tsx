@@ -4,12 +4,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
 import RandomNews from "@/components/random-news";
 import DiceRoller from "@/components/dice-roller";
+import SequenceRandomizer from "@/components/sequence-randomizer";
 import { Header } from "@/components/header";
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
       <Header />
       <main className="w-full max-w-2xl mx-auto mt-12">
         <Tabs defaultValue="list" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 h-auto">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
             <TabsTrigger
               value="list"
               className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
@@ -54,6 +55,13 @@ export default function Home() {
               <Dices className="h-5 w-5" />
               <span>Dice</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="sequence"
+              className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
+            >
+              <ListOrdered className="h-5 w-5" />
+              <span>Sequence</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -69,6 +77,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="dice" forceMount>
             <DiceRoller />
+          </TabsContent>
+          <TabsContent value="sequence" forceMount>
+            <SequenceRandomizer />
           </TabsContent>
         </Tabs>
       </main>

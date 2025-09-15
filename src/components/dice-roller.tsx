@@ -37,7 +37,8 @@ const diceIcons = [
   <Dice6 key={6} className="h-16 w-16" />,
 ];
 
-const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
+// const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
+const animations = ["animate-spin-dice"];
 
 export default function DiceRoller() {
   const [numberOfDice, setNumberOfDice] = useState("1");
