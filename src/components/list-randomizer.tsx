@@ -15,7 +15,9 @@ import AnimatedResult from "./animated-result";
 import { Wand2 } from "lucide-react";
 
 export default function ListRandomizer() {
-  const [choicesText, setChoicesText] = useState("");
+  const [choicesText, setChoicesText] = useState(`Apples
+Bananas
+Oranges`);
   const [result, setResult] = useState<string | null>(null);
   const [options, setOptions] = useState<string[]>([]);
 
@@ -43,9 +45,7 @@ export default function ListRandomizer() {
       </CardHeader>
       <CardContent>
         <Textarea
-          placeholder={`Apples
-Bananas
-Oranges`}
+          placeholder={``}
           rows={8}
           value={choicesText}
           onChange={(e) => setChoicesText(e.target.value)}
