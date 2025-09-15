@@ -175,7 +175,7 @@
   
   .spinner-arrow {
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(180deg);
     z-index: 10;
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     background: currentColor;

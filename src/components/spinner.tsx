@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Wand2, Trash2, Copy, Check, Star, ArrowDown } from "lucide-react";
+import { Wand2, Trash2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "./ui/label";
@@ -109,7 +109,7 @@ export default function Spinner() {
       <CardContent className="grid md:grid-cols-2 gap-8 items-center">
         <div className="relative">
           <div className="aspect-square p-4 relative flex items-center justify-center">
-              <div className="spinner-arrow absolute w-10 h-10 text-accent fill-current -top-2" />
+              <div className="spinner-arrow absolute w-10 h-10 text-accent fill-current -top-1" />
               <div 
                 className="w-full h-full rounded-full border-4 border-accent shadow-2xl overflow-hidden relative transition-transform duration-[5000ms] ease-out"
                 style={{
@@ -123,15 +123,15 @@ export default function Spinner() {
                       return (
                            <div
                             key={index}
-                            className="absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-start"
+                            className="absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-center"
                             style={{
                                 transform: `rotate(${angle}deg)`,
                                 color: getBestTextColor(color),
                             }}
                            >
                             <span 
-                                className="text-center px-4 font-semibold text-lg"
-                                style={{ transform: `translateX(-50%) rotate(-${segmentAngle / 2}deg) ` }}
+                                className="text-center font-semibold text-lg"
+                                style={{ transform: 'translateY(-150%) rotate(90deg)' }}
                             >
                                 {item}
                             </span>
