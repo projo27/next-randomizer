@@ -13,16 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Wand2, CalendarIcon, Copy, Check } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { DatePicker } from "@/components/date-picker";
+import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import AnimatedResultList from "./animated-result-list";
 
 export default function DateRandomizer() {
   const [startDate, setStartDate] = useState<Date | undefined>(
@@ -34,7 +30,12 @@ export default function DateRandomizer() {
     return date;
   });
   const [numberOfDates, setNumberOfDates] = useState("3");
+  const [includeTime, setIncludeTime] = useState(false);
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("17:00");
+  
   const [results, setResults] = useState<Date[]>([]);
+  const [isRandomizing, setIsRandomizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
@@ -43,56 +44,101 @@ export default function DateRandomizer() {
     setError(null);
     setResults([]);
     setIsResultCopied(false);
+    setIsRandomizing(true);
 
     if (!startDate || !endDate) {
       setError("Please select both a start and an end date.");
+      setIsRandomizing(false);
       return;
     }
 
     if (startDate > endDate) {
       setError("Start date cannot be after the end date.");
+      setIsRandomizing(false);
       return;
     }
 
     const count = parseInt(numberOfDates, 10);
     if (isNaN(count) || count <= 0) {
       setError("Please enter a valid number of dates to generate (must be > 0).");
+      setIsRandomizing(false);
       return;
     }
     
-    // To prevent infinite loops or performance issues
     const dayDifference = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1;
-    if(count > 1000 || count > dayDifference) {
-      setError(`Cannot generate more than ${Math.min(1000, dayDifference)} unique dates in this range.`);
+    if(count > 1000 || (count > dayDifference && !includeTime)) {
+      setError(`Cannot generate more than ${Math.min(1000, Math.floor(dayDifference))} unique dates in this range without time.`);
+      setIsRandomizing(false);
       return;
     }
+    if (count > 1000) {
+       setError(`Cannot generate more than 1000 unique dates.`);
+       setIsRandomizing(false);
+       return;
+    }
 
+    const tempStartDate = new Date(startDate);
+    const tempEndDate = new Date(endDate);
 
-    const startMs = startDate.getTime();
-    const endMs = endDate.getTime();
+    if (includeTime) {
+      const [startHours, startMinutes] = startTime.split(':').map(Number);
+      const [endHours, endMinutes] = endTime.split(':').map(Number);
+      tempStartDate.setHours(startHours, startMinutes, 0, 0);
+      tempEndDate.setHours(endHours, endMinutes, 0, 0);
+
+      if (tempStartDate.getTime() >= tempEndDate.getTime()) {
+        setError("Start time must be before end time.");
+        setIsRandomizing(false);
+        return;
+      }
+    } else {
+        tempStartDate.setHours(0, 0, 0, 0);
+        tempEndDate.setHours(23, 59, 59, 999);
+    }
+
+    const startMs = tempStartDate.getTime();
+    const endMs = tempEndDate.getTime();
     const generatedDates: Date[] = [];
     const generatedTimestamps = new Set();
     
-    while(generatedDates.length < count) {
+    // Safety break to prevent infinite loops
+    let maxTries = count * 100;
+
+    while(generatedDates.length < count && maxTries > 0) {
         const randomMs = startMs + Math.random() * (endMs - startMs);
         const randomDate = new Date(randomMs);
-        randomDate.setHours(0, 0, 0, 0); // Normalize to the start of the day
+        
+        if (!includeTime) {
+            randomDate.setHours(0, 0, 0, 0); // Normalize to the start of the day
+        }
+
         const timestamp = randomDate.getTime();
         
         if (!generatedTimestamps.has(timestamp)) {
             generatedTimestamps.add(timestamp);
             generatedDates.push(randomDate);
         }
+        maxTries--;
+    }
+
+    if (maxTries === 0) {
+       setError("Could not generate the requested number of unique dates. Try a larger date/time range.");
+       setIsRandomizing(false);
+       return;
     }
 
     generatedDates.sort((a,b) => a.getTime() - b.getTime());
-
-    setResults(generatedDates);
+    
+    setTimeout(() => {
+        setResults(generatedDates);
+        setIsRandomizing(false);
+    }, 500); // Fake delay for animation
   };
   
   const handleCopyResult = () => {
     if (results.length === 0) return;
-    const resultString = results.map(date => format(date, "PPP")).join("\n");
+    const formatString = includeTime ? "PPP p" : "PPP";
+    const resultString = results.map(date => format(date, formatString)).join("\n");
     navigator.clipboard.writeText(resultString);
     setIsResultCopied(true);
     toast({
@@ -107,68 +153,37 @@ export default function DateRandomizer() {
       <CardHeader>
         <CardTitle>Date Randomizer</CardTitle>
         <CardDescription>
-          Pick a number of random dates between two dates.
+          Pick a number of random dates between two dates, with an optional time range.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="start-date">Start Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="end-date">End Date</Label>
-             <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !endDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+            <DatePicker label="Start Date" date={startDate} setDate={setStartDate} />
+            <DatePicker label="End Date" date={endDate} setDate={setEndDate} />
         </div>
-        <div className="grid w-full max-w-sm items-center gap-1.5">
+        <div className="flex items-center space-x-2 pt-2">
+            <Switch id="include-time" checked={includeTime} onCheckedChange={setIncludeTime} />
+            <Label htmlFor="include-time">Include Time</Label>
+        </div>
+        {includeTime && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="start-time">Start Time</Label>
+                    <Input id="start-time" type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+                </div>
+                 <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="end-time">End Time</Label>
+                    <Input id="end-time" type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+                </div>
+            </div>
+        )}
+        <div className="grid w-full max-w-xs items-center gap-1.5 pt-2">
             <Label htmlFor="num-dates">Number of Dates to Generate</Label>
             <Input
               id="num-dates"
               type="number"
               min="1"
+              max="1000"
               value={numberOfDates}
               onChange={(e) => setNumberOfDates(e.target.value)}
             />
@@ -177,10 +192,11 @@ export default function DateRandomizer() {
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
+          disabled={isRandomizing}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          Randomize Dates!
+          {isRandomizing ? "Randomizing..." : "Randomize Dates!"}
         </Button>
          {error && (
           <Alert variant="destructive" className="mt-4">
@@ -188,28 +204,15 @@ export default function DateRandomizer() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        {results.length > 0 && (
-           <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Random Dates</CardTitle>
-                 <Button variant="ghost" size="icon" onClick={handleCopyResult}>
-                 {isResultCopied ? (
-                   <Check className="h-5 w-5 text-green-500" />
-                 ) : (
-                   <Copy className="h-5 w-5" />
-                 )}
-               </Button>
-            </CardHeader>
-            <CardContent>
-                <ul className="list-disc list-inside space-y-2">
-                  {results.map((date, index) => (
-                    <li key={index} className="text-lg">
-                      {format(date, "PPP")}
-                    </li>
-                  ))}
-                </ul>
-            </CardContent>
-          </Card>
+        {(isRandomizing || results.length > 0) && (
+           <AnimatedResultList
+            isShuffling={isRandomizing}
+            shuffledItems={results.map(r => format(r, includeTime ? "PPP p" : "PPP"))}
+            isResultCopied={isResultCopied}
+            handleCopyResult={handleCopyResult}
+            title="Random Dates"
+            itemClassName="text-lg"
+           />
         )}
       </CardFooter>
     </Card>

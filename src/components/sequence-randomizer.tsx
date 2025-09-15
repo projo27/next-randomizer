@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Wand2, Copy, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AnimatedResultList from "./animated-result-list";
 
 // Fisher-Yates (aka Knuth) Shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -124,37 +125,14 @@ Participant 4`);
           {isShuffling ? "Shuffling..." : "Shuffle Sequence!"}
         </Button>
         {(isShuffling || shuffledItems.length > 0) && (
-          <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>New Sequence</CardTitle>
-              {!isShuffling && (
-                 <Button variant="ghost" size="icon" onClick={handleCopyResult}>
-                 {isResultCopied ? (
-                   <Check className="h-5 w-5 text-green-500" />
-                 ) : (
-                   <Copy className="h-5 w-5" />
-                 )}
-               </Button>
-              )}
-            </CardHeader>
-            <CardContent>
-              {isShuffling ? (
-                <div className="space-y-2">
-                  <div className="h-6 bg-muted rounded-md animate-pulse" />
-                  <div className="h-6 bg-muted rounded-md animate-pulse w-5/6" />
-                  <div className="h-6 bg-muted rounded-md animate-pulse w-3/4" />
-                </div>
-              ) : (
-                <ol className="list-decimal list-inside space-y-2">
-                  {shuffledItems.map((item, index) => (
-                    <li key={index} className="text-lg">
-                      {item}
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </CardContent>
-          </Card>
+          <AnimatedResultList
+            isShuffling={isShuffling}
+            shuffledItems={shuffledItems}
+            isResultCopied={isResultCopied}
+            handleCopyResult={handleCopyResult}
+            title="New Sequence"
+            itemClassName="text-lg"
+          />
         )}
       </CardFooter>
     </Card>
