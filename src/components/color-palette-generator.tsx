@@ -22,6 +22,8 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
+type ColorScheme = "analogous" | "complementary" | "triadic" | "tetradic" | "square";
+
 function hslToHex(h: number, s: number, l: number): string {
   l /= 100;
   const a = (s * Math.min(l, 1 - l)) / 100;
@@ -47,6 +49,7 @@ function getBestTextColor(bgColor: string): string {
 
 export default function ColorPaletteGenerator() {
   const [count, setCount] = useState("5");
+  const [scheme, setScheme] = useState<ColorScheme>("analogous");
   const [palette, setPalette] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
@@ -56,30 +59,57 @@ export default function ColorPaletteGenerator() {
     setIsGenerating(true);
     setCopiedColor(null);
     const numColors = parseInt(count, 10);
-    const newPalette: string[] = [];
+    let newPalette: string[] = [];
 
     const baseHue = Math.random() * 360;
     const saturation = 50 + Math.random() * 30; // 50% to 80%
-    const lightness = 60 + Math.random() * 15; // 60% to 75%
+    const lightness = 65 + Math.random() * 10; // 65% to 75%
 
-    // Using analogous color scheme
-    const hueStep = 30;
-
-    for (let i = 0; i < numColors; i++) {
-      const hue = (baseHue + i * hueStep) % 360;
-      const l = lightness - i * 5; // Slightly decrease lightness for variation
-      newPalette.push(hslToHex(hue, saturation, l));
+    const hues: number[] = [baseHue];
+    
+    switch (scheme) {
+      case "complementary":
+        hues.push((baseHue + 180) % 360);
+        break;
+      case "triadic":
+        hues.push((baseHue + 120) % 360);
+        hues.push((baseHue + 240) % 360);
+        break;
+      case "tetradic":
+        hues.push((baseHue + 60) % 360);
+        hues.push((baseHue + 180) % 360);
+        hues.push((baseHue + 240) % 360);
+        break;
+      case "square":
+        hues.push((baseHue + 90) % 360);
+        hues.push((baseHue + 180) % 360);
+        hues.push((baseHue + 270) % 360);
+        break;
+      case "analogous":
+      default:
+        for (let i = 1; i < numColors; i++) {
+          hues.push((baseHue + i * 30) % 360);
+        }
+        break;
     }
     
+    // Generate colors from hues
+    for (let i = 0; i < numColors; i++) {
+        const hue = hues[i % hues.length];
+        const l = lightness - (i * 3) + Math.random() * 6; // Add some variation
+        const s = saturation - (i*2) + Math.random() * 4;
+        newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20,l))));
+    }
+
     setTimeout(() => {
-        setPalette(newPalette);
-        setIsGenerating(false);
+      setPalette(newPalette);
+      setIsGenerating(false);
     }, 500);
   };
-  
+
   useEffect(() => {
     generatePalette();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCopy = (color: string) => {
@@ -101,23 +131,44 @@ export default function ColorPaletteGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Label htmlFor="color-count">Number of Colors</Label>
-          <Select
-            value={count}
-            onValueChange={setCount}
-            disabled={isGenerating}
-          >
-            <SelectTrigger id="color-count" className="w-24">
-              <SelectValue placeholder="5" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="4">4</SelectItem>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="6">6</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center gap-4">
+            <Label htmlFor="color-count">Number of Colors</Label>
+            <Select
+              value={count}
+              onValueChange={setCount}
+              disabled={isGenerating}
+            >
+              <SelectTrigger id="color-count" className="w-24">
+                <SelectValue placeholder="5" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">3</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="6">6</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-4">
+            <Label htmlFor="color-scheme">Scheme</Label>
+            <Select
+              value={scheme}
+              onValueChange={(v) => setScheme(v as ColorScheme)}
+              disabled={isGenerating}
+            >
+              <SelectTrigger id="color-scheme" className="w-full">
+                <SelectValue placeholder="Scheme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="analogous">Analogous</SelectItem>
+                <SelectItem value="complementary">Complementary</SelectItem>
+                <SelectItem value="triadic">Triadic</SelectItem>
+                <SelectItem value="tetradic">Tetradic</SelectItem>
+                <SelectItem value="square">Square</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row rounded-lg overflow-hidden min-h-[200px] shadow-inner">
@@ -125,8 +176,8 @@ export default function ColorPaletteGenerator() {
             <div
               key={index}
               className={cn(
-                  "flex-1 p-4 flex flex-col justify-end items-center text-center transition-all duration-500",
-                  isGenerating && "opacity-50"
+                "flex-1 p-4 flex flex-col justify-end items-center text-center transition-all duration-500",
+                isGenerating && "opacity-50"
               )}
               style={{ backgroundColor: color, color: getBestTextColor(color) }}
             >
