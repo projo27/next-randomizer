@@ -14,8 +14,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DatePicker } from "@/components/date-picker";
-import { Wand2, Copy, Check } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import AnimatedResultList from "./animated-result-list";
@@ -31,8 +38,10 @@ export default function DateRandomizer() {
   });
   const [numberOfDates, setNumberOfDates] = useState("3");
   const [includeTime, setIncludeTime] = useState(false);
+  const [is24Hour, setIs24Hour] = useState(false);
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
+  const [dateFormat, setDateFormat] = useState("PPP");
   
   const [results, setResults] = useState<Date[]>([]);
   const [isRandomizing, setIsRandomizing] = useState(false);
@@ -53,9 +62,9 @@ export default function DateRandomizer() {
     }
 
     if (startDate > endDate) {
-      setError("Start date cannot be after the end date.");
-      setIsRandomizing(false);
-      return;
+      let dateDiff = startDate.getTime() - endDate.getTime();
+      setStartDate(endDate);
+      setEndDate(startDate);
     }
 
     const count = parseInt(numberOfDates, 10);
@@ -134,10 +143,18 @@ export default function DateRandomizer() {
         setIsRandomizing(false);
     }, 500); // Fake delay for animation
   };
+
+  const getFormatString = () => {
+    if (includeTime) {
+      const timeFormat = is24Hour ? "HH:mm" : "p";
+      return `${dateFormat} ${timeFormat}`;
+    }
+    return dateFormat;
+  };
   
   const handleCopyResult = () => {
     if (results.length === 0) return;
-    const formatString = includeTime ? "PPP p" : "PPP";
+    const formatString = getFormatString();
     const resultString = results.map(date => format(date, formatString)).join("\n");
     navigator.clipboard.writeText(resultString);
     setIsResultCopied(true);
@@ -161,11 +178,43 @@ export default function DateRandomizer() {
             <DatePicker label="Start Date" date={startDate} setDate={setStartDate} />
             <DatePicker label="End Date" date={endDate} setDate={setEndDate} />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="date-format">Date Format</Label>
+                <Select value={dateFormat} onValueChange={setDateFormat}>
+                    <SelectTrigger id="date-format">
+                        <SelectValue placeholder="Select format" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="PPP">Short (Jan 1, 2024)</SelectItem>
+                        <SelectItem value="MM/dd/yyyy">MM/DD/YYYY</SelectItem>
+                        <SelectItem value="dd/MM/yyyy">DD/MM/YYYY</SelectItem>
+                        <SelectItem value="yyyy-MM-dd">YYYY-MM-DD</SelectItem>
+                        <SelectItem value="MMMM d, yyyy">Long (January 1, 2024)</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="grid w-full max-w-xs items-center gap-1.5">
+                <Label htmlFor="num-dates">Number of Dates to Generate</Label>
+                <Input
+                id="num-dates"
+                type="number"
+                min="1"
+                max="1000"
+                value={numberOfDates}
+                onChange={(e) => setNumberOfDates(e.target.value)}
+                />
+            </div>
+        </div>
+
         <div className="flex items-center space-x-2 pt-2">
             <Switch id="include-time" checked={includeTime} onCheckedChange={setIncludeTime} />
             <Label htmlFor="include-time">Include Time</Label>
         </div>
+
         {includeTime && (
+          <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="start-time">Start Time</Label>
@@ -176,18 +225,12 @@ export default function DateRandomizer() {
                     <Input id="end-time" type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
                 </div>
             </div>
+            <div className="flex items-center space-x-2 pt-2">
+              <Switch id="time-format" checked={is24Hour} onCheckedChange={setIs24Hour} />
+              <Label htmlFor="time-format">Use 24-Hour Format</Label>
+            </div>
+          </>
         )}
-        <div className="grid w-full max-w-xs items-center gap-1.5 pt-2">
-            <Label htmlFor="num-dates">Number of Dates to Generate</Label>
-            <Input
-              id="num-dates"
-              type="number"
-              min="1"
-              max="1000"
-              value={numberOfDates}
-              onChange={(e) => setNumberOfDates(e.target.value)}
-            />
-          </div>
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
@@ -207,7 +250,7 @@ export default function DateRandomizer() {
         {(isRandomizing || results.length > 0) && (
            <AnimatedResultList
             isShuffling={isRandomizing}
-            shuffledItems={results.map(r => format(r, includeTime ? "PPP p" : "PPP"))}
+            shuffledItems={results.map(r => format(r, getFormatString()))}
             isResultCopied={isResultCopied}
             handleCopyResult={handleCopyResult}
             title="Random Dates"
