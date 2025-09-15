@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -15,6 +15,7 @@ import { Header } from "@/components/header";
 import TeamShuffler from "@/components/team-shuffler";
 import DateRandomizer from "@/components/date-randomizer";
 import CoinFlipper from "@/components/coin-flipper";
+import Spinner from "@/components/spinner";
 
 export default function Home() {
   return (
@@ -22,7 +23,7 @@ export default function Home() {
       <Header />
       <main className="w-full max-w-4xl mx-auto mt-12">
         <Tabs defaultValue="list" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-9 h-auto">
+          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10 h-auto">
             <TabsTrigger
               value="list"
               className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
@@ -86,6 +87,13 @@ export default function Home() {
               <CircleDollarSign className="h-5 w-5" />
               <span>Coin</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="spinner"
+              className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
+            >
+              <Disc className="h-5 w-5" />
+              <span>Spinner</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -113,6 +121,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="coin" forceMount>
             <CoinFlipper />
+          </TabsContent>
+          <TabsContent value="spinner" forceMount>
+            <Spinner />
           </TabsContent>
         </Tabs>
       </main>
