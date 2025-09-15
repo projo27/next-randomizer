@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -22,6 +22,7 @@ import EmojiGenerator from "@/components/emoji-generator";
 import CompassRandomizer from "@/components/compass-randomizer";
 import ColorPaletteGenerator from "@/components/color-palette-generator";
 import NumberBaseRandomizer from "@/components/number-base-randomizer";
+import ImageRandomizer from "@/components/image-randomizer";
 
 export default function Home() {
   return (
@@ -142,6 +143,13 @@ export default function Home() {
               <Binary className="h-5 w-5" />
               <span>Base</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="image"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <ImageIcon className="h-5 w-5" />
+              <span>Image</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -190,6 +198,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="base" forceMount>
             <NumberBaseRandomizer />
+          </TabsContent>
+          <TabsContent value="image" forceMount>
+            <ImageRandomizer />
           </TabsContent>
         </Tabs>
       </main>
