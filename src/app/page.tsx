@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -20,6 +20,7 @@ import CardDeckRandomizer from "@/components/card-deck-randomizer";
 import LotteryGenerator from "@/components/lottery-generator";
 import EmojiGenerator from "@/components/emoji-generator";
 import CompassRandomizer from "@/components/compass-randomizer";
+import ColorPaletteGenerator from "@/components/color-palette-generator";
 
 export default function Home() {
   return (
@@ -126,6 +127,13 @@ export default function Home() {
               <Compass className="h-5 w-5" />
               <span>Compass</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="palette"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Palette className="h-5 w-5" />
+              <span>Palette</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -168,6 +176,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="compass" forceMount>
             <CompassRandomizer />
+          </TabsContent>
+          <TabsContent value="palette" forceMount>
+            <ColorPaletteGenerator />
           </TabsContent>
         </Tabs>
       </main>
