@@ -51,6 +51,7 @@ John Smith 4
 Richard Roe 1
 John Q. Public 5
 A. Person 2`);
+    
   const [teamSize, setTeamSize] = useState("3");
   const [teams, setTeams] = useState<Team[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -61,22 +62,35 @@ A. Person 2`);
   
   const handleUseLevelsChange = (checked: boolean) => {
     setUseLevels(checked);
-    if(checked) {
-        setParticipantsText(`John Doe 3
-Jane Doe 2
-John Smith 4
-Richard Roe 1
-John Q. Public 5
-A. Person 2`);
+    const lines = participantsText.split('\n').filter(line => line.trim() !== '');
+    
+    if (checked) {
+        // Switching to 'With Levels'
+        const newText = lines.map(line => {
+            const parts = line.split(' ');
+            const lastPart = parts[parts.length - 1];
+            // Check if the last part is not a number between 1-5
+            if (isNaN(parseInt(lastPart, 10)) || parseInt(lastPart, 10) < 1 || parseInt(lastPart, 10) > 5) {
+                return `${line} 1`; // Add a default level
+            }
+            return line; // Line already has a valid level
+        }).join('\n');
+        setParticipantsText(newText);
     } else {
-        setParticipantsText(`Paijo
-Paimin
-Painah
-Paimo
-Paijan
-Paidi`);
+        // Switching to 'Without Levels'
+        const newText = lines.map(line => {
+            const parts = line.split(' ');
+            const lastPart = parts[parts.length - 1];
+            // Check if the last part is a number between 1-5
+            if (!isNaN(parseInt(lastPart, 10)) && parseInt(lastPart, 10) >= 1 && parseInt(lastPart, 10) <= 5 && parts.length > 1) {
+                return parts.slice(0, parts.length - 1).join(' ');
+            }
+            return line; // Line doesn't have a level or is just one word
+        }).join('\n');
+        setParticipantsText(newText);
     }
-  }
+  };
+
 
   const parseParticipants = (): Participant[] | null => {
     const lines = participantsText
