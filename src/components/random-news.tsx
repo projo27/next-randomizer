@@ -65,7 +65,8 @@ export default function RandomNews() {
             <Label htmlFor="urls">Article URLs (one per line)</Label>
             <Textarea
               id="urls"
-              placeholder="https://example.com/news-story-1&#10;https://another.com/news-story-2"
+              placeholder={`https://example.com/news-story-1
+https://another.com/news-story-2`}
               rows={4}
               value={urls}
               onChange={(e) => setUrls(e.target.value)}

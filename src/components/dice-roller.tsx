@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dices, Wand2 } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import {
   Dice1,
   Dice2,
@@ -37,13 +37,20 @@ const diceIcons = [
   <Dice6 key={6} className="h-16 w-16" />,
 ];
 
+const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
+
 export default function DiceRoller() {
   const [numberOfDice, setNumberOfDice] = useState("1");
   const [results, setResults] = useState<number[]>([]);
   const [isRolling, setIsRolling] = useState(false);
+  const [animationClass, setAnimationClass] = useState("animate-spin-dice");
 
   const handleRoll = () => {
     setIsRolling(true);
+    // Select a random animation
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    setAnimationClass(randomAnimation);
+
     const numDice = parseInt(numberOfDice, 10);
     const newResults: number[] = [];
     for (let i = 0; i < numDice; i++) {
@@ -90,7 +97,9 @@ export default function DiceRoller() {
         <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
           {isRolling &&
             Array.from({ length: parseInt(numberOfDice, 10) }).map((_, i) => (
-              <Dices key={i} className="h-16 w-16 animate-spin-dice" />
+              <div key={i} className={`text-primary ${animationClass}`}>
+                {diceIcons[Math.floor(Math.random() * 6)]}
+              </div>
             ))}
           {!isRolling &&
             results.length > 0 &&
