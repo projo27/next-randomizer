@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -17,6 +17,7 @@ import DateRandomizer from "@/components/date-randomizer";
 import CoinFlipper from "@/components/coin-flipper";
 import Spinner from "@/components/spinner";
 import CardDeckRandomizer from "@/components/card-deck-randomizer";
+import LotteryGenerator from "@/components/lottery-generator";
 
 export default function Home() {
   return (
@@ -24,7 +25,7 @@ export default function Home() {
       <Header />
       <main className="w-full max-w-4xl mx-auto mt-12">
         <Tabs defaultValue="list" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 sm:grid-cols-11 h-auto">
+          <TabsList className="grid w-full grid-cols-6 sm:grid-cols-12 h-auto">
             <TabsTrigger
               value="list"
               className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
@@ -102,6 +103,13 @@ export default function Home() {
               <Spade className="h-5 w-5" />
               <span>Card</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="lottery"
+              className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
+            >
+              <Ticket className="h-5 w-5" />
+              <span>Lottery</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -135,6 +143,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="card" forceMount>
             <CardDeckRandomizer />
+          </TabsContent>
+          <TabsContent value="lottery" forceMount>
+            <LotteryGenerator />
           </TabsContent>
         </Tabs>
       </main>

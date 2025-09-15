@@ -46,7 +46,7 @@ function shuffleDeck(deck: CardType[]): CardType[] {
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
-  const [numToDraw, setNumToDraw] = useState("5");
+  const [numToDraw, setNumToDraw] = useState("3");
   const [drawnCards, setDrawnCards] = useState<CardType[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [error, setError] = useState<string | null>(null);

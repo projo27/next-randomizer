@@ -56,7 +56,7 @@ const PlayingCard: React.FC<PlayingCardProps> = ({ suit, rank, className }) => {
         <span className="text-xl font-bold leading-none">{rank}</span>
         <div>{suitIcons[suit]}</div>
       </div>
-      <div className="flex flex-col items-end rotate-180">
+      <div className="flex flex-col items-start rotate-180">
         <span className="text-xl font-bold leading-none">{rank}</span>
         <div>{suitIcons[suit]}</div>
       </div>
