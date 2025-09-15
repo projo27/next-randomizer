@@ -13,9 +13,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Wand2, Star, Users } from "lucide-react";
+import { Wand2, Star, Users, Copy, Check, Trash2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 type Participant = {
   name: string;
@@ -43,15 +44,18 @@ function StarRating({ level }: { level: number }) {
 }
 
 export default function TeamShuffler() {
-  const [participantsText, setParticipantsText] = useState(`Paijo 3
-Paimin 2
-Painah 4
-Paimo 1
-Paijan 5
-Paidi 2`);
+  const [participantsText, setParticipantsText] = useState(`John Doe 3
+Jane Doe 2
+John Smith 4
+Richard Roe 1
+John Q. Public 5
+A. Person 2`);
   const [teamSize, setTeamSize] = useState("3");
   const [teams, setTeams] = useState<Team[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isInputCopied, setIsInputCopied] = useState(false);
+  const [isResultCopied, setIsResultCopied] = useState(false);
+  const { toast } = useToast();
 
   const parseParticipants = (): Participant[] | null => {
     const lines = participantsText
@@ -77,6 +81,7 @@ Paidi 2`);
   const handleShuffle = () => {
     setError(null);
     setTeams([]);
+    setIsResultCopied(false);
 
     const participants = parseParticipants();
     if (!participants) return;
@@ -128,10 +133,41 @@ Paidi 2`);
     setTeams(newTeams);
   };
 
+  const handleCopyInput = () => {
+    navigator.clipboard.writeText(participantsText);
+    setIsInputCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Participants list copied to clipboard.",
+    });
+    setTimeout(() => setIsInputCopied(false), 2000);
+  };
+
+  const handleClearInput = () => {
+    setParticipantsText("");
+  };
+
+  const handleCopyResult = () => {
+    if (teams.length === 0) return;
+    const resultString = teams.map((team, index) => {
+        const header = `Team ${index + 1} (Total Level: ${team.totalLevel})`;
+        const members = team.members.map(m => `- ${m.name} (Level ${m.level})`).join('\n');
+        return `${header}\n${members}`;
+    }).join('\n\n');
+
+    navigator.clipboard.writeText(resultString);
+    setIsResultCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Team results copied to clipboard.",
+    });
+    setTimeout(() => setIsResultCopied(false), 2000);
+  };
+
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>Team Shuffler</CardTitle>
+        <CardTitle>Balance Power Team Shuffler</CardTitle>
         <CardDescription>
           Create balanced teams based on player skill level.
         </CardDescription>
@@ -139,14 +175,28 @@ Paidi 2`);
       <CardContent className="space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="participants">Participants (Name and Level 1-5)</Label>
-          <Textarea
-            id="participants"
-            placeholder="Enter participants, one per line..."
-            rows={8}
-            value={participantsText}
-            onChange={(e) => setParticipantsText(e.target.value)}
-            className="resize-none"
-          />
+          <div className="relative">
+            <Textarea
+              id="participants"
+              placeholder="Enter participants, one per line..."
+              rows={8}
+              value={participantsText}
+              onChange={(e) => setParticipantsText(e.target.value)}
+              className="resize-none pr-20"
+            />
+            <div className="absolute top-2 right-2 flex flex-col gap-2">
+              <Button variant="ghost" size="icon" onClick={handleCopyInput}>
+                {isInputCopied ? (
+                  <Check className="h-5 w-5 text-green-500" />
+                ) : (
+                  <Copy className="h-5 w-5" />
+                )}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleClearInput}>
+                <Trash2 className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="team-size">Members per Team</Label>
@@ -177,7 +227,18 @@ Paidi 2`);
 
         {teams.length > 0 && (
           <div className="mt-6 w-full space-y-4">
-            <h3 className="text-xl font-bold text-center">Generated Teams</h3>
+            <div className="relative text-center">
+              <h3 className="text-xl font-bold">Generated Teams</h3>
+              <div className="absolute -top-2 right-0">
+                  <Button variant="ghost" size="icon" onClick={handleCopyResult}>
+                    {isResultCopied ? (
+                      <Check className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Copy className="h-5 w-5" />
+                    )}
+                  </Button>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {teams.map((team, index) => (
                 <Card key={index} className="bg-card/80">
