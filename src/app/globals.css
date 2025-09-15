@@ -85,3 +85,17 @@
     display: none;
   }
 }
+
+@layer utilities {
+  @keyframes spin-dice {
+    0% {
+      transform: rotate(0deg) scale(0.8);
+    }
+    100% {
+      transform: rotate(1080deg) scale(1);
+    }
+  }
+  .animate-spin-dice {
+    animation: spin-dice 1s ease-out;
+  }
+}
