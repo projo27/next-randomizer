@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -13,14 +13,15 @@ import DiceRoller from "@/components/dice-roller";
 import SequenceRandomizer from "@/components/sequence-randomizer";
 import { Header } from "@/components/header";
 import TeamShuffler from "@/components/team-shuffler";
+import DateRandomizer from "@/components/date-randomizer";
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
-      <main className="w-full max-w-2xl mx-auto mt-12">
+      <main className="w-full max-w-4xl mx-auto mt-12">
         <Tabs defaultValue="list" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 h-auto">
             <TabsTrigger
               value="list"
               className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
@@ -70,6 +71,13 @@ export default function Home() {
               <Users className="h-5 w-5" />
               <span>Team</span>
             </TabsTrigger>
+             <TabsTrigger
+              value="date"
+              className="flex flex-col md:flex-row gap-2 h-14 md:h-10"
+            >
+              <CalendarDays className="h-5 w-5" />
+              <span>Date</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
             <ListRandomizer />
@@ -91,6 +99,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="team" forceMount>
             <TeamShuffler />
+          </TabsContent>
+           <TabsContent value="date" forceMount>
+            <DateRandomizer />
           </TabsContent>
         </Tabs>
       </main>
