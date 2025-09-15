@@ -61,17 +61,17 @@ export default function DateRandomizer() {
       return;
     }
 
-    if (startDate > endDate) {
-      let dateDiff = startDate.getTime() - endDate.getTime();
-      setStartDate(endDate);
-      setEndDate(startDate);
-    }
-
     const count = parseInt(numberOfDates, 10);
     if (isNaN(count) || count <= 0) {
       setError("Please enter a valid number of dates to generate (must be > 0).");
       setIsRandomizing(false);
       return;
+    }
+
+    if (startDate > endDate) {
+      let dateDiff = startDate.getTime() - endDate.getTime();
+      setStartDate(endDate);
+      setEndDate(startDate);
     }
     
     const dayDifference = (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1;
@@ -147,7 +147,7 @@ export default function DateRandomizer() {
   const getFormatString = () => {
     if (includeTime) {
       const timeFormat = is24Hour ? "HH:mm" : "p";
-      return `${dateFormat} ${timeFormat}`;
+      return `${dateFormat} · ${timeFormat}`;
     }
     return dateFormat;
   };
