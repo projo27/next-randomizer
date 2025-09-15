@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Wand2 } from "lucide-react";
+import { Wand2, Copy, Check } from "lucide-react";
 import {
   Dice1,
   Dice2,
@@ -27,6 +27,7 @@ import {
   Dice5,
   Dice6,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const diceIcons = [
   <Dice1 key={1} className="h-16 w-16" />,
@@ -37,17 +38,19 @@ const diceIcons = [
   <Dice6 key={6} className="h-16 w-16" />,
 ];
 
-// const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
-const animations = ["animate-spin-dice"];
+const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
 
 export default function DiceRoller() {
   const [numberOfDice, setNumberOfDice] = useState("1");
   const [results, setResults] = useState<number[]>([]);
   const [isRolling, setIsRolling] = useState(false);
   const [animationClass, setAnimationClass] = useState("animate-spin-dice");
+  const [isCopied, setIsCopied] = useState(false);
+  const { toast } = useToast();
 
   const handleRoll = () => {
     setIsRolling(true);
+    setIsCopied(false);
     // Select a random animation
     const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
     setAnimationClass(randomAnimation);
@@ -63,8 +66,20 @@ export default function DiceRoller() {
       setIsRolling(false);
     }, 1000); // Duration of the animation
   };
-
+  
   const total = results.reduce((sum, val) => sum + val, 0);
+  
+  const handleCopy = () => {
+    if (results.length === 0) return;
+    const resultString = `Total: ${total} (Rolls: ${results.join(", ")})`;
+    navigator.clipboard.writeText(resultString);
+    setIsCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Dice roll result copied to clipboard.",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -111,8 +126,17 @@ export default function DiceRoller() {
             ))}
         </div>
         {!isRolling && results.length > 0 && (
-          <div className="text-center">
+          <div className="text-center relative">
             <p className="text-lg font-bold">Total: {total}</p>
+             <div className="absolute -top-2 right-0">
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                  {isCopied ? (
+                    <Check className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Copy className="h-5 w-5" />
+                  )}
+                </Button>
+            </div>
           </div>
         )}
       </CardContent>

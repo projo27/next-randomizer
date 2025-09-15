@@ -13,9 +13,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, Check, Copy } from "lucide-react";
 import { summarizeAndRandomizeNews } from "@/ai/flows/summarize-and-randomize-news";
 import { Skeleton } from "./ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RandomNews() {
   const [urls, setUrls] = useState("");
@@ -23,6 +24,8 @@ export default function RandomNews() {
   const [result, setResult] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +39,7 @@ export default function RandomNews() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setIsCopied(false);
 
     try {
       const response = await summarizeAndRandomizeNews({
@@ -50,6 +54,18 @@ export default function RandomNews() {
       setIsLoading(false);
     }
   };
+
+  const handleCopy = () => {
+    if (!result) return;
+    navigator.clipboard.writeText(result);
+    setIsCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Summary copied to clipboard.",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -103,8 +119,15 @@ https://another.com/news-story-2`}
           )}
           {result && (
             <Card className="mt-6 w-full bg-card/80">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Your Randomized Summary</CardTitle>
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                  {isCopied ? (
+                    <Check className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Copy className="h-5 w-5" />
+                  )}
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-card-foreground/90 whitespace-pre-wrap">
