@@ -24,10 +24,10 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export default function SequenceRandomizer() {
-  const [itemsText, setItemsText] = useState(`Peserta 1
-Peserta 2
-Peserta 3
-Peserta 4`);
+  const [itemsText, setItemsText] = useState(`Participant 1
+Participant 2
+Participant 3
+Participant 4`);
   const [shuffledItems, setShuffledItems] = useState<string[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
 
@@ -56,12 +56,12 @@ Peserta 4`);
       <CardHeader>
         <CardTitle>Sequence Randomizer</CardTitle>
         <CardDescription>
-          Masukkan daftar item untuk diacak urutannya.
+          Enter a list of items to shuffle their order.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Textarea
-          placeholder="Masukkan item, satu per baris..."
+          placeholder="Enter items, one per line..."
           rows={8}
           value={itemsText}
           onChange={(e) => setItemsText(e.target.value)}
@@ -75,12 +75,12 @@ Peserta 4`);
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isShuffling ? "Mengacak..." : "Acak Urutan!"}
+          {isShuffling ? "Shuffling..." : "Shuffle Sequence!"}
         </Button>
         {(isShuffling || shuffledItems.length > 0) && (
           <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
             <CardHeader>
-              <CardTitle>Urutan Baru</CardTitle>
+              <CardTitle>New Sequence</CardTitle>
             </CardHeader>
             <CardContent>
               {isShuffling ? (
