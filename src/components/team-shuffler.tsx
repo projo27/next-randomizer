@@ -17,6 +17,7 @@ import { Wand2, Star, Users, Copy, Check, Trash2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "./ui/switch";
 
 type Participant = {
   name: string;
@@ -55,35 +56,73 @@ A. Person 2`);
   const [error, setError] = useState<string | null>(null);
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
+  const [useLevels, setUseLevels] = useState(true);
   const { toast } = useToast();
+  
+  const handleUseLevelsChange = (checked: boolean) => {
+    setUseLevels(checked);
+    if(checked) {
+        setParticipantsText(`John Doe 3
+Jane Doe 2
+John Smith 4
+Richard Roe 1
+John Q. Public 5
+A. Person 2`);
+    } else {
+        setParticipantsText(`Paijo
+Paimin
+Painah
+Paimo
+Paijan
+Paidi`);
+    }
+  }
 
   const parseParticipants = (): Participant[] | null => {
     const lines = participantsText
       .split("\n")
       .map((line) => line.trim())
       .filter((line) => line);
+      
     const participants: Participant[] = [];
+
     for (const line of lines) {
-      const parts = line.split(" ");
-      const level = parseInt(parts[parts.length - 1], 10);
-      const name = parts.slice(0, parts.length - 1).join(" ");
-      if (!name || isNaN(level) || level < 1 || level > 5) {
-        setError(
-          `Invalid line: "${line}". Each line must be in the format "Name Level" with level between 1 and 5.`
-        );
-        return null;
-      }
-      participants.push({ name, level });
+        if(useLevels) {
+            const parts = line.split(" ");
+            const level = parseInt(parts[parts.length - 1], 10);
+            const name = parts.slice(0, parts.length - 1).join(" ");
+            if (!name || isNaN(level) || level < 1 || level > 5) {
+                setError(
+                `Invalid line: "${line}". Each line must be in the format "Name Level" with level between 1 and 5.`
+                );
+                return null;
+            }
+            participants.push({ name, level });
+        } else {
+            if (!line) continue;
+            participants.push({ name: line, level: 1 }); // Assign default level for random shuffle
+        }
     }
     return participants;
   };
+  
+    // Fisher-Yates (aka Knuth) Shuffle algorithm
+    function shuffleArray<T>(array: T[]): T[] {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+    }
+
 
   const handleShuffle = () => {
     setError(null);
     setTeams([]);
     setIsResultCopied(false);
 
-    const participants = parseParticipants();
+    let participants = parseParticipants();
     if (!participants) return;
 
     const size = parseInt(teamSize, 10);
@@ -96,10 +135,7 @@ A. Person 2`);
         setError("Not enough participants to form a single team.");
         return;
     }
-
-    // Sort participants by level in descending order
-    participants.sort((a, b) => b.level - a.level);
-
+    
     const numTeams = Math.floor(participants.length / size);
     if(numTeams === 0) {
         setError("Not enough participants to form a single team.");
@@ -109,26 +145,40 @@ A. Person 2`);
       members: [],
       totalLevel: 0,
     }));
-
-    // Distribute players using a greedy algorithm
-    participants.forEach((participant) => {
-        // Find the team with the lowest total level that is not yet full
-        let bestTeam: Team | null = null;
-        let lowestLevel = Infinity;
-
-        for (const team of newTeams) {
-            if (team.members.length < size && team.totalLevel < lowestLevel) {
-                lowestLevel = team.totalLevel;
-                bestTeam = team;
-            }
-        }
+    
+    if(useLevels) {
+        // Sort participants by level in descending order for balanced distribution
+        participants.sort((a, b) => b.level - a.level);
         
-        // If all teams are full, this logic might fail for remaining players
-        if(bestTeam) {
-            bestTeam.members.push(participant);
-            bestTeam.totalLevel += participant.level;
+        // Distribute players using a greedy algorithm
+        participants.forEach((participant) => {
+            // Find the team with the lowest total level that is not yet full
+            let bestTeam: Team | null = null;
+            let lowestLevel = Infinity;
+
+            for (const team of newTeams) {
+                if (team.members.length < size && team.totalLevel < lowestLevel) {
+                    lowestLevel = team.totalLevel;
+                    bestTeam = team;
+                }
+            }
+            
+            // If all teams are full, this logic might fail for remaining players
+            if(bestTeam) {
+                bestTeam.members.push(participant);
+                bestTeam.totalLevel += participant.level;
+            }
+        });
+    } else {
+        // Simple random shuffle
+        participants = shuffleArray(participants);
+        for (let i = 0; i < numTeams * size; i++) {
+            const teamIndex = i % numTeams;
+            newTeams[teamIndex].members.push(participants[i]);
+            newTeams[teamIndex].totalLevel += participants[i].level;
         }
-    });
+    }
+
 
     setTeams(newTeams);
   };
@@ -150,8 +200,8 @@ A. Person 2`);
   const handleCopyResult = () => {
     if (teams.length === 0) return;
     const resultString = teams.map((team, index) => {
-        const header = `Team ${index + 1} (Total Level: ${team.totalLevel})`;
-        const members = team.members.map(m => `- ${m.name} (Level ${m.level})`).join('\n');
+        const header = useLevels ? `Team ${index + 1} (Total Level: ${team.totalLevel})` : `Team ${index + 1}`;
+        const members = team.members.map(m => `- ${m.name}` + (useLevels ? ` (Level ${m.level})` : '')).join('\n');
         return `${header}\n${members}`;
     }).join('\n\n');
 
@@ -167,18 +217,25 @@ A. Person 2`);
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>Balance Power Team Shuffler</CardTitle>
+        <CardTitle>Team Shuffler</CardTitle>
         <CardDescription>
-          Create balanced teams based on player skill level.
+            {useLevels ? "Create balanced teams based on player skill level." : "Randomly shuffle participants into teams."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="flex items-center space-x-2">
+            <Switch id="use-levels" checked={useLevels} onCheckedChange={handleUseLevelsChange} />
+            <Label htmlFor="use-levels">Use Skill Level for Balancing</Label>
+        </div>
+      
         <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="participants">Participants (Name and Level 1-5)</Label>
+          <Label htmlFor="participants">
+            {useLevels ? "Participants (Name and Level 1-5)" : "Participants (one per line)"}
+          </Label>
           <div className="relative">
             <Textarea
               id="participants"
-              placeholder="Enter participants, one per line..."
+              placeholder={useLevels ? "e.g., John Doe 3" : "e.g., John Doe"}
               rows={8}
               value={participantsText}
               onChange={(e) => setParticipantsText(e.target.value)}
@@ -245,7 +302,7 @@ A. Person 2`);
                   <CardHeader>
                     <CardTitle className="flex justify-between items-center">
                       <span>Team {index + 1}</span>
-                      <Badge variant="secondary">Lvl: {team.totalLevel}</Badge>
+                      {useLevels && <Badge variant="secondary">Lvl: {team.totalLevel}</Badge>}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -253,7 +310,7 @@ A. Person 2`);
                       {team.members.map((member) => (
                         <li key={member.name} className="flex justify-between items-center">
                           <span>{member.name}</span>
-                          <StarRating level={member.level} />
+                          {useLevels && <StarRating level={member.level} />}
                         </li>
                       ))}
                     </ul>
