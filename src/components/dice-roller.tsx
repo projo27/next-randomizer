@@ -30,12 +30,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const diceIcons = [
-  <Dice1 key={1} className="h-16 w-16" />,
-  <Dice2 key={2} className="h-16 w-16" />,
-  <Dice3 key={3} className="h-16 w-16" />,
-  <Dice4 key={4} className="h-16 w-16" />,
-  <Dice5 key={5} className="h-16 w-16" />,
-  <Dice6 key={6} className="h-16 w-16" />,
+  <Dice1 key={1} className="h-24 w-24" />,
+  <Dice2 key={2} className="h-24 w-24" />,
+  <Dice3 key={3} className="h-24 w-24" />,
+  <Dice4 key={4} className="h-24 w-24" />,
+  <Dice5 key={5} className="h-24 w-24" />,
+  <Dice6 key={6} className="h-24 w-24" />,
 ];
 
 // const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
@@ -114,14 +114,14 @@ export default function DiceRoller() {
         <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
           {isRolling &&
             Array.from({ length: parseInt(numberOfDice, 10) }).map((_, i) => (
-              <div key={i} className={`text-primary ${animationClass}`}>
+              <div key={i} className={`dark:text-primary light:text-accent ${animationClass}`}>
                 {diceIcons[Math.floor(Math.random() * 6)]}
               </div>
             ))}
           {!isRolling &&
             results.length > 0 &&
             results.map((result, i) => (
-              <div key={i} className="text-primary">
+              <div key={i} className="dark:text-primary light:text-accent">
                 {diceIcons[result - 1]}
               </div>
             ))}

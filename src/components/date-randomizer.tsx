@@ -254,7 +254,7 @@ export default function DateRandomizer() {
             isResultCopied={isResultCopied}
             handleCopyResult={handleCopyResult}
             title="Random Dates"
-            itemClassName="text-lg"
+            itemClassName="text-lg font-mono"
            />
         )}
       </CardFooter>
