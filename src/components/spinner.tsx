@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Wand2, Trash2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { Label } from "./ui/label";
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const WHEEL_COLORS = [
   "#FFC107", "#FF9800", "#FF5722", "#F44336",
@@ -33,6 +33,29 @@ const getBestTextColor = (bgColor: string): string => {
   return luma < 128 ? "white" : "black";
 };
 
+// @ts-ignore
+const CustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, index, payload }) => {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const textColor = getBestTextColor(WHEEL_COLORS[index % WHEEL_COLORS.length]);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill={textColor}
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      className="text-sm font-semibold"
+    >
+      {payload.name}
+    </text>
+  );
+};
+
+
 export default function Spinner() {
   const [itemsText, setItemsText] = useState("Apple\nBanana\nOrange\nGrape");
   const [isSpinning, setIsSpinning] = useState(false);
@@ -43,6 +66,12 @@ export default function Spinner() {
   const { toast } = useToast();
 
   const items = useMemo(() => itemsText.split("\n").map(i => i.trim()).filter(i => i), [itemsText]);
+  
+  const data = useMemo(() => {
+    if (items.length === 0) return [{ name: 'Empty', value: 1 }];
+    return items.map(item => ({ name: item, value: 1 }));
+  }, [items]);
+  
   const segmentAngle = 360 / items.length;
 
   const handleSpin = () => {
@@ -66,9 +95,13 @@ export default function Spinner() {
     setRotation(newRotation);
 
     setTimeout(() => {
+      // The arrow points straight down, so the winning angle is 270 degrees.
       const finalAngle = newRotation % 360;
-      const winnerIndex = Math.floor(((360 - finalAngle + segmentAngle / 2) % 360) / segmentAngle);
+      // Adjust by 90 degrees because Pie chart starts at the 3 o'clock position.
+      const winningAngle = (360 - finalAngle + 270 - 90) % 360;
+      const winnerIndex = Math.floor(winningAngle / segmentAngle);
       const newWinner = items[winnerIndex];
+
       setWinner(newWinner);
       setIsSpinning(false);
     }, 5000); // Must match animation duration
@@ -93,13 +126,6 @@ export default function Spinner() {
     setTimeout(() => setIsResultCopied(false), 2000);
   };
 
-  const conicGradient = useMemo(() => {
-    if (items.length === 0) return "radial-gradient(circle, hsl(var(--muted)), hsl(var(--border)))";
-    return `conic-gradient(${items.map((_, i) =>
-      `${WHEEL_COLORS[i % WHEEL_COLORS.length]} ${i * segmentAngle}deg ${(i + 1) * segmentAngle}deg`
-    ).join(", ")})`;
-  }, [items, segmentAngle]);
-
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
@@ -109,35 +135,37 @@ export default function Spinner() {
       <CardContent className="grid md:grid-cols-2 gap-8 items-center">
         <div className="relative">
           <div className="aspect-square p-4 relative flex items-center justify-center">
-              <div className="spinner-arrow absolute w-10 h-10 text-accent fill-current -top-1" />
+              <div 
+                className="spinner-arrow absolute w-10 h-10 text-accent -top-1" 
+                style={{ transform: "translateX(-50%) rotate(0deg)", clipPath: "polygon(50% 100%, 0 0, 100% 0)"}}
+              />
               <div 
                 className="w-full h-full rounded-full border-4 border-accent shadow-2xl overflow-hidden relative transition-transform duration-[5000ms] ease-out"
                 style={{
-                    background: conicGradient,
                     transform: `rotate(${rotation}deg)`
                 }}
               >
-                  {items.map((item, index) => {
-                      const angle = segmentAngle * index + segmentAngle / 2;
-                      const color = WHEEL_COLORS[index % WHEEL_COLORS.length];
-                      return (
-                           <div
-                            key={index}
-                            className="absolute w-1/2 h-1/2 origin-bottom-right flex items-center justify-center"
-                            style={{
-                                transform: `rotate(${angle}deg)`,
-                                color: getBestTextColor(color),
-                            }}
-                           >
-                            <span 
-                                className="text-center font-semibold text-lg"
-                                style={{ transform: 'translateY(-150%) rotate(90deg)' }}
-                            >
-                                {item}
-                            </span>
-                           </div>
-                      )
-                  })}
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            // @ts-ignore
+                            label={<CustomizedLabel />}
+                            outerRadius="100%"
+                            innerRadius="10%"
+                            dataKey="value"
+                            startAngle={90}
+                            endAngle={450}
+                        >
+                        {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={WHEEL_COLORS[index % WHEEL_COLORS.length]} stroke={WHEEL_COLORS[index % WHEEL_COLORS.length]}/>
+                        ))}
+                        </Pie>
+                    </PieChart>
+                </ResponsiveContainer>
               </div>
           </div>
         </div>
@@ -154,10 +182,10 @@ export default function Spinner() {
                 disabled={isSpinning}
               />
               <div className="absolute top-8 right-2 flex flex-col gap-2">
-                <Button variant="ghost" size="icon" onClick={handleCopyInput}>
+                <Button variant="ghost" size="icon" onClick={handleCopyInput} disabled={isSpinning}>
                   {isInputCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
                 </Button>
-                <Button variant="ghost" size="icon" onClick={handleClearInput}>
+                <Button variant="ghost" size="icon" onClick={handleClearInput} disabled={isSpinning}>
                   <Trash2 className="h-5 w-5" />
                 </Button>
               </div>
