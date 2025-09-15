@@ -14,9 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Wand2, Upload, Play, Pause, Square } from "lucide-react";
+import { Wand2, Upload, Play, Pause, Square, Expand, Minimize } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 // Fisher-Yates shuffle
 function shuffleArray<T>(array: T[]): T[] {
@@ -35,14 +36,23 @@ export default function ImageRandomizer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { toast } = useToast();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const slideshowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Cleanup object URLs on component unmount
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    // Cleanup object URLs and event listener on component unmount
     return () => {
       imageUrls.forEach(URL.revokeObjectURL);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUrls]);
@@ -117,6 +127,20 @@ export default function ImageRandomizer() {
     fileInputRef.current?.click();
   };
 
+  const handleToggleFullscreen = () => {
+    if (!slideshowRef.current) return;
+
+    if (!document.fullscreenElement) {
+        slideshowRef.current.requestFullscreen().catch(err => {
+            alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+  };
+
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
@@ -155,7 +179,13 @@ export default function ImageRandomizer() {
             </div>
         </div>
 
-        <div className="relative w-full aspect-video bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
+        <div 
+          ref={slideshowRef} 
+          className={cn(
+            "relative w-full aspect-video bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden",
+            "group", // Add group for button visibility
+            isFullscreen && "bg-black"
+          )}>
           {imageUrls.length > 0 ? (
             imageUrls.map((url, index) => (
               <Image
@@ -169,6 +199,21 @@ export default function ImageRandomizer() {
           ) : (
             <p className="text-muted-foreground">Your images will appear here</p>
           )}
+           {imageUrls.length > 0 && (
+             <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleToggleFullscreen}
+                className={cn(
+                    "absolute top-2 right-2 text-white bg-black/30 hover:bg-black/50 hover:text-white",
+                    "opacity-0 group-hover:opacity-100 transition-opacity",
+                    isFullscreen && "opacity-100"
+                )}
+                aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+             >
+                {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
+             </Button>
+           )}
         </div>
         
         {error && (
