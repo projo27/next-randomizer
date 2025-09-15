@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import {
   Card,
@@ -28,14 +28,8 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import AnimatedResultList from "./animated-result-list";
 
 export default function DateRandomizer() {
-  const [startDate, setStartDate] = useState<Date | undefined>(
-    new Date()
-  );
-  const [endDate, setEndDate] = useState<Date | undefined>(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 1);
-    return date;
-  });
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
   const [numberOfDates, setNumberOfDates] = useState("3");
   const [includeTime, setIncludeTime] = useState(false);
   const [is24Hour, setIs24Hour] = useState(false);
@@ -48,6 +42,15 @@ export default function DateRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Initialize dates on the client to avoid hydration mismatch
+    const now = new Date();
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    setStartDate(now);
+    setEndDate(nextMonth);
+  }, []);
 
   const handleRandomize = () => {
     setError(null);
