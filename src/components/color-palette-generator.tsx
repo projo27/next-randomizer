@@ -34,7 +34,7 @@ function hslToHex(h: number, s: number, l: number): string {
       .toString(16)
       .padStart(2, "0");
   };
-  return `#${f(0)}$f(8)$f(4)`.toUpperCase();
+  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
 }
 
 function getBestTextColor(bgColor: string): string {
