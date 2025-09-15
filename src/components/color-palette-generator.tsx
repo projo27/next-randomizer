@@ -22,7 +22,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-type ColorScheme = "analogous" | "complementary" | "triadic" | "tetradic" | "square";
+type ColorScheme = "analogous" | "monochromatic" | "complementary" | "split-complementary" | "triadic" | "tetradic" | "square";
 
 function hslToHex(h: number, s: number, l: number): string {
   l /= 100;
@@ -68,8 +68,20 @@ export default function ColorPaletteGenerator() {
     const hues: number[] = [baseHue];
     
     switch (scheme) {
+      case "monochromatic":
+        // For monochromatic, we use the same hue but vary lightness and saturation
+        for (let i = 0; i < numColors; i++) {
+            const l = lightness - 15 + (i / (numColors -1)) * 30;
+            const s = saturation - 10 + (i / (numColors -1)) * 20;
+            newPalette.push(hslToHex(baseHue, Math.min(100, Math.max(20, s)), Math.min(95, Math.max(15, l))));
+        }
+        break;
       case "complementary":
         hues.push((baseHue + 180) % 360);
+        break;
+      case "split-complementary":
+        hues.push((baseHue + 150) % 360);
+        hues.push((baseHue + 210) % 360);
         break;
       case "triadic":
         hues.push((baseHue + 120) % 360);
@@ -93,13 +105,15 @@ export default function ColorPaletteGenerator() {
         break;
     }
     
-    // Generate colors from hues
-    for (let i = 0; i < numColors; i++) {
-        const hue = hues[i % hues.length];
-        const l = lightness - (i * 3) + Math.random() * 6; // Add some variation
-        const s = saturation - (i*2) + Math.random() * 4;
-        newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20,l))));
+    if (scheme !== 'monochromatic') {
+        for (let i = 0; i < numColors; i++) {
+            const hue = hues[i % hues.length];
+            const l = lightness - (i * 3) + Math.random() * 6;
+            const s = saturation - (i*2) + Math.random() * 4;
+            newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20,l))));
+        }
     }
+
 
     setTimeout(() => {
       setPalette(newPalette);
@@ -162,7 +176,9 @@ export default function ColorPaletteGenerator() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="analogous">Analogous</SelectItem>
+                <SelectItem value="monochromatic">Monochromatic</SelectItem>
                 <SelectItem value="complementary">Complementary</SelectItem>
+                <SelectItem value="split-complementary">Split-Complementary</SelectItem>
                 <SelectItem value="triadic">Triadic</SelectItem>
                 <SelectItem value="tetradic">Tetradic</SelectItem>
                 <SelectItem value="square">Square</SelectItem>
