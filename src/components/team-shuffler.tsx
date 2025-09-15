@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -60,6 +60,10 @@ A. Person 2`);
   const [useLevels, setUseLevels] = useState(true);
   const { toast } = useToast();
   
+  const participantCount = useMemo(() => {
+    return participantsText.split('\n').filter(line => line.trim() !== '').length;
+  }, [participantsText]);
+
   const handleUseLevelsChange = (checked: boolean) => {
     setUseLevels(checked);
     const lines = participantsText.split('\n').filter(line => line.trim() !== '');
@@ -243,9 +247,14 @@ A. Person 2`);
         </div>
       
         <div className="grid w-full items-center gap-1.5">
-          <Label htmlFor="participants">
-            {useLevels ? "Participants (Name and Level 1-5)" : "Participants (one per line)"}
-          </Label>
+          <div className="flex justify-between items-center">
+            <Label htmlFor="participants">
+              {useLevels ? "Participants (Name and Level 1-5)" : "Participants (one per line)"}
+            </Label>
+            <span className="text-xs text-muted-foreground">
+                {participantCount} participant(s)
+            </span>
+          </div>
           <div className="relative">
             <Textarea
               id="participants"
@@ -253,7 +262,7 @@ A. Person 2`);
               rows={8}
               value={participantsText}
               onChange={(e) => setParticipantsText(e.target.value)}
-              className="resize-none pr-20"
+              className="resize-none pr-20 mt-1"
             />
             <div className="absolute top-2 right-2 flex flex-col gap-2">
               <Button variant="ghost" size="icon" onClick={handleCopyInput}>
