@@ -22,6 +22,7 @@ import { Wand2, Youtube } from "lucide-react";
 import { recommendVideo } from "@/app/actions/youtube-actions";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { COUNTRY_CODES } from "@/lib/country-codes";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const YOUTUBE_CATEGORIES = [
     { categoryId: "1", videoCategory: "Film & Animation" },
@@ -65,8 +66,11 @@ export default function YouTubeRandomizer() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleRandomize = async () => {
+    if (isRandomizing) return;
+    triggerRateLimit();
     setIsRandomizing(true);
     setError(null);
     setVideoUrl(null);
@@ -111,7 +115,7 @@ export default function YouTubeRandomizer() {
             <Select
                 value={categoryId}
                 onValueChange={setCategoryId}
-                disabled={isRandomizing}
+                disabled={isRandomizing || isRateLimited}
             >
                 <SelectTrigger id="youtube-category">
                 <SelectValue placeholder="Select Category" />
@@ -131,7 +135,7 @@ export default function YouTubeRandomizer() {
             <Select
                 value={regionCode}
                 onValueChange={setRegionCode}
-                disabled={isRandomizing}
+                disabled={isRandomizing || isRateLimited}
             >
                 <SelectTrigger id="youtube-region">
                 <SelectValue placeholder="Select Region" />
@@ -182,11 +186,11 @@ export default function YouTubeRandomizer() {
       <CardFooter>
         <Button
           onClick={handleRandomize}
-          disabled={isRandomizing}
+          disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRandomizing ? "Randomizing..." : "Randomize Video"}
+          {isRandomizing ? "Randomizing..." : isRateLimited ? "Please wait..." : "Randomize Video"}
         </Button>
       </CardFooter>
     </Card>

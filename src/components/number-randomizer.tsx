@@ -14,13 +14,16 @@ import { Button } from "@/components/ui/button";
 import AnimatedResult from "./animated-result";
 import { Label } from "@/components/ui/label";
 import { Wand2 } from "lucide-react";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 export default function NumberRandomizer() {
   const [min, setMin] = useState("1");
   const [max, setMax] = useState("100");
   const [result, setResult] = useState<number | null>(null);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleRandomize = () => {
+    triggerRateLimit();
     const minNum = parseFloat(min);
     const maxNum = parseFloat(max);
 
@@ -94,10 +97,11 @@ export default function NumberRandomizer() {
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
+          disabled={isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          Randomize!
+          {isRateLimited ? "Please wait..." : "Randomize!"}
         </Button>
         {result !== null && <AnimatedResult result={result} />}
       </CardFooter>

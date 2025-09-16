@@ -17,6 +17,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import PlayingCard, { Card as CardType } from "./playing-card";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const SUITS = ["S", "C", "H", "D"] as const;
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] as const;
@@ -52,10 +53,13 @@ export default function CardDeckRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const deck = useMemo(() => createDeck(includeJokers), [includeJokers]);
 
   const handleDraw = () => {
+    if (isDrawing) return;
+    triggerRateLimit();
     setError(null);
     setIsCopied(false);
     
@@ -105,7 +109,7 @@ export default function CardDeckRandomizer() {
       <CardContent className="space-y-6">
         <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
             <div className="flex items-center space-x-2">
-                <Switch id="include-jokers" checked={includeJokers} onCheckedChange={setIncludeJokers} disabled={isDrawing}/>
+                <Switch id="include-jokers" checked={includeJokers} onCheckedChange={setIncludeJokers} disabled={isDrawing || isRateLimited}/>
                 <Label htmlFor="include-jokers">Include Jokers</Label>
             </div>
              <div className="flex items-center gap-2">
@@ -118,7 +122,7 @@ export default function CardDeckRandomizer() {
                 value={numToDraw}
                 onChange={(e) => setNumToDraw(e.target.value)}
                 className="w-20"
-                disabled={isDrawing}
+                disabled={isDrawing || isRateLimited}
                 />
             </div>
         </div>
@@ -163,11 +167,11 @@ export default function CardDeckRandomizer() {
       <CardFooter>
         <Button
           onClick={handleDraw}
-          disabled={isDrawing}
+          disabled={isDrawing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isDrawing ? "Drawing..." : "Draw Cards"}
+          {isDrawing ? "Drawing..." : isRateLimited ? "Please wait..." : "Draw Cards"}
         </Button>
       </CardFooter>
     </Card>

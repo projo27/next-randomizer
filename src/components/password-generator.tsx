@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { generateReadablePassword } from "@/lib/password-generator";
 import { Check, Copy, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 export default function PasswordGenerator() {
   const [length, setLength] = useState(12);
@@ -25,8 +26,10 @@ export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handleGenerate = () => {
+  const handleGenerate = useCallback(() => {
+    triggerRateLimit();
     const newPassword = generateReadablePassword(
       length,
       includeNumbers,
@@ -35,12 +38,11 @@ export default function PasswordGenerator() {
     );
     setPassword(newPassword);
     setIsCopied(false);
-  };
+  }, [length, includeNumbers, includeSymbols, includeUppercase, triggerRateLimit]);
 
   useEffect(() => {
     handleGenerate();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [length, includeNumbers, includeSymbols, includeUppercase]);
+  }, [handleGenerate]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(password);
@@ -73,8 +75,8 @@ export default function PasswordGenerator() {
                 <Copy className="h-5 w-5" />
               )}
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleGenerate}>
-              <RefreshCw className="h-5 w-5" />
+            <Button variant="ghost" size="icon" onClick={handleGenerate} disabled={isRateLimited}>
+              <RefreshCw className={`h-5 w-5 ${isRateLimited ? "animate-spin" : ""}`} />
             </Button>
           </div>
         </div>

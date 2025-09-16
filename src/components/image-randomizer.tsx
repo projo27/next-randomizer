@@ -18,6 +18,7 @@ import { Wand2, Upload, Play, Pause, Square, Expand, Minimize } from "lucide-rea
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 // Fisher-Yates shuffle
 function shuffleArray<T>(array: T[]): T[] {
@@ -41,6 +42,7 @@ export default function ImageRandomizer() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const slideshowRef = useRef<HTMLDivElement>(null);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -112,6 +114,7 @@ export default function ImageRandomizer() {
       toast({ title: "Not enough images", description: "Please select at least 2 images to start the slideshow.", variant: "destructive"});
       return;
     }
+    triggerRateLimit();
     setIsPlaying(!isPlaying);
   };
 
@@ -161,7 +164,7 @@ export default function ImageRandomizer() {
                     onChange={handleFileChange}
                     className="hidden"
                 />
-                <Button onClick={handleUploadClick} variant="outline" className="w-full">
+                <Button onClick={handleUploadClick} variant="outline" className="w-full" disabled={isRateLimited}>
                     <Upload className="mr-2 h-4 w-4" />
                     Select Images ({imageFiles.length})
                 </Button>
@@ -174,7 +177,7 @@ export default function ImageRandomizer() {
                     min="1"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    disabled={isPlaying}
+                    disabled={isPlaying || isRateLimited}
                 />
             </div>
         </div>
@@ -227,11 +230,11 @@ export default function ImageRandomizer() {
         <div className="w-full flex flex-col md:flex-row gap-2">
              <Button
                 onClick={handlePlayPause}
-                disabled={imageUrls.length < 1}
+                disabled={imageUrls.length < 1 || isRateLimited}
                 className="w-full"
             >
                 {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-                {isPlaying ? "Pause" : "Play Slideshow"}
+                {isPlaying ? "Pause" : isRateLimited ? "Please wait..." : "Play Slideshow"}
             </Button>
              <Button
                 onClick={handleStop}

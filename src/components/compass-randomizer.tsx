@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CompassIcon } from "./icons/compass-icon";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const DIRECTIONS: Record<string, number> = {
   "North": 0,
@@ -37,8 +38,11 @@ export default function CompassRandomizer() {
   const [rotation, setRotation] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(4500); // Longer timeout to match animation
 
   const handleRandomize = () => {
+    if (isRandomizing) return;
+    triggerRateLimit();
     setIsRandomizing(true);
     setResult(null);
     setIsCopied(false);
@@ -88,7 +92,7 @@ export default function CompassRandomizer() {
             id="include-intercardinal" 
             checked={includeIntercardinal} 
             onCheckedChange={setIncludeIntercardinal}
-            disabled={isRandomizing}
+            disabled={isRandomizing || isRateLimited}
           />
           <Label htmlFor="include-intercardinal">Include Intercardinal Directions</Label>
         </div>
@@ -118,11 +122,11 @@ export default function CompassRandomizer() {
       <CardFooter>
         <Button
           onClick={handleRandomize}
-          disabled={isRandomizing}
+          disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRandomizing ? "Spinning..." : "Randomize Direction"}
+          {isRandomizing ? "Spinning..." : isRateLimited ? "Please wait..." : "Randomize Direction"}
         </Button>
       </CardFooter>
     </Card>

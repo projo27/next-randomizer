@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 interface Recommendation {
   country: string;
@@ -38,8 +39,11 @@ export default function TravelRandomizer() {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleRandomize = async () => {
+    if (isLoading) return;
+    triggerRateLimit();
     setIsLoading(true);
     setError(null);
     setRecommendation(null);
@@ -90,7 +94,7 @@ export default function TravelRandomizer() {
       <CardContent className="space-y-6">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="country-select">Choose a Country</Label>
-          <Select value={selectedCountry} onValueChange={setSelectedCountry} disabled={isLoading}>
+          <Select value={selectedCountry} onValueChange={setSelectedCountry} disabled={isLoading || isRateLimited}>
             <SelectTrigger id="country-select">
               <SelectValue placeholder="Select a country" />
             </SelectTrigger>
@@ -156,11 +160,11 @@ export default function TravelRandomizer() {
       <CardFooter>
         <Button
           onClick={handleRandomize}
-          disabled={isLoading}
+          disabled={isLoading || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading ? "Finding your destination..." : "Suggest a Destination"}
+          {isLoading ? "Finding your destination..." : isRateLimited ? "Please wait..." : "Suggest a Destination"}
         </Button>
       </CardFooter>
     </Card>

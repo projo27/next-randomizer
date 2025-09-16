@@ -22,6 +22,7 @@ import {
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const EMOJI_CATEGORIES = {
   "Smileys & Emotion": ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🥸', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾'],
@@ -44,8 +45,11 @@ export default function EmojiGenerator() {
   const [isCopied, setIsCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleGenerate = () => {
+    if (isGenerating) return;
+    triggerRateLimit();
     setError(null);
     setIsGenerating(true);
     setIsCopied(false);
@@ -116,7 +120,7 @@ export default function EmojiGenerator() {
                 value={count}
                 onChange={(e) => setCount(e.target.value)}
                 className="w-20"
-                disabled={isGenerating}
+                disabled={isGenerating || isRateLimited}
                 />
             </div>
             <div className="flex items-center gap-2">
@@ -124,7 +128,7 @@ export default function EmojiGenerator() {
                 <Select
                     value={category}
                     onValueChange={setCategory}
-                    disabled={isGenerating}
+                    disabled={isGenerating || isRateLimited}
                 >
                     <SelectTrigger id="emoji-category" className="w-full">
                         <SelectValue placeholder="Category" />
@@ -168,11 +172,11 @@ export default function EmojiGenerator() {
       <CardFooter>
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating}
+          disabled={isGenerating || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : "Generate Emojis"}
+          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Emojis"}
         </Button>
       </CardFooter>
     </Card>

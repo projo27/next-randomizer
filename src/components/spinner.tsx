@@ -15,6 +15,7 @@ import { Wand2, Trash2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "./ui/label";
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const WHEEL_COLORS = [
   "#FFC107", "#FF9800", "#FF5722", "#F44336",
@@ -64,6 +65,7 @@ export default function Spinner() {
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(5500); // Longer timeout for animation
 
   const items = useMemo(() => itemsText.split("\n").map(i => i.trim()).filter(i => i), [itemsText]);
   
@@ -83,7 +85,8 @@ export default function Spinner() {
       });
       return;
     }
-
+    if (isSpinning) return;
+    triggerRateLimit();
     setIsSpinning(true);
     setWinner(null);
     setIsResultCopied(false);
@@ -179,13 +182,13 @@ export default function Spinner() {
                 value={itemsText}
                 onChange={(e) => setItemsText(e.target.value)}
                 className="resize-none pr-20 mt-1.5"
-                disabled={isSpinning}
+                disabled={isSpinning || isRateLimited}
               />
               <div className="absolute top-8 right-2 flex flex-col gap-2">
-                <Button variant="ghost" size="icon" onClick={handleCopyInput} disabled={isSpinning}>
+                <Button variant="ghost" size="icon" onClick={handleCopyInput} disabled={isSpinning || isRateLimited}>
                   {isInputCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
                 </Button>
-                <Button variant="ghost" size="icon" onClick={handleClearInput} disabled={isSpinning}>
+                <Button variant="ghost" size="icon" onClick={handleClearInput} disabled={isSpinning || isRateLimited}>
                   <Trash2 className="h-5 w-5" />
                 </Button>
               </div>
@@ -212,11 +215,11 @@ export default function Spinner() {
       <CardFooter>
         <Button
           onClick={handleSpin}
-          disabled={isSpinning}
+          disabled={isSpinning || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isSpinning ? "Spinning..." : "Spin the Wheel!"}
+          {isSpinning ? "Spinning..." : isRateLimited ? "Please wait..." : "Spin the Wheel!"}
         </Button>
       </CardFooter>
     </Card>

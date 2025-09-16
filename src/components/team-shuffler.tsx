@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "./ui/switch";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 type Participant = {
   name: string;
@@ -59,6 +60,7 @@ A. Person 2`);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const [useLevels, setUseLevels] = useState(true);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   
   const participantCount = useMemo(() => {
     return participantsText.split('\n').filter(line => line.trim() !== '').length;
@@ -136,6 +138,7 @@ A. Person 2`);
 
 
   const handleShuffle = () => {
+    triggerRateLimit();
     setError(null);
     setTeams([]);
     setIsResultCopied(false);
@@ -292,10 +295,11 @@ A. Person 2`);
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleShuffle}
+          disabled={isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          Shuffle into Teams!
+          {isRateLimited ? "Please wait..." : "Shuffle into Teams!"}
         </Button>
 
         {error && (

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Wand2, Copy, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AnimatedResultList from "./animated-result-list";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 // Fisher-Yates (aka Knuth) Shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -35,8 +36,10 @@ Participant 4`);
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleShuffle = () => {
+    triggerRateLimit();
     setIsShuffling(true);
     setShuffledItems([]);
     const currentItems = itemsText
@@ -118,11 +121,11 @@ Participant 4`);
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleShuffle}
-          disabled={isShuffling}
+          disabled={isShuffling || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isShuffling ? "Shuffling..." : "Shuffle Sequence!"}
+          {isShuffling ? "Shuffling..." : isRateLimited ? "Please wait..." : "Shuffle Sequence!"}
         </Button>
         {(isShuffling || shuffledItems.length > 0) && (
           <AnimatedResultList

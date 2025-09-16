@@ -22,6 +22,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HeadsIcon } from "./icons/heads-icon";
 import { TailsIcon } from "./icons/tails-icon";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 type CoinResult = "Heads" | "Tails";
 
@@ -31,8 +32,11 @@ export default function CoinFlipper() {
   const [isFlipping, setIsFlipping] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleFlip = () => {
+    if (isFlipping) return;
+    triggerRateLimit();
     setIsFlipping(true);
     setIsCopied(false);
     
@@ -77,7 +81,7 @@ export default function CoinFlipper() {
           <Select
             value={numberOfCoins}
             onValueChange={setNumberOfCoins}
-            disabled={isFlipping}
+            disabled={isFlipping || isRateLimited}
           >
             <SelectTrigger id="num-coins" className="w-24">
               <SelectValue placeholder="1" />
@@ -126,11 +130,11 @@ export default function CoinFlipper() {
       <CardFooter>
         <Button
           onClick={handleFlip}
-          disabled={isFlipping}
+          disabled={isFlipping || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isFlipping ? "Flipping..." : "Flip Coins!"}
+          {isFlipping ? "Flipping..." : isRateLimited ? "Please wait..." : "Flip Coins!"}
         </Button>
       </CardFooter>
     </Card>

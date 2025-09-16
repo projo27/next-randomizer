@@ -26,6 +26,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const GENDERS = ["Male", "Female", "Unisex"];
 const ICONS = [<Mars/>, <Venus />, <Ghost />]
@@ -58,8 +59,12 @@ export default function OotdGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleGenerate = async () => {
+    if (isLoading) return;
+    triggerRateLimit();
+
     const heightNum = parseInt(height, 10);
     const weightNum = parseInt(weight, 10);
 
@@ -137,7 +142,7 @@ export default function OotdGenerator() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="gender">Gender</Label>
-            <Select value={gender} onValueChange={setGender} disabled={isLoading}>
+            <Select value={gender} onValueChange={setGender} disabled={isLoading || isRateLimited}>
               <SelectTrigger id="gender">
                 <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
@@ -150,7 +155,7 @@ export default function OotdGenerator() {
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="style">Fashion Style</Label>
-            <Select value={style} onValueChange={setStyle} disabled={isLoading}>
+            <Select value={style} onValueChange={setStyle} disabled={isLoading || isRateLimited}>
               <SelectTrigger id="style">
                 <SelectValue placeholder="Select Style" />
               </SelectTrigger>
@@ -163,7 +168,7 @@ export default function OotdGenerator() {
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="season">Season</Label>
-            <Select value={season} onValueChange={setSeason} disabled={isLoading}>
+            <Select value={season} onValueChange={setSeason} disabled={isLoading || isRateLimited}>
               <SelectTrigger id="season">
                 <SelectValue placeholder="Select Season" />
               </SelectTrigger>
@@ -176,22 +181,22 @@ export default function OotdGenerator() {
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="height">Height (cm)</Label>
-            <Input id="height" type="number" placeholder="e.g., 175" value={height} onChange={(e) => setHeight(e.target.value)} disabled={isLoading} />
+            <Input id="height" type="number" placeholder="e.g., 175" value={height} onChange={(e) => setHeight(e.target.value)} disabled={isLoading || isRateLimited} />
           </div>
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="weight">Weight (kg)</Label>
-            <Input id="weight" type="number" placeholder="e.g., 70" value={weight} onChange={(e) => setWeight(e.target.value)} disabled={isLoading} />
+            <Input id="weight" type="number" placeholder="e.g., 70" value={weight} onChange={(e) => setWeight(e.target.value)} disabled={isLoading || isRateLimited} />
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start">
         <Button
           onClick={handleGenerate}
-          disabled={isLoading}
+          disabled={isLoading || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <BrainCircuit className="mr-2 h-4 w-4" />
-          {isLoading ? "Thinking..." : "Generate my OOTD!"}
+          {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Generate my OOTD!"}
         </Button>
         {error && (
             <Alert variant="destructive" className="mt-4 w-full">

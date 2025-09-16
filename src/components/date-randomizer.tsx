@@ -26,6 +26,7 @@ import { Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import AnimatedResultList from "./animated-result-list";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 export default function DateRandomizer() {
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -42,6 +43,7 @@ export default function DateRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   useEffect(() => {
     // Initialize dates on the client to avoid hydration mismatch
@@ -53,6 +55,7 @@ export default function DateRandomizer() {
   }, []);
 
   const handleRandomize = () => {
+    triggerRateLimit();
     setError(null);
     setResults([]);
     setIsResultCopied(false);
@@ -238,11 +241,11 @@ export default function DateRandomizer() {
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
-          disabled={isRandomizing}
+          disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRandomizing ? "Randomizing..." : "Randomize Dates!"}
+          {isRandomizing ? "Randomizing..." : isRateLimited ? "Please wait..." : "Randomize Dates!"}
         </Button>
          {error && (
           <Alert variant="destructive" className="mt-4">

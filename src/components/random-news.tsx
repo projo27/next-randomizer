@@ -17,6 +17,7 @@ import { BrainCircuit, Check, Copy } from "lucide-react";
 import { summarizeAndRandomizeNews } from "@/ai/flows/summarize-and-randomize-news";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 export default function RandomNews() {
   const [urls, setUrls] = useState("");
@@ -26,9 +27,12 @@ export default function RandomNews() {
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
+    triggerRateLimit();
     const urlList = urls.split("\n").filter((url) => url.trim() !== "");
 
     if (urlList.length === 0 || !category) {
@@ -86,7 +90,7 @@ https://another.com/news-story-2`}
               rows={4}
               value={urls}
               onChange={(e) => setUrls(e.target.value)}
-              disabled={isLoading}
+              disabled={isLoading || isRateLimited}
             />
           </div>
           <div className="grid w-full items-center gap-1.5">
@@ -96,18 +100,18 @@ https://another.com/news-story-2`}
               placeholder="e.g., Technology, Politics, Sports"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              disabled={isLoading}
+              disabled={isLoading || isRateLimited}
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isRateLimited}
             className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
           >
             <BrainCircuit className="mr-2 h-4 w-4" />
-            {isLoading ? "Thinking..." : "Summarize & Randomize"}
+            {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Summarize & Randomize"}
           </Button>
           {error && <p className="text-destructive text-sm mt-4">{error}</p>}
           {isLoading && (

@@ -28,6 +28,7 @@ import {
   Dice6,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -48,8 +49,11 @@ export default function DiceRoller() {
   const [animationClass, setAnimationClass] = useState("animate-spin-dice");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleRoll = () => {
+    if (isRolling) return;
+    triggerRateLimit();
     setIsRolling(true);
     setIsCopied(false);
     // Select a random animation
@@ -96,7 +100,7 @@ export default function DiceRoller() {
           <Select
             value={numberOfDice}
             onValueChange={setNumberOfDice}
-            disabled={isRolling}
+            disabled={isRolling || isRateLimited}
           >
             <SelectTrigger id="num-dice" className="w-24">
               <SelectValue placeholder="1" />
@@ -144,11 +148,11 @@ export default function DiceRoller() {
       <CardFooter>
         <Button
           onClick={handleRoll}
-          disabled={isRolling}
+          disabled={isRolling || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRolling ? "Rolling..." : "Roll Dice!"}
+          {isRolling ? "Rolling..." : isRateLimited ? "Please wait..." : "Roll Dice!"}
         </Button>
       </CardFooter>
     </Card>

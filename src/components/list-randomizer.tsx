@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import AnimatedResult from "./animated-result";
 import { Wand2, Copy, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 export default function ListRandomizer() {
   const [choicesText, setChoicesText] = useState(`Apples
@@ -23,8 +24,11 @@ Oranges`);
   const [options, setOptions] = useState<string[]>([]);
   const [isInputCopied, setIsInputCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+
 
   const handleRandomize = () => {
+    triggerRateLimit();
     const currentOptions = choicesText
       .split("\n")
       .map((c) => c.trim())
@@ -86,10 +90,11 @@ Oranges`);
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
+          disabled={isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          Randomize!
+          {isRateLimited ? "Please wait..." : "Randomize!"}
         </Button>
         {result && <AnimatedResult result={result} options={options} />}
       </CardFooter>

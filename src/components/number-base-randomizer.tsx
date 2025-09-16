@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 interface Result {
   decimal: number;
@@ -31,8 +32,10 @@ export default function NumberBaseRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleRandomize = () => {
+    triggerRateLimit();
     setError(null);
     setResult(null);
     setCopiedKey(null);
@@ -95,7 +98,7 @@ export default function NumberBaseRandomizer() {
               type="number"
               value={min}
               onChange={(e) => setMin(e.target.value)}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             />
           </div>
           <div className="grid w-full items-center gap-1.5">
@@ -105,7 +108,7 @@ export default function NumberBaseRandomizer() {
               type="number"
               value={max}
               onChange={(e) => setMax(e.target.value)}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             />
           </div>
         </div>
@@ -120,11 +123,11 @@ export default function NumberBaseRandomizer() {
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
-          disabled={isGenerating}
+          disabled={isGenerating || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : "Generate Number"}
+          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Number"}
         </Button>
         {isGenerating && (
             <div className="w-full space-y-2 mt-6">

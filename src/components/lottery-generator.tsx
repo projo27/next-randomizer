@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 const NUMBERS = "0123456789";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -26,8 +27,11 @@ export default function LotteryGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const handleGenerate = () => {
+    if (isGenerating) return;
+    triggerRateLimit();
     setIsGenerating(true);
     setIsCopied(false);
     setResult(null);
@@ -101,7 +105,7 @@ export default function LotteryGenerator() {
               id="include-letters"
               checked={includeLetters}
               onCheckedChange={setIncludeLetters}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             />
             <Label htmlFor="include-letters">Include Letters</Label>
           </div>
@@ -115,7 +119,7 @@ export default function LotteryGenerator() {
               value={length}
               onChange={(e) => setLength(e.target.value)}
               className="w-20"
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             />
           </div>
         </div>
@@ -143,11 +147,11 @@ export default function LotteryGenerator() {
       <CardFooter>
         <Button
           onClick={handleGenerate}
-          disabled={isGenerating}
+          disabled={isGenerating || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : "Generate Combination"}
+          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Combination"}
         </Button>
       </CardFooter>
     </Card>

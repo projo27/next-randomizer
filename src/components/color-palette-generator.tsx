@@ -21,6 +21,7 @@ import {
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
 type ColorScheme = "analogous" | "monochromatic" | "complementary" | "split-complementary" | "triadic" | "tetradic" | "square";
 
@@ -55,8 +56,11 @@ export default function ColorPaletteGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const generatePalettes = () => {
+    if(isGenerating) return;
+    triggerRateLimit();
     setIsGenerating(true);
     setCopiedColor(null);
 
@@ -159,7 +163,7 @@ export default function ColorPaletteGenerator() {
             <Select
               value={numColors}
               onValueChange={setNumColors}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             >
               <SelectTrigger id="color-count" className="w-24">
                 <SelectValue placeholder="5" />
@@ -178,7 +182,7 @@ export default function ColorPaletteGenerator() {
             <Select
               value={numPalettes}
               onValueChange={setNumPalettes}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             >
               <SelectTrigger id="num-palettes" className="w-24">
                 <SelectValue placeholder="1" />
@@ -195,7 +199,7 @@ export default function ColorPaletteGenerator() {
             <Select
               value={scheme}
               onValueChange={(v) => setScheme(v as ColorScheme)}
-              disabled={isGenerating}
+              disabled={isGenerating || isRateLimited}
             >
               <SelectTrigger id="color-scheme" className="w-full">
                 <SelectValue placeholder="Scheme" />
@@ -251,11 +255,11 @@ export default function ColorPaletteGenerator() {
       <CardFooter>
         <Button
           onClick={generatePalettes}
-          disabled={isGenerating}
+          disabled={isGenerating || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : "Generate New Palette(s)"}
+          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate New Palette(s)"}
         </Button>
       </CardFooter>
     </Card>
