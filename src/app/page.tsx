@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, Suspense } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -30,8 +30,9 @@ import ImageRandomizer from "@/components/image-randomizer";
 import OotdGenerator from "@/components/ootd-generator";
 import TravelRandomizer from "@/components/travel-randomizer";
 import YouTubeRandomizer from "@/components/youtube-randomizer";
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function Home() {
+function HomePageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -47,216 +48,233 @@ export default function Home() {
   );
 
   return (
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto">
+        <TabsTrigger
+          value="list"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <ListTodo className="h-5 w-5" />
+          <span>List</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="number"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Shuffle className="h-5 w-5" />
+          <span>Number</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="sequence"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <ListOrdered className="h-5 w-5" />
+          <span>Sequence</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="password"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Lock className="h-5 w-5" />
+          <span>Password</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="date"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <CalendarDays className="h-5 w-5" />
+          <span>Date</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="team"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Users className="h-5 w-5" />
+          <span>Team</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="coin"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <CircleDollarSign className="h-5 w-5" />
+          <span>Coin</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="dice"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Dices className="h-5 w-5" />
+          <span>Dice</span>
+        </TabsTrigger>
+        
+        <TabsTrigger
+          value="card"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Spade className="h-5 w-5" />
+          <span>Card</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="lottery"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Ticket className="h-5 w-5" />
+          <span>Lottery</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="emoji"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Smile className="h-5 w-5" />
+          <span>Emoji</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="palette"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Palette className="h-5 w-5" />
+          <span>Palette</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="base"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Binary className="h-5 w-5" />
+          <span>Base</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="spinner"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Disc className="h-5 w-5" />
+          <span>Spinner</span>
+        </TabsTrigger>
+        
+        <TabsTrigger
+          value="compass"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Compass className="h-5 w-5" />
+          <span>Compass</span>
+        </TabsTrigger>
+        
+        <TabsTrigger
+          value="image"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <ImageIcon className="h-5 w-5" />
+          <span>Image</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="youtube"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Youtube className="h-5 w-5" />
+          <span>YouTube</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="ootd"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Shirt className="h-5 w-5" />
+          <span>OOTD</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="travel"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Plane className="h-5 w-5" />
+          <span>Travel</span>
+        </TabsTrigger>
+        <TabsTrigger
+          value="news"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Newspaper className="h-5 w-5" />
+          <span>News</span>
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="list">
+        <ListRandomizer />
+      </TabsContent>
+      <TabsContent value="number">
+        <NumberRandomizer />
+      </TabsContent>
+      <TabsContent value="password">
+        <PasswordGenerator />
+      </TabsContent>
+      <TabsContent value="news">
+        <RandomNews />
+      </TabsContent>
+      <TabsContent value="dice">
+        <DiceRoller />
+      </TabsContent>
+      <TabsContent value="sequence">
+        <SequenceRandomizer />
+      </TabsContent>
+      <TabsContent value="team">
+        <TeamShuffler />
+      </TabsContent>
+      <TabsContent value="date">
+        <DateRandomizer />
+      </TabsContent>
+      <TabsContent value="coin">
+        <CoinFlipper />
+      </TabsContent>
+      <TabsContent value="spinner">
+        <Spinner />
+      </TabsContent>
+      <TabsContent value="card">
+        <CardDeckRandomizer />
+      </TabsContent>
+      <TabsContent value="lottery">
+        <LotteryGenerator />
+      </TabsContent>
+      <TabsContent value="emoji">
+        <EmojiGenerator />
+      </TabsContent>
+      <TabsContent value="compass">
+        <CompassRandomizer />
+      </TabsContent>
+      <TabsContent value="palette">
+        <ColorPaletteGenerator />
+      </TabsContent>
+      <TabsContent value="base">
+        <NumberBaseRandomizer />
+      </TabsContent>
+      <TabsContent value="image">
+        <ImageRandomizer />
+      </TabsContent>
+      <TabsContent value="youtube">
+        <YouTubeRandomizer />
+      </TabsContent>
+      <TabsContent value="ootd">
+        <OotdGenerator />
+      </TabsContent>
+      <TabsContent value="travel">
+        <TravelRandomizer />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+function HomePageFallback() {
+  return (
+    <div className='w-full space-y-4'>
+      <Skeleton className="h-10 w-full" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
+}
+
+export default function Home() {
+  return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
       <main className="w-full max-w-6xl mx-auto mt-12">
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="flex flex-wrap items-center justify-center w-full h-auto">
-            <TabsTrigger
-              value="list"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <ListTodo className="h-5 w-5" />
-              <span>List</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="number"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Shuffle className="h-5 w-5" />
-              <span>Number</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="sequence"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <ListOrdered className="h-5 w-5" />
-              <span>Sequence</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="password"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Lock className="h-5 w-5" />
-              <span>Password</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="date"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <CalendarDays className="h-5 w-5" />
-              <span>Date</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="team"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Users className="h-5 w-5" />
-              <span>Team</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="coin"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <CircleDollarSign className="h-5 w-5" />
-              <span>Coin</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="dice"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Dices className="h-5 w-5" />
-              <span>Dice</span>
-            </TabsTrigger>
-            
-            <TabsTrigger
-              value="card"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Spade className="h-5 w-5" />
-              <span>Card</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="lottery"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Ticket className="h-5 w-5" />
-              <span>Lottery</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="emoji"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Smile className="h-5 w-5" />
-              <span>Emoji</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="palette"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Palette className="h-5 w-5" />
-              <span>Palette</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="base"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Binary className="h-5 w-5" />
-              <span>Base</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="spinner"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Disc className="h-5 w-5" />
-              <span>Spinner</span>
-            </TabsTrigger>
-            
-            <TabsTrigger
-              value="compass"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Compass className="h-5 w-5" />
-              <span>Compass</span>
-            </TabsTrigger>
-            
-            <TabsTrigger
-              value="image"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <ImageIcon className="h-5 w-5" />
-              <span>Image</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="youtube"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Youtube className="h-5 w-5" />
-              <span>YouTube</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="ootd"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Shirt className="h-5 w-5" />
-              <span>OOTD</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="travel"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Plane className="h-5 w-5" />
-              <span>Travel</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="news"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Newspaper className="h-5 w-5" />
-              <span>News</span>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="list">
-            <ListRandomizer />
-          </TabsContent>
-          <TabsContent value="number">
-            <NumberRandomizer />
-          </TabsContent>
-          <TabsContent value="password">
-            <PasswordGenerator />
-          </TabsContent>
-          <TabsContent value="news">
-            <RandomNews />
-          </TabsContent>
-          <TabsContent value="dice">
-            <DiceRoller />
-          </TabsContent>
-          <TabsContent value="sequence">
-            <SequenceRandomizer />
-          </TabsContent>
-          <TabsContent value="team">
-            <TeamShuffler />
-          </TabsContent>
-          <TabsContent value="date">
-            <DateRandomizer />
-          </TabsContent>
-          <TabsContent value="coin">
-            <CoinFlipper />
-          </TabsContent>
-          <TabsContent value="spinner">
-            <Spinner />
-          </TabsContent>
-          <TabsContent value="card">
-            <CardDeckRandomizer />
-          </TabsContent>
-          <TabsContent value="lottery">
-            <LotteryGenerator />
-          </TabsContent>
-          <TabsContent value="emoji">
-            <EmojiGenerator />
-          </TabsContent>
-          <TabsContent value="compass">
-            <CompassRandomizer />
-          </TabsContent>
-          <TabsContent value="palette">
-            <ColorPaletteGenerator />
-          </TabsContent>
-          <TabsContent value="base">
-            <NumberBaseRandomizer />
-          </TabsContent>
-          <TabsContent value="image">
-            <ImageRandomizer />
-          </TabsContent>
-          <TabsContent value="youtube">
-            <YouTubeRandomizer />
-          </TabsContent>
-          <TabsContent value="ootd">
-            <OotdGenerator />
-          </TabsContent>
-          <TabsContent value="travel">
-            <TravelRandomizer />
-          </TabsContent>
-        </Tabs>
+        <Suspense fallback={<HomePageFallback />}>
+          <HomePageContent />
+        </Suspense>
       </main>
     </div>
   );
