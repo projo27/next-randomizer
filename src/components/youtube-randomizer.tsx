@@ -31,7 +31,16 @@ const YOUTUBE_CATEGORIES = [
     "Documentaries",
     "Travel Vlogs",
     "Cooking Tutorials",
-    "DIY & Crafts"
+    "DIY & Crafts",
+    "Film & Animation",
+    "Autos & Vehicles",
+    "Pets & Animals",
+    "Sports",
+    "Entertainment",
+    "News & Politics",
+    "Howto & Style",
+    "Education",
+    "People & Blogs"
 ];
 
 
