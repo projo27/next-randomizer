@@ -26,10 +26,10 @@ export default function PasswordGenerator() {
   const [password, setPassword] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(10000);
 
   const handleGenerate = useCallback(() => {
-    triggerRateLimit();
+    // triggerRateLimit();
     const newPassword = generateReadablePassword(
       length,
       includeNumbers,
@@ -65,7 +65,7 @@ export default function PasswordGenerator() {
           <Input
             readOnly
             value={password}
-            className="pr-20 text-lg font-mono tracking-wider h-12"
+            className="pr-20 pl-6 [&&&]:text-2xl font-mono tracking-wider h-20"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2">
             <Button variant="ghost" size="icon" onClick={handleCopy}>
