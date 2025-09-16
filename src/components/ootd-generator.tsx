@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -18,34 +19,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BrainCircuit, Check, Copy, Package } from "lucide-react";
+import { BrainCircuit, Check, Copy, Package, Image as ImageIcon, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateOotd, OotdGeneratorOutput } from "@/ai/flows/ootd-generator-flow";
+import { generateOotd, generateOotdImage, OotdGeneratorOutput } from "@/ai/flows/ootd-generator-flow";
 import { Skeleton } from "./ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Badge } from "./ui/badge";
 
-const GENDERS = ["Pria", "Wanita"];
+const GENDERS = ["Male", "Female", "Unisex"];
 const STYLES = [
+  "All",
   "Casual",
   "Streetwear",
   "Formal",
-  "Bisnis Kasual",
+  "Business Casual",
   "Vintage",
   "Bohemian",
-  "Minimalis",
+  "Minimalist",
   "Sporty",
   "Preppy",
   "Grunge",
 ];
-const SEASONS = ["Musim Kemarau", "Musim Hujan", "Musim Salju", "Musim Gugur", "Musim Semi"];
+const SEASONS = ["Dry Season", "Rainy Season", "Snowy Season", "Autumn", "Spring"];
 
 export default function OotdGenerator() {
-  const [gender, setGender] = useState("Pria");
-  const [style, setStyle] = useState("Casual");
-  const [season, setSeason] = useState("Musim Kemarau");
+  const [gender, setGender] = useState("Male");
+  const [style, setStyle] = useState("All");
+  const [season, setSeason] = useState("Dry Season");
 
   const [result, setResult] = useState<OotdGeneratorOutput | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
@@ -54,27 +59,49 @@ export default function OotdGenerator() {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setImageUrl(null);
     setIsCopied(false);
+    setIsGeneratingImage(false);
 
     try {
+      // Generate text description first
       const response = await generateOotd({ gender, style, season });
       setResult(response);
+      setIsLoading(false); // Stop main loading state
+      
+      // Start async image generation
+      setIsGeneratingImage(true);
+      generateOotdImage(response.outfitDescription)
+        .then(imageResponse => {
+            setImageUrl(imageResponse.imageUrl);
+        })
+        .catch(err => {
+            console.error("Image generation failed:", err);
+            toast({
+                variant: 'destructive',
+                title: 'Image Generation Failed',
+                description: 'Could not generate the outfit image. Please try again later.'
+            });
+        })
+        .finally(() => {
+            setIsGeneratingImage(false);
+        });
+
     } catch (err) {
-      setError("Gagal menghasilkan OOTD. Silakan coba lagi nanti.");
+      setError("Failed to generate OOTD. Please try again later.");
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
   
   const handleCopy = () => {
     if (!result) return;
-    const resultString = `Deskripsi:\n${result.outfitDescription}\n\nItem:\n- ${result.items.join('\n- ')}`;
+    const resultString = `Style: ${result.styleUsed}\n\nDescription:\n${result.outfitDescription}\n\nItems:\n- ${result.items.join('\n- ')}`;
     navigator.clipboard.writeText(resultString);
     setIsCopied(true);
     toast({
-      title: "Disalin!",
-      description: "Rekomendasi OOTD telah disalin.",
+      title: "Copied!",
+      description: "OOTD recommendation has been copied.",
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
@@ -84,7 +111,7 @@ export default function OotdGenerator() {
       <CardHeader>
         <CardTitle>OOTD Generator</CardTitle>
         <CardDescription>
-          Dapatkan rekomendasi outfit acak berdasarkan gaya dan musim Anda.
+          Get a random AI-powered outfit recommendation based on your style and the season.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -93,7 +120,7 @@ export default function OotdGenerator() {
             <Label htmlFor="gender">Gender</Label>
             <Select value={gender} onValueChange={setGender} disabled={isLoading}>
               <SelectTrigger id="gender">
-                <SelectValue placeholder="Pilih Gender" />
+                <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
               <SelectContent>
                 {GENDERS.map((g) => (
@@ -103,10 +130,10 @@ export default function OotdGenerator() {
             </Select>
           </div>
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="style">Gaya Busana</Label>
+            <Label htmlFor="style">Fashion Style</Label>
             <Select value={style} onValueChange={setStyle} disabled={isLoading}>
               <SelectTrigger id="style">
-                <SelectValue placeholder="Pilih Gaya" />
+                <SelectValue placeholder="Select Style" />
               </SelectTrigger>
               <SelectContent>
                 {STYLES.map((s) => (
@@ -116,10 +143,10 @@ export default function OotdGenerator() {
             </Select>
           </div>
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="season">Musim</Label>
+            <Label htmlFor="season">Season</Label>
             <Select value={season} onValueChange={setSeason} disabled={isLoading}>
               <SelectTrigger id="season">
-                <SelectValue placeholder="Pilih Musim" />
+                <SelectValue placeholder="Select Season" />
               </SelectTrigger>
               <SelectContent>
                 {SEASONS.map((s) => (
@@ -137,7 +164,7 @@ export default function OotdGenerator() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <BrainCircuit className="mr-2 h-4 w-4" />
-          {isLoading ? "Sedang Berpikir..." : "Buatkan OOTD Untukku!"}
+          {isLoading ? "Thinking..." : "Generate my OOTD!"}
         </Button>
         {error && (
             <Alert variant="destructive" className="mt-4 w-full">
@@ -158,35 +185,65 @@ export default function OotdGenerator() {
             </div>
           </div>
         )}
-        {result && (
-          <Card className="mt-6 w-full bg-card/80">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Rekomendasi OOTD-mu</CardTitle>
-              <Button variant="ghost" size="icon" onClick={handleCopy}>
-                {isCopied ? (
-                  <Check className="h-5 w-5 text-green-500" />
-                ) : (
-                  <Copy className="h-5 w-5" />
-                )}
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <p className="text-card-foreground/90 italic">
-                "{result.outfitDescription}"
-              </p>
-              <div>
-                <h4 className="font-semibold flex items-center gap-2 mb-2">
-                    <Package className="h-5 w-5" />
-                    Item yang Kamu Butuhkan:
-                </h4>
-                <ul className="list-disc list-inside space-y-1 text-card-foreground/80">
-                    {result.items.map((item, index) => (
-                        <li key={index}>{item}</li>
-                    ))}
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+        {(result || isGeneratingImage) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 w-full">
+            <Card className="bg-card/80">
+                <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Your OOTD Recommendation</CardTitle>
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    {isCopied ? (
+                    <Check className="h-5 w-5 text-green-500" />
+                    ) : (
+                    <Copy className="h-5 w-5" />
+                    )}
+                </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                 <div>
+                    <Badge>{result?.styleUsed}</Badge>
+                 </div>
+                <p className="text-card-foreground/90 italic">
+                    "{result?.outfitDescription}"
+                </p>
+                <div>
+                    <h4 className="font-semibold flex items-center gap-2 mb-2">
+                        <Package className="h-5 w-5" />
+                        Items You'll Need:
+                    </h4>
+                    <ul className="list-disc list-inside space-y-1 text-card-foreground/80">
+                        {result?.items.map((item, index) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ul>
+                </div>
+                </CardContent>
+            </Card>
+
+            <Card className="bg-card/80">
+                 <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5" /> Outfit Visualization</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="aspect-square relative rounded-md overflow-hidden bg-muted flex items-center justify-center">
+                        {isGeneratingImage && (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                <Sparkles className="h-8 w-8 animate-pulse" />
+                                <p>Generating image...</p>
+                            </div>
+                        )}
+                        {imageUrl && (
+                            <Image src={imageUrl} alt="Generated outfit" fill className="object-cover animate-fade-in" />
+                        )}
+                        {!isGeneratingImage && !imageUrl && result && (
+                            <div className="flex flex-col items-center gap-2 text-muted-foreground text-center p-4">
+                                <ImageIcon className="h-8 w-8" />
+                                <p>Image will appear here</p>
+                            </div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+          </div>
         )}
       </CardFooter>
     </Card>
