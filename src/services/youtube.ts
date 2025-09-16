@@ -22,10 +22,10 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
     const params: any = {
       key: apiKey,
       part: ['id'],
-      chart: 'mostPopular',
+      type: ['video'],
       maxResults: 50,
       videoEmbeddable: 'true',
-      type: ['video'],
+      q: 'popular videos' // General query for broad results
     };
 
     if (regionCode) {
@@ -35,9 +35,12 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
       params.videoCategoryId = videoCategoryId;
     }
 
-    const response = await youtube.videos.list(params);
+    console.log("YouTube API Params:", params);
 
-    const videoIds = response.data.items?.map(item => item.id).filter((id): id is string => !!id);
+    // Use search.list which is more flexible for this kind of query.
+    const response = await youtube.search.list(params);
+
+    const videoIds = response.data.items?.map(item => item.id?.videoId).filter((id): id is string => !!id);
 
     return videoIds || [];
 
@@ -51,9 +54,8 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
       if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured' || reason === 'forbidden') {
         throw new Error(`The YouTube API key is invalid or misconfigured. Reason: ${reason}`);
       }
-      // Handle cases where a category might not be available for a region
       if (reason === 'processingFailure' || apiError.code === 400) {
-        console.warn(`Could not fetch chart for category ${videoCategoryId} in region ${regionCode}. It might not be available.`);
+        console.warn(`Could not fetch videos for category ${videoCategoryId} in region ${regionCode}.`);
         return []; // Return empty array to allow frontend to handle it gracefully
       }
     }
