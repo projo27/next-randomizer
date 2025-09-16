@@ -194,64 +194,64 @@ function HomePageContent() {
           <span>News</span>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="list">
+      <TabsContent value="list" forceMount>
         <ListRandomizer />
       </TabsContent>
-      <TabsContent value="number">
+      <TabsContent value="number" forceMount>
         <NumberRandomizer />
       </TabsContent>
-      <TabsContent value="password">
+      <TabsContent value="password" forceMount>
         <PasswordGenerator />
       </TabsContent>
-      <TabsContent value="news">
+      <TabsContent value="news" forceMount>
         <RandomNews />
       </TabsContent>
-      <TabsContent value="dice">
+      <TabsContent value="dice" forceMount>
         <DiceRoller />
       </TabsContent>
-      <TabsContent value="sequence">
+      <TabsContent value="sequence" forceMount>
         <SequenceRandomizer />
       </TabsContent>
-      <TabsContent value="team">
+      <TabsContent value="team" forceMount>
         <TeamShuffler />
       </TabsContent>
-      <TabsContent value="date">
+      <TabsContent value="date" forceMount>
         <DateRandomizer />
       </TabsContent>
-      <TabsContent value="coin">
+      <TabsContent value="coin" forceMount>
         <CoinFlipper />
       </TabsContent>
-      <TabsContent value="spinner">
+      <TabsContent value="spinner" forceMount>
         <Spinner />
       </TabsContent>
-      <TabsContent value="card">
+      <TabsContent value="card" forceMount>
         <CardDeckRandomizer />
       </TabsContent>
-      <TabsContent value="lottery">
+      <TabsContent value="lottery" forceMount>
         <LotteryGenerator />
       </TabsContent>
-      <TabsContent value="emoji">
+      <TabsContent value="emoji" forceMount>
         <EmojiGenerator />
       </TabsContent>
-      <TabsContent value="compass">
+      <TabsContent value="compass" forceMount>
         <CompassRandomizer />
       </TabsContent>
-      <TabsContent value="palette">
+      <TabsContent value="palette" forceMount>
         <ColorPaletteGenerator />
       </TabsContent>
-      <TabsContent value="base">
+      <TabsContent value="base" forceMount>
         <NumberBaseRandomizer />
       </TabsContent>
-      <TabsContent value="image">
+      <TabsContent value="image" forceMount>
         <ImageRandomizer />
       </TabsContent>
-      <TabsContent value="youtube">
+      <TabsContent value="youtube" forceMount>
         <YouTubeRandomizer />
       </TabsContent>
-      <TabsContent value="ootd">
+      <TabsContent value="ootd" forceMount>
         <OotdGenerator />
       </TabsContent>
-      <TabsContent value="travel">
+      <TabsContent value="travel" forceMount>
         <TravelRandomizer />
       </TabsContent>
     </Tabs>
