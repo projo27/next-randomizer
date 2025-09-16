@@ -9,9 +9,10 @@ const youtube = google.youtube('v3');
 /**
  * Searches for popular videos on YouTube based on a query.
  * @param query The search query (e.g., category).
+ * @param regionCode The ISO 3166-1 alpha-2 country code.
  * @returns A promise that resolves to an array of video IDs.
  */
-export async function searchVideos(query: string): Promise<string[]> {
+export async function searchVideos(query: string, regionCode?: string): Promise<string[]> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     throw new Error('YouTube API Key is not configured. Please set YOUTUBE_API_KEY environment variable.');
@@ -27,6 +28,7 @@ export async function searchVideos(query: string): Promise<string[]> {
       maxResults: 25, // Get a decent number of results for variety
       order: 'relevance',
       safeSearch: 'moderate',
+      regionCode: regionCode,
     });
     
     const videoIds = response.data.items?.map(item => item.id?.videoId).filter((id): id is string => !!id);
@@ -40,7 +42,7 @@ export async function searchVideos(query: string): Promise<string[]> {
     if (apiError.errors && apiError.errors.length > 0) {
         console.error('YouTube API Error Details:', apiError.errors);
         const reason = apiError.errors[0].reason;
-        if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured') {
+        if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured' || reason === 'forbidden') {
              throw new Error(`The YouTube API key is invalid or misconfigured. Reason: ${reason}`);
         }
     }

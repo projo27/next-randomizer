@@ -21,6 +21,7 @@ import {
 import { Wand2, Youtube } from "lucide-react";
 import { recommendVideo } from "@/app/actions/youtube-actions";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { COUNTRY_CODES } from "@/lib/country-codes";
 
 const YOUTUBE_CATEGORIES = [
     "Music",
@@ -46,6 +47,7 @@ const YOUTUBE_CATEGORIES = [
 
 export default function YouTubeRandomizer() {
   const [category, setCategory] = useState("all");
+  const [regionCode, setRegionCode] = useState("all");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +62,16 @@ export default function YouTubeRandomizer() {
             ? YOUTUBE_CATEGORIES[Math.floor(Math.random() * YOUTUBE_CATEGORIES.length)]
             : category;
 
-        const result = await recommendVideo({ category: queryCategory });
+        const queryRegionCode = regionCode === 'all'
+            ? undefined
+            : regionCode;
+
+        const result = await recommendVideo({ category: queryCategory, regionCode: queryRegionCode });
         
         if (result.videoId) {
             setVideoUrl(`https://www.youtube.com/embed/${result.videoId}`);
         } else {
-            setError("Could not find a video for this category. Please try another one.");
+            setError("Could not find a video for this category/region. Please try another one.");
         }
 
     } catch (err: any) {
@@ -81,29 +87,51 @@ export default function YouTubeRandomizer() {
       <CardHeader>
         <CardTitle>YouTube Randomizer</CardTitle>
         <CardDescription>
-          Find a random YouTube video to watch from various categories. <i>Powered by YouTube Data API</i>
+          Find a random YouTube video to watch from various categories and regions. <i>Powered by YouTube Data API</i>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="youtube-category">Video Category</Label>
-          <Select
-            value={category}
-            onValueChange={setCategory}
-            disabled={isRandomizing}
-          >
-            <SelectTrigger id="youtube-category">
-              <SelectValue placeholder="Select Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories (Random)</SelectItem>
-              {YOUTUBE_CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="youtube-category">Video Category</Label>
+            <Select
+                value={category}
+                onValueChange={setCategory}
+                disabled={isRandomizing}
+            >
+                <SelectTrigger id="youtube-category">
+                <SelectValue placeholder="Select Category" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="all">All Categories (Random)</SelectItem>
+                {YOUTUBE_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                    {cat}
+                    </SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
+            </div>
+             <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="youtube-region">Region</Label>
+            <Select
+                value={regionCode}
+                onValueChange={setRegionCode}
+                disabled={isRandomizing}
+            >
+                <SelectTrigger id="youtube-region">
+                <SelectValue placeholder="Select Region" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="all">All Countries</SelectItem>
+                {COUNTRY_CODES.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                    {country.name}
+                    </SelectItem>
+                ))}
+                </SelectContent>
+            </Select>
+            </div>
         </div>
 
         {error && (
