@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -29,6 +30,7 @@ interface Recommendation {
   country: string;
   city: string;
   description: string;
+  imageUrl: string;
 }
 
 export default function TravelRandomizer() {
@@ -66,6 +68,7 @@ export default function TravelRandomizer() {
         country: countryToProcess.country,
         city: result.city,
         description: result.description,
+        imageUrl: result.imageUrl,
       });
 
     } catch (err) {
@@ -102,22 +105,36 @@ export default function TravelRandomizer() {
           </Select>
         </div>
 
-        <div className="min-h-[180px]">
+        <div className="min-h-[250px] md:min-h-[200px]">
           {isLoading && (
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-1/2" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-1/2" />
+                <Skeleton className="h-6 w-1/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+              <Skeleton className="h-48 w-full rounded-lg" />
             </div>
           )}
           {!isLoading && recommendation && (
-            <div className="animate-fade-in space-y-4">
-               <h2 className="text-2xl font-bold text-primary">{recommendation.city}</h2>
-               <p className="text-lg text-muted-foreground">{recommendation.country}</p>
-               <p className="text-card-foreground/90 pt-2">
-                  {recommendation.description}
-               </p>
+            <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
+              <div className="space-y-4">
+                 <h2 className="text-2xl font-bold text-primary">{recommendation.city}</h2>
+                 <p className="text-lg text-muted-foreground">{recommendation.country}</p>
+                 <p className="text-card-foreground/90 pt-2">
+                    {recommendation.description}
+                 </p>
+              </div>
+              <div className="relative aspect-video md:aspect-auto h-48 w-full overflow-hidden rounded-lg">
+                <Image 
+                  src={recommendation.imageUrl}
+                  alt={`Photo of ${recommendation.city}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
             </div>
           )}
           {!isLoading && !recommendation && !error && (

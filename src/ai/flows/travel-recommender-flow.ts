@@ -20,6 +20,7 @@ export type CityRecommenderInput = z.infer<typeof CityRecommenderInputSchema>;
 const CityRecommenderOutputSchema = z.object({
   city: z.string().describe('The recommended city to visit.'),
   description: z.string().describe('A short, compelling reason why this city is the best choice for a traveler.'),
+  imageUrl: z.string().url().describe('A URL to a beautiful, high-quality, realistic photograph of the recommended city.'),
 });
 export type CityRecommenderOutput = z.infer<typeof CityRecommenderOutputSchema>;
 
@@ -36,11 +37,14 @@ const cityRecommenderPrompt = ai.definePrompt({
     schema: CityRecommenderOutputSchema,
   },
   prompt: `You are a world-class travel expert providing recommendations.
-From the list of cities provided in {{country}}, pick the single best city for a tourist to visit.
+From the list of cities provided in {{country}}, pick the random single best city for a tourist to visit.
+The city you choose, must not same as city you choose last to three has choosen before
 
 Cities to choose from: {{cities}}
 
-Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.`,
+Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.
+
+Also, provide a URL for a stunning, realistic photo of the city you recommended. Use a service like Unsplash or a similar stock photo site. For example: https://images.unsplash.com/photo-1502602898657-3e91760c0337?q=80&w=2070&auto=format&fit=crop`,
 });
 
 const cityRecommenderFlow = ai.defineFlow(
