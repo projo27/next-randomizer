@@ -65,7 +65,7 @@ Oranges`);
       setError("Please enter at least one item in the list.");
       return;
     }
-    
+
     if (isNaN(numToPick) || numToPick <= 0) {
       setError("Please enter a valid number of items to pick (must be > 0).");
       return;
@@ -91,7 +91,7 @@ Oranges`);
       }, 500);
     }
   };
-  
+
   const handleCopyResult = () => {
     if (!result) return;
     const resultString = Array.isArray(result) ? result.join("\n") : result;
@@ -152,17 +152,30 @@ Oranges`}
             </Button>
           </div>
         </div>
-         <div className="grid w-full max-w-xs items-center gap-1.5">
-            <Label htmlFor="num-items">Number of Items to Pick</Label>
-            <Input
+        <div className="grid w-full max-w-xs items-center gap-1.5">
+          <Label htmlFor="num-items">Number of Items to Pick</Label>
+          <Input
             id="num-items"
             type="number"
             min="1"
             value={count}
             onChange={(e) => setCount(e.target.value)}
-            />
+          />
         </div>
-         {error && (
+        {result && !Array.isArray(result) && (
+          <AnimatedResult result={result} options={options} handleCopyResult={handleCopyResult} />
+        )}
+        {(isShuffling || (result && Array.isArray(result))) && (
+          <AnimatedResultList
+            isShuffling={isShuffling}
+            shuffledItems={Array.isArray(result) ? result : []}
+            isResultCopied={isResultCopied}
+            handleCopyResult={handleCopyResult}
+            title="Randomly Picked Items"
+            itemClassName="text-lg"
+          />
+        )}
+        {error && (
           <Alert variant="destructive" className="mt-4">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
@@ -177,19 +190,6 @@ Oranges`}
           <Wand2 className="mr-2 h-4 w-4" />
           {isShuffling ? "Picking..." : isRateLimited ? "Please wait..." : "Randomize!"}
         </Button>
-        {result && !Array.isArray(result) && (
-            <AnimatedResult result={result} options={options} handleCopyResult={handleCopyResult}/>
-        )}
-        {(isShuffling || (result && Array.isArray(result))) && (
-            <AnimatedResultList
-                isShuffling={isShuffling}
-                shuffledItems={Array.isArray(result) ? result : []}
-                isResultCopied={isResultCopied}
-                handleCopyResult={handleCopyResult}
-                title="Randomly Picked Items"
-                itemClassName="text-lg"
-            />
-        )}
       </CardFooter>
     </Card>
   );
