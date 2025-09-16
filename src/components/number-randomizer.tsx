@@ -56,7 +56,7 @@ export default function NumberRandomizer() {
       return;
     }
     
-    const isIntegerRange = Number.isInteger(minNum) && Number.isInteger(maxNum) && getDecimalDigits(minNum) === 0 && getDecimalDigits(maxNum) === 0;
+    const isIntegerRange = Number.isInteger(minNum) && Number.isInteger(maxNum) && getDecimalDigits(min) === 0 && getDecimalDigits(max) === 0;
 
     if (isIntegerRange && countNum > (maxNum - minNum + 1)) {
         setError(`Cannot generate ${countNum} unique integers from a range of only ${maxNum - minNum + 1} possibilities.`);
@@ -105,7 +105,7 @@ export default function NumberRandomizer() {
 
 
   function getDecimalDigits(value: string): number {
-    if (value.includes('.')) {
+    if (value.indexOf('.') > -1) {
       return value.split('.')[1].length;
     }
     return 0;
