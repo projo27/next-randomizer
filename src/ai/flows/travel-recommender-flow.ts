@@ -9,6 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { searchPhotos } from '@/services/unsplash';
 import { z } from 'genkit';
 
 const CityRecommenderInputSchema = z.object({
@@ -27,7 +28,6 @@ export type CityRecommenderOutput = z.infer<typeof CityRecommenderOutputSchema>;
 const CityRecommenderAIOutputSchema = z.object({
     city: z.string().describe('The recommended city to visit.'),
     description: z.string().describe('A short, compelling reason why this city is the best choice for a traveler.'),
-    unsplashPhotoId: z.string().describe('An ID of a real, high-quality, relevant photo from Unsplash. The ID should look like this: "1-fp-T5i20k".'),
 });
 
 export async function recommendCity(input: CityRecommenderInput): Promise<CityRecommenderOutput> {
@@ -47,10 +47,7 @@ From the list of cities provided in {{country}}, pick the single best city for a
 
 Cities to choose from: {{cities}}
 
-Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.
-
-Also, provide an ID for a stunning, realistic photo of the city you recommended from Unsplash. It should be just the ID, not the full URL.
-For example, for a photo of Paris, a valid ID would be "1-fp-T5i20k".`,
+Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.`,
 });
 
 const cityRecommenderFlow = ai.defineFlow(
@@ -65,8 +62,14 @@ const cityRecommenderFlow = ai.defineFlow(
       throw new Error("Failed to get a recommendation from the AI.");
     }
     
-    // Construct the full, working URL from the photo ID
-    const imageUrl = `https://images.unsplash.com/photo-${output.unsplashPhotoId}?q=80&w=1080&auto=format&fit=crop`;
+    // Search for photos of the recommended city using the Unsplash service
+    const photoUrls = await searchPhotos(output.city);
+    if (!photoUrls || photoUrls.length === 0) {
+      throw new Error(`Could not find photos for ${output.city}`);
+    }
+    
+    // Pick a random photo from the results
+    const imageUrl = photoUrls[Math.floor(Math.random() * photoUrls.length)];
 
     return {
       city: output.city,
