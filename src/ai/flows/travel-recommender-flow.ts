@@ -27,7 +27,7 @@ export type CityRecommenderOutput = z.infer<typeof CityRecommenderOutputSchema>;
 const CityRecommenderAIOutputSchema = z.object({
     city: z.string().describe('The recommended city to visit.'),
     description: z.string().describe('A short, compelling reason why this city is the best choice for a traveler.'),
-    unsplashPhotoId: z.string().describe('An ID of a real, high-quality, relevant photo from Unsplash. For example, for Paris, a valid ID would be "1-fp-T5i20k".'),
+    unsplashPhotoId: z.string().describe('An ID of a real, high-quality, relevant photo from Unsplash. The ID should look like this: "1-fp-T5i20k".'),
 });
 
 export async function recommendCity(input: CityRecommenderInput): Promise<CityRecommenderOutput> {
@@ -43,8 +43,7 @@ const cityRecommenderPrompt = ai.definePrompt({
     schema: CityRecommenderAIOutputSchema,
   },
   prompt: `You are a world-class travel expert providing recommendations.
-From the list of cities provided in {{country}}, pick the random single best city for a tourist to visit.
-The city you choose, must not same as city you choose last to three has choosen before
+From the list of cities provided in {{country}}, pick the single best city for a tourist to visit.
 
 Cities to choose from: {{cities}}
 
