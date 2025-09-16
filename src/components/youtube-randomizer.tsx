@@ -147,14 +147,6 @@ export default function YouTubeRandomizer() {
             </Select>
             </div>
         </div>
-
-        {error && (
-            <Alert variant="destructive" className="mt-4">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
-        )}
-
         <div className="aspect-video w-full bg-muted/50 rounded-lg flex items-center justify-center">
             {isRandomizing ? (
                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -179,6 +171,13 @@ export default function YouTubeRandomizer() {
                 </div>
             )}
         </div>
+
+        {error && (
+            <Alert variant="destructive" className="mt-4">
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        )}
+
       </CardContent>
       <CardFooter>
         <Button

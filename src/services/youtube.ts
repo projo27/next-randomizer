@@ -26,20 +26,20 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
       type: ['video'],
       maxResults: 50,
       videoEmbeddable: 'true',
-      q: 'all', // General query for broad results
-      videoDefinition: 'high',
+      q: ' ', // General query for broad results
+      videoCategoryId: videoCategoryId,
       videoDuration: 'long',
     };
 
     if (regionCode) {
       params.regionCode = regionCode;
     }
-    if (videoCategoryId) {
-      params.videoCategoryId = videoCategoryId;
-    }
+    else delete params.regionCode;
+
     if (relevanceLanguage) {
       params.relevanceLanguage = relevanceLanguage;
     }
+    else delete params.relevanceLanguage;
 
     console.log("YouTube API Params:", params);
 
