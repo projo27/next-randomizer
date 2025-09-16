@@ -19,17 +19,26 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
   }
 
   try {
-    const response = await youtube.videos.list({
-        key: apiKey,
-        part: ['id'],
-        chart: 'mostPopular',
-        videoCategoryId: videoCategoryId,
-        regionCode: regionCode,
-        maxResults: 50, // Get a decent number of results for variety
-    });
-    
+    const params: any = {
+      key: apiKey,
+      part: ['id'],
+      chart: 'mostPopular',
+      maxResults: 50,
+      videoEmbeddable: 'true',
+      type: ['video'],
+    };
+
+    if (regionCode) {
+      params.regionCode = regionCode;
+    }
+    if (videoCategoryId) {
+      params.videoCategoryId = videoCategoryId;
+    }
+
+    const response = await youtube.videos.list(params);
+
     const videoIds = response.data.items?.map(item => item.id).filter((id): id is string => !!id);
-    
+
     return videoIds || [];
 
   } catch (error) {
@@ -37,16 +46,16 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
     // It's possible the error is a GoogleApisError, which has more details
     const apiError = error as any;
     if (apiError.errors && apiError.errors.length > 0) {
-        console.error('YouTube API Error Details:', apiError.errors);
-        const reason = apiError.errors[0].reason;
-        if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured' || reason === 'forbidden') {
-             throw new Error(`The YouTube API key is invalid or misconfigured. Reason: ${reason}`);
-        }
-         // Handle cases where a category might not be available for a region
-        if (reason === 'processingFailure' || apiError.code === 400) {
-          console.warn(`Could not fetch chart for category ${videoCategoryId} in region ${regionCode}. It might not be available.`);
-          return []; // Return empty array to allow frontend to handle it gracefully
-        }
+      console.error('YouTube API Error Details:', apiError.errors);
+      const reason = apiError.errors[0].reason;
+      if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured' || reason === 'forbidden') {
+        throw new Error(`The YouTube API key is invalid or misconfigured. Reason: ${reason}`);
+      }
+      // Handle cases where a category might not be available for a region
+      if (reason === 'processingFailure' || apiError.code === 400) {
+        console.warn(`Could not fetch chart for category ${videoCategoryId} in region ${regionCode}. It might not be available.`);
+        return []; // Return empty array to allow frontend to handle it gracefully
+      }
     }
     throw new Error('An unexpected error occurred while fetching videos from YouTube.');
   }
