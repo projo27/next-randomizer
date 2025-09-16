@@ -105,20 +105,20 @@ export default function TravelRandomizer() {
           </Select>
         </div>
 
-        <div className="min-h-[250px] md:min-h-[200px]">
+        {/* <div className="min-h-[450px] md:min-h-[300px] h-auto"> */}
           {isLoading && (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-6">
               <div className="space-y-4">
                 <Skeleton className="h-8 w-1/2" />
                 <Skeleton className="h-6 w-1/4" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-5/6" />
               </div>
-              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-64 w-full rounded-lg" />
             </div>
           )}
           {!isLoading && recommendation && (
-            <div className="grid md:grid-cols-2 gap-6 animate-fade-in">
+            <div className="flex flex-col gap-6 animate-fade-in">
               <div className="space-y-4">
                  <h2 className="text-2xl font-bold text-primary">{recommendation.city}</h2>
                  <p className="text-lg text-muted-foreground">{recommendation.country}</p>
@@ -126,13 +126,14 @@ export default function TravelRandomizer() {
                     {recommendation.description}
                  </p>
               </div>
-              <div className="relative aspect-video md:aspect-auto h-48 w-full overflow-hidden rounded-lg">
-                <Image 
+              <div className="relative w-full rounded-lg overflow-hidden">
+                <Image
                   src={recommendation.imageUrl}
                   alt={`Photo of ${recommendation.city}`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="h-auto w-full object-contain"
                 />
               </div>
             </div>
@@ -150,7 +151,7 @@ export default function TravelRandomizer() {
                   <AlertDescription>{error}</AlertDescription>
               </Alert>
           )}
-        </div>
+        {/* </div> */}
       </CardContent>
       <CardFooter>
         <Button
