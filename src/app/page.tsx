@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -28,11 +32,25 @@ import TravelRandomizer from "@/components/travel-randomizer";
 import YouTubeRandomizer from "@/components/youtube-randomizer";
 
 export default function Home() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'list';
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('tab', value);
+      router.push(pathname + '?' + params.toString());
+    },
+    [pathname, router, searchParams]
+  );
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
       <main className="w-full max-w-6xl mx-auto mt-12">
-        <Tabs defaultValue="list" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="flex flex-wrap items-center justify-center w-full h-auto">
             <TabsTrigger
               value="list"
@@ -178,64 +196,64 @@ export default function Home() {
               <span>News</span>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="list" forceMount>
+          <TabsContent value="list">
             <ListRandomizer />
           </TabsContent>
-          <TabsContent value="number" forceMount>
+          <TabsContent value="number">
             <NumberRandomizer />
           </TabsContent>
-          <TabsContent value="password" forceMount>
+          <TabsContent value="password">
             <PasswordGenerator />
           </TabsContent>
-          <TabsContent value="news" forceMount>
+          <TabsContent value="news">
             <RandomNews />
           </TabsContent>
-          <TabsContent value="dice" forceMount>
+          <TabsContent value="dice">
             <DiceRoller />
           </TabsContent>
-          <TabsContent value="sequence" forceMount>
+          <TabsContent value="sequence">
             <SequenceRandomizer />
           </TabsContent>
-          <TabsContent value="team" forceMount>
+          <TabsContent value="team">
             <TeamShuffler />
           </TabsContent>
-          <TabsContent value="date" forceMount>
+          <TabsContent value="date">
             <DateRandomizer />
           </TabsContent>
-          <TabsContent value="coin" forceMount>
+          <TabsContent value="coin">
             <CoinFlipper />
           </TabsContent>
-          <TabsContent value="spinner" forceMount>
+          <TabsContent value="spinner">
             <Spinner />
           </TabsContent>
-          <TabsContent value="card" forceMount>
+          <TabsContent value="card">
             <CardDeckRandomizer />
           </TabsContent>
-          <TabsContent value="lottery" forceMount>
+          <TabsContent value="lottery">
             <LotteryGenerator />
           </TabsContent>
-          <TabsContent value="emoji" forceMount>
+          <TabsContent value="emoji">
             <EmojiGenerator />
           </TabsContent>
-          <TabsContent value="compass" forceMount>
+          <TabsContent value="compass">
             <CompassRandomizer />
           </TabsContent>
-          <TabsContent value="palette" forceMount>
+          <TabsContent value="palette">
             <ColorPaletteGenerator />
           </TabsContent>
-          <TabsContent value="base" forceMount>
+          <TabsContent value="base">
             <NumberBaseRandomizer />
           </TabsContent>
-          <TabsContent value="image" forceMount>
+          <TabsContent value="image">
             <ImageRandomizer />
           </TabsContent>
-          <TabsContent value="youtube" forceMount>
+          <TabsContent value="youtube">
             <YouTubeRandomizer />
           </TabsContent>
-          <TabsContent value="ootd" forceMount>
+          <TabsContent value="ootd">
             <OotdGenerator />
           </TabsContent>
-          <TabsContent value="travel" forceMount>
+          <TabsContent value="travel">
             <TravelRandomizer />
           </TabsContent>
         </Tabs>

@@ -17,6 +17,8 @@ export async function searchVideos(query: string, regionCode?: string): Promise<
   if (!apiKey) {
     throw new Error('YouTube API Key is not configured. Please set YOUTUBE_API_KEY environment variable.');
   }
+  
+  console.info(query, regionCode);
 
   try {
     const response = await youtube.search.list({
