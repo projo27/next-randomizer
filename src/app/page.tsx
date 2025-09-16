@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -25,6 +25,7 @@ import NumberBaseRandomizer from "@/components/number-base-randomizer";
 import ImageRandomizer from "@/components/image-randomizer";
 import OotdGenerator from "@/components/ootd-generator";
 import TravelRandomizer from "@/components/travel-randomizer";
+import YouTubeRandomizer from "@/components/youtube-randomizer";
 
 export default function Home() {
   return (
@@ -106,7 +107,8 @@ export default function Home() {
             </TabsTrigger>
             <TabsTrigger
               value="emoji"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h
+-10"
             >
               <Smile className="h-5 w-5" />
               <span>Emoji</span>
@@ -147,6 +149,13 @@ export default function Home() {
             >
               <ImageIcon className="h-5 w-5" />
               <span>Image</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="youtube"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Youtube className="h-5 w-5" />
+              <span>YouTube</span>
             </TabsTrigger>
             <TabsTrigger
               value="ootd"
@@ -220,6 +229,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="image" forceMount>
             <ImageRandomizer />
+          </TabsContent>
+          <TabsContent value="youtube" forceMount>
+            <YouTubeRandomizer />
           </TabsContent>
           <TabsContent value="ootd" forceMount>
             <OotdGenerator />
