@@ -25,6 +25,7 @@ import { generateOotd, generateOotdImage, OotdGeneratorOutput } from "@/ai/flows
 import { Skeleton } from "./ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
+import { Input } from "./ui/input";
 
 const GENDERS = ["Male", "Female", "Unisex"];
 const STYLES = [
@@ -46,6 +47,8 @@ export default function OotdGenerator() {
   const [gender, setGender] = useState("Male");
   const [style, setStyle] = useState("All");
   const [season, setSeason] = useState("Dry Season");
+  const [height, setHeight] = useState("175");
+  const [weight, setWeight] = useState("70");
 
   const [result, setResult] = useState<OotdGeneratorOutput | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -56,6 +59,14 @@ export default function OotdGenerator() {
   const { toast } = useToast();
 
   const handleGenerate = async () => {
+    const heightNum = parseInt(height, 10);
+    const weightNum = parseInt(weight, 10);
+
+    if (isNaN(heightNum) || isNaN(weightNum) || heightNum <= 0 || weightNum <= 0) {
+      setError("Please enter a valid height and weight.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -65,7 +76,7 @@ export default function OotdGenerator() {
 
     try {
       // Generate text description first
-      const response = await generateOotd({ gender, style, season });
+      const response = await generateOotd({ gender, style, season, height: heightNum, weight: weightNum });
       setResult(response);
       setIsLoading(false); // Stop main loading state
       
@@ -115,7 +126,7 @@ export default function OotdGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="gender">Gender</Label>
             <Select value={gender} onValueChange={setGender} disabled={isLoading}>
@@ -154,6 +165,14 @@ export default function OotdGenerator() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="height">Height (cm)</Label>
+            <Input id="height" type="number" placeholder="e.g., 175" value={height} onChange={(e) => setHeight(e.target.value)} disabled={isLoading} />
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="weight">Weight (kg)</Label>
+            <Input id="weight" type="number" placeholder="e.g., 70" value={weight} onChange={(e) => setWeight(e.target.value)} disabled={isLoading} />
           </div>
         </div>
       </CardContent>

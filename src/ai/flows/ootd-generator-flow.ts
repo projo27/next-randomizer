@@ -17,6 +17,8 @@ const OotdGeneratorInputSchema = z.object({
   gender: z.string().describe('The gender for the outfit (e.g., Male, Female).'),
   style: z.string().describe('The desired fashion style (e.g., Casual, Formal, Streetwear, or All for random).'),
   season: z.string().describe('The current season (e.g., Rainy Season, Dry Season).'),
+  height: z.number().describe('The height of the person in centimeters.'),
+  weight: z.number().describe('The weight of the person in kilograms.'),
 });
 export type OotdGeneratorInput = z.infer<typeof OotdGeneratorInputSchema>;
 
@@ -49,28 +51,31 @@ const ootdPrompt = ai.definePrompt({
   output: {
     schema: OotdGeneratorOutputSchema,
   },
-  prompt: `You are a creative and knowledgeable fashion stylist. Your task is to generate a stylish and practical "Outfit of the Day" (OOTD) based on the user's preferences.
+  prompt: `You are a creative and knowledgeable fashion stylist. Your task is to generate a stylish and practical "Outfit of the Day" (OOTD) based on the user's preferences and body measurements.
 
 User Preferences:
 - Gender: {{gender}}
 - Fashion Style: {{style}}
 - Season: {{season}}
+- Height: {{height}} cm
+- Weight: {{weight}} kg
 
 Instructions:
 1.  If the style is "All", you must first randomly select one specific style from this list: Casual, Streetwear, Formal, Business Casual, Vintage, Bohemian, Minimalist, Sporty, Preppy, Grunge. Then, generate the outfit based on that chosen style.
 2.  Create a complete outfit recommendation including a top, bottom, footwear, and at least one accessory.
-3.  Write a compelling and descriptive summary of the outfit in 'outfitDescription'. Make it sound fashionable and appealing.
-4.  List the individual clothing and accessory items in the 'items' array. Be specific about colors and materials where appropriate.
-5.  Specify the style you chose in the 'styleUsed' field. If the user provided a specific style, use that one.
-6.  Ensure the outfit is suitable for the specified season. For example, recommend warmer, layered clothing for 'Rainy Season' or light, breathable fabrics for 'Dry Season'.
-7.  All output must be in English.
+3.  Consider the user's height and weight to suggest clothing that would be flattering for their body type. For example, you might suggest certain cuts or styles that elongate the figure for a shorter person, or styles that add shape for a slender person.
+4.  Write a compelling and descriptive summary of the outfit in 'outfitDescription'. Make it sound fashionable and appealing.
+5.  List the individual clothing and accessory items in the 'items' array. Be specific about colors and materials where appropriate.
+6.  Specify the style you chose in the 'styleUsed' field. If the user provided a specific style, use that one.
+7.  Ensure the outfit is suitable for the specified season. For example, recommend warmer, layered clothing for 'Rainy Season' or light, breathable fabrics for 'Dry Season'.
+8.  All output must be in English.
 
-Example for 'Female', 'Casual', 'Dry Season':
+Example for 'Female', 'Casual', 'Dry Season', '165 cm', '60 kg':
 {
-  "outfitDescription": "Stay cool and chic in the dry season with this refreshing and classic combo. A lightweight white linen blouse paired with khaki culottes creates a comfortable and elegant silhouette. Espadrille sandals and a straw tote bag add the perfect summer touch.",
+  "outfitDescription": "Stay cool and chic in the dry season with this refreshing and classic combo. A lightweight white linen blouse paired with high-waisted khaki culottes creates a comfortable and elegant silhouette that flatters your frame. Espadrille sandals and a straw tote bag add the perfect summer touch.",
   "items": [
     "White short-sleeve linen blouse",
-    "Khaki-colored cotton culottes",
+    "High-waisted khaki-colored cotton culottes",
     "Espadrille sandals with ties",
     "Woven straw tote bag",
     "Cat-eye sunglasses"
