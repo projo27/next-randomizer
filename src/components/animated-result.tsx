@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,6 +13,7 @@ interface AnimatedResultProps {
   duration?: number;
   title?: string;
   description?: string;
+  handleCopyResult?: () => void;
 }
 
 export default function AnimatedResult({
@@ -20,6 +22,7 @@ export default function AnimatedResult({
   duration = 2000,
   title = "And the winner is...",
   description,
+  handleCopyResult
 }: AnimatedResultProps) {
   const [displayValue, setDisplayValue] = useState<string | number | null>(
     null
@@ -62,6 +65,12 @@ export default function AnimatedResult({
 
   const handleCopy = () => {
     if (result === null) return;
+    if (handleCopyResult) {
+      handleCopyResult();
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+      return;
+    }
     navigator.clipboard.writeText(result.toString());
     setIsCopied(true);
     toast({
