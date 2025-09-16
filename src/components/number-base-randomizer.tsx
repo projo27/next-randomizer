@@ -47,15 +47,15 @@ export default function NumberBaseRandomizer() {
       setError("Please enter valid minimum and maximum numbers.");
       return;
     }
-    
+
     if (minNum >= maxNum) {
-        setError("Minimum number must be less than the maximum number.");
-        return;
+      setError("Minimum number must be less than the maximum number.");
+      return;
     }
-    
+
     if (maxNum > 1000000) {
-        setError("Maximum number cannot be greater than 1,000,000 to ensure performance.");
-        return;
+      setError("Maximum number cannot be greater than 1,000,000 to ensure performance.");
+      return;
     }
 
     setIsGenerating(true);
@@ -63,13 +63,13 @@ export default function NumberBaseRandomizer() {
     const randomNumber = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
 
     setTimeout(() => {
-        setResult({
-            decimal: randomNumber,
-            binary: randomNumber.toString(2),
-            octal: randomNumber.toString(8),
-            hex: randomNumber.toString(16).toUpperCase(),
-        });
-        setIsGenerating(false);
+      setResult({
+        decimal: randomNumber,
+        binary: randomNumber.toString(2),
+        octal: randomNumber.toString(8),
+        hex: randomNumber.toString(16).toUpperCase(),
+      });
+      setIsGenerating(false);
     }, 500);
   };
 
@@ -115,9 +115,39 @@ export default function NumberBaseRandomizer() {
 
         {error && (
           <Alert variant="destructive" className="mt-4">
-            <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
+        )}
+
+        {isGenerating && (
+          <div className="w-full space-y-2 p-4 mt-8">
+            <div className="h-8 bg-muted rounded-md animate-pulse" />
+            <div className="h-8 bg-muted rounded-md animate-pulse" />
+            <div className="h-8 bg-muted rounded-md animate-pulse" />
+            <div className="h-8 bg-muted rounded-md animate-pulse" />
+          </div>
+        )}
+        {result && !isGenerating && (
+          <div className="p-4 w-full space-y-2 mt-8 rounded-md border-accent border-2">
+            {Object.entries(result).map(([key, value]) => (
+              <div key={key} className="relative flex items-center">
+                <Label htmlFor={key} className="w-28 text-sm text-muted-foreground">{key.charAt(0).toUpperCase() + key.slice(1)}</Label>
+                <Input id={key} readOnly value={value} className="font-mono [&&&]:text-xl pr-10" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 h-8 w-8"
+                  onClick={() => handleCopy(key as keyof Result, value)}
+                >
+                  {copiedKey === key ? (
+                    <Check className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Copy className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
       <CardFooter className="flex flex-col">
@@ -129,36 +159,7 @@ export default function NumberBaseRandomizer() {
           <Wand2 className="mr-2 h-4 w-4" />
           {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Number"}
         </Button>
-        {isGenerating && (
-            <div className="w-full space-y-2 mt-6">
-                <div className="h-8 bg-muted rounded-md animate-pulse" />
-                <div className="h-8 bg-muted rounded-md animate-pulse" />
-                <div className="h-8 bg-muted rounded-md animate-pulse" />
-                <div className="h-8 bg-muted rounded-md animate-pulse" />
-            </div>
-        )}
-        {result && !isGenerating && (
-            <div className="mt-6 w-full space-y-2">
-                {Object.entries(result).map(([key, value]) => (
-                    <div key={key} className="relative flex items-center">
-                        <Label htmlFor={key} className="w-28 text-sm text-muted-foreground">{key.charAt(0).toUpperCase() + key.slice(1)}</Label>
-                        <Input id={key} readOnly value={value} className="font-mono text-base pr-10" />
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-1 h-8 w-8"
-                            onClick={() => handleCopy(key as keyof Result, value)}
-                        >
-                            {copiedKey === key ? (
-                                <Check className="h-5 w-5 text-green-500" />
-                            ) : (
-                                <Copy className="h-5 w-5" />
-                            )}
-                        </Button>
-                    </div>
-                ))}
-            </div>
-        )}
+
       </CardFooter>
     </Card>
   );

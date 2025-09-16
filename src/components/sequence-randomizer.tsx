@@ -117,16 +117,7 @@ Participant 4`);
             </Button>
           </div>
         </div>
-      </CardContent>
-      <CardFooter className="flex flex-col">
-        <Button
-          onClick={handleShuffle}
-          disabled={isShuffling || isRateLimited}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-        >
-          <Wand2 className="mr-2 h-4 w-4" />
-          {isShuffling ? "Shuffling..." : isRateLimited ? "Please wait..." : "Shuffle Sequence!"}
-        </Button>
+
         {(isShuffling || shuffledItems.length > 0) && (
           <AnimatedResultList
             isShuffling={isShuffling}
@@ -137,6 +128,16 @@ Participant 4`);
             itemClassName="text-lg"
           />
         )}
+      </CardContent>
+      <CardFooter className="flex flex-col">
+        <Button
+          onClick={handleShuffle}
+          disabled={isShuffling || isRateLimited}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
+          <Wand2 className="mr-2 h-4 w-4" />
+          {isShuffling ? "Shuffling..." : isRateLimited ? "Please wait..." : "Shuffle Sequence!"}
+        </Button>
       </CardFooter>
     </Card>
   );

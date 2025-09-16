@@ -159,16 +159,7 @@ export default function NumberRandomizer() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-      </CardContent>
-      <CardFooter className="flex flex-col">
-        <Button
-          onClick={handleRandomize}
-          disabled={isRandomizing || isRateLimited}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-        >
-          <Wand2 className="mr-2 h-4 w-4" />
-          {isRandomizing ? "Generating..." : isRateLimited ? "Please wait..." : "Randomize!"}
-        </Button>
+        
         {result && result.length === 1 && !isRandomizing && (
           <AnimatedResult result={result[0]} handleCopyResult={handleCopyResult} />
         )}
@@ -182,6 +173,16 @@ export default function NumberRandomizer() {
             itemClassName="text-xl font-bold font-mono"
            />
         )}
+      </CardContent>
+      <CardFooter className="flex flex-col">
+        <Button
+          onClick={handleRandomize}
+          disabled={isRandomizing || isRateLimited}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
+          <Wand2 className="mr-2 h-4 w-4" />
+          {isRandomizing ? "Generating..." : isRateLimited ? "Please wait..." : "Randomize!"}
+        </Button>
       </CardFooter>
     </Card>
   );
