@@ -7,6 +7,7 @@
  * - generateOotdImage - A function that generates an image for a given outfit description.
  * - OotdGeneratorInput - The input type for the generateOotd function.
  * - OotdGeneratorOutput - The return type for the generateOotd function.
+ * - OotdImageGeneratorInput - The input type for the generateOotdImage function.
  * - OotdImageGeneratorOutput - The return type for the generateOotdImage function.
  */
 
@@ -29,6 +30,15 @@ const OotdGeneratorOutputSchema = z.object({
 });
 export type OotdGeneratorOutput = z.infer<typeof OotdGeneratorOutputSchema>;
 
+const OotdImageGeneratorInputSchema = z.object({
+  outfitDescription: z.string().describe('The description of the outfit to be visualized.'),
+  gender: z.string().describe('The gender for the outfit (e.g., Male, Female).'),
+  height: z.number().describe('The height of the person in centimeters.'),
+  weight: z.number().describe('The weight of the person in kilograms.'),
+});
+export type OotdImageGeneratorInput = z.infer<typeof OotdImageGeneratorInputSchema>;
+
+
 const OotdImageGeneratorOutputSchema = z.object({
   imageUrl: z.string().describe("A data URI of the generated image. Expected format: 'data:image/png;base64,<encoded_data>'."),
 });
@@ -39,8 +49,8 @@ export async function generateOotd(input: OotdGeneratorInput): Promise<OotdGener
   return ootdGeneratorFlow(input);
 }
 
-export async function generateOotdImage(outfitDescription: string): Promise<OotdImageGeneratorOutput> {
-  return ootdImageGeneratorFlow(outfitDescription);
+export async function generateOotdImage(input: OotdImageGeneratorInput): Promise<OotdImageGeneratorOutput> {
+  return ootdImageGeneratorFlow(input);
 }
 
 const ootdPrompt = ai.definePrompt({
@@ -102,13 +112,14 @@ const ootdGeneratorFlow = ai.defineFlow(
 const ootdImageGeneratorFlow = ai.defineFlow(
   {
     name: 'ootdImageGeneratorFlow',
-    inputSchema: z.string(),
+    inputSchema: OotdImageGeneratorInputSchema,
     outputSchema: OotdImageGeneratorOutputSchema,
   },
-  async (outfitDescription) => {
+  async (input) => {
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A full-body, high-quality, realistic fashion photograph of an outfit. The photo should not show a face. The background should be a clean, minimalist studio setting. The outfit is described as: "${outfitDescription}"`,
+      prompt: `A full-body, high-quality, realistic fashion photograph of an outfit displayed on a mannequin that reflects a {{gender}} body type for a person who is {{height}}cm tall and weighs {{weight}}kg. The photo must not show a human face. The background should be a clean, minimalist studio setting. The outfit is described as: "{{outfitDescription}}"`,
+      promptVariables: input,
     });
     return { imageUrl: media.url };
   }

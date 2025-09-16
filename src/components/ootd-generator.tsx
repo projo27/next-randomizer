@@ -82,7 +82,12 @@ export default function OotdGenerator() {
       
       // Start async image generation
       setIsGeneratingImage(true);
-      generateOotdImage(response.outfitDescription)
+      generateOotdImage({
+        outfitDescription: response.outfitDescription,
+        gender,
+        height: heightNum,
+        weight: weightNum
+      })
         .then(imageResponse => {
             setImageUrl(imageResponse.imageUrl);
         })
