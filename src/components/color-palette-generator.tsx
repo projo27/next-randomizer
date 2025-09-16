@@ -59,66 +59,66 @@ export default function ColorPaletteGenerator() {
   const generatePalettes = () => {
     setIsGenerating(true);
     setCopiedColor(null);
-    
+
     const countPalettes = parseInt(numPalettes, 10);
     const allNewPalettes: string[][] = [];
 
-    for(let p = 0; p < countPalettes; p++) {
-        const count = parseInt(numColors, 10);
-        let newPalette: string[] = [];
+    for (let p = 0; p < countPalettes; p++) {
+      const count = parseInt(numColors, 10);
+      let newPalette: string[] = [];
 
-        const baseHue = Math.random() * 360;
-        const saturation = 50 + Math.random() * 30; // 50% to 80%
-        const lightness = 65 + Math.random() * 10; // 65% to 75%
+      const baseHue = Math.random() * 360;
+      const saturation = 50 + Math.random() * 30; // 50% to 80%
+      const lightness = 65 + Math.random() * 10; // 65% to 75%
 
-        const hues: number[] = [baseHue];
-        
-        switch (scheme) {
+      const hues: number[] = [baseHue];
+
+      switch (scheme) {
         case "monochromatic":
-            for (let i = 0; i < count; i++) {
-                const l = lightness - 15 + (i / (count -1)) * 30;
-                const s = saturation - 10 + (i / (count -1)) * 20;
-                newPalette.push(hslToHex(baseHue, Math.min(100, Math.max(20, s)), Math.min(95, Math.max(15, l))));
-            }
-            break;
+          for (let i = 0; i < count; i++) {
+            const l = lightness - 15 + (i / (count - 1)) * 30;
+            const s = saturation - 10 + (i / (count - 1)) * 20;
+            newPalette.push(hslToHex(baseHue, Math.min(100, Math.max(20, s)), Math.min(95, Math.max(15, l))));
+          }
+          break;
         case "complementary":
-            hues.push((baseHue + 180) % 360);
-            break;
+          hues.push((baseHue + 180) % 360);
+          break;
         case "split-complementary":
-            hues.push((baseHue + 150) % 360);
-            hues.push((baseHue + 210) % 360);
-            break;
+          hues.push((baseHue + 150) % 360);
+          hues.push((baseHue + 210) % 360);
+          break;
         case "triadic":
-            hues.push((baseHue + 120) % 360);
-            hues.push((baseHue + 240) % 360);
-            break;
+          hues.push((baseHue + 120) % 360);
+          hues.push((baseHue + 240) % 360);
+          break;
         case "tetradic":
-            hues.push((baseHue + 60) % 360);
-            hues.push((baseHue + 180) % 360);
-            hues.push((baseHue + 240) % 360);
-            break;
+          hues.push((baseHue + 60) % 360);
+          hues.push((baseHue + 180) % 360);
+          hues.push((baseHue + 240) % 360);
+          break;
         case "square":
-            hues.push((baseHue + 90) % 360);
-            hues.push((baseHue + 180) % 360);
-            hues.push((baseHue + 270) % 360);
-            break;
+          hues.push((baseHue + 90) % 360);
+          hues.push((baseHue + 180) % 360);
+          hues.push((baseHue + 270) % 360);
+          break;
         case "analogous":
         default:
-            for (let i = 1; i < count; i++) {
+          for (let i = 1; i < count; i++) {
             hues.push((baseHue + i * 30) % 360);
-            }
-            break;
+          }
+          break;
+      }
+
+      if (scheme !== 'monochromatic') {
+        for (let i = 0; i < count; i++) {
+          const hue = hues[i % hues.length];
+          const l = lightness - (i * 3) + Math.random() * 6;
+          const s = saturation - (i * 2) + Math.random() * 4;
+          newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20, l))));
         }
-        
-        if (scheme !== 'monochromatic') {
-            for (let i = 0; i < count; i++) {
-                const hue = hues[i % hues.length];
-                const l = lightness - (i * 3) + Math.random() * 6;
-                const s = saturation - (i*2) + Math.random() * 4;
-                newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20,l))));
-            }
-        }
-        allNewPalettes.push(newPalette);
+      }
+      allNewPalettes.push(newPalette);
     }
 
 
@@ -139,6 +139,7 @@ export default function ColorPaletteGenerator() {
     toast({
       title: "Copied!",
       description: `${color} copied to clipboard.`,
+      duration: 1600
     });
     setTimeout(() => setCopiedColor(null), 2000);
   };
@@ -154,24 +155,7 @@ export default function ColorPaletteGenerator() {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex items-center gap-4">
-            <Label htmlFor="num-palettes">Palettes</Label>
-            <Select
-              value={numPalettes}
-              onValueChange={setNumPalettes}
-              disabled={isGenerating}
-            >
-              <SelectTrigger id="num-palettes" className="w-24">
-                <SelectValue placeholder="1" />
-              </SelectTrigger>
-              <SelectContent>
-                {[...Array(7)].map((_, i) => (
-                    <SelectItem key={i+1} value={(i+1).toString()}>{i+1}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-4">
-            <Label htmlFor="color-count">Colors</Label>
+            <Label htmlFor="color-count">Number of Colors</Label>
             <Select
               value={numColors}
               onValueChange={setNumColors}
@@ -186,6 +170,23 @@ export default function ColorPaletteGenerator() {
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem value="6">6</SelectItem>
                 <SelectItem value="7">7</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-4">
+            <Label htmlFor="num-palettes">Number of Palettes Generated</Label>
+            <Select
+              value={numPalettes}
+              onValueChange={setNumPalettes}
+              disabled={isGenerating}
+            >
+              <SelectTrigger id="num-palettes" className="w-24">
+                <SelectValue placeholder="1" />
+              </SelectTrigger>
+              <SelectContent>
+                {[...Array(7)].map((_, i) => (
+                  <SelectItem key={i + 1} value={(i + 1).toString()}>{i + 1}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -211,38 +212,39 @@ export default function ColorPaletteGenerator() {
             </Select>
           </div>
         </div>
-        
+
         <div className="space-y-4">
-        {palettes.map((palette, pIndex) => (
+          {palettes.map((palette, pIndex) => (
             <div key={pIndex} className="flex flex-col md:flex-row rounded-lg overflow-hidden min-h-[100px] shadow-inner">
-            {palette.map((color, cIndex) => (
+              {palette.map((color, cIndex) => (
                 <div
-                key={cIndex}
-                className={cn(
-                    "flex-1 p-4 flex flex-col justify-end items-center text-center transition-all duration-500",
+                  key={cIndex}
+                  className={cn(
+                    "flex-1 flex flex-col justify-end items-strech text-center transition-all duration-500 w-full min-h-32",
                     isGenerating && "opacity-50"
-                )}
-                style={{ backgroundColor: color, color: getBestTextColor(color) }}
+                  )}
+                  style={{ backgroundColor: color, color: getBestTextColor(color) }}
                 >
-                <div className="bg-black/20 rounded-md p-2 flex items-center gap-2">
-                    <span className="font-mono text-sm md:text-base">{color}</span>
-                    <Button
+                  {/* <div className=""> */}
+
+                  <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 hover:bg-white/30"
+                    className="rounded-none hover:bg-white/30 p-2 flex flex-row items-center justify-center w-full h-1/3"
                     onClick={() => handleCopy(color)}
-                    >
+                  >
+                    <span className="font-mono text-sm md:text-base">{color}</span>
                     {copiedColor === color ? (
-                        <Check className="h-5 w-5" />
+                      <Check className="h-5 w-5" />
                     ) : (
-                        <Copy className="h-5 w-5" />
+                      <Copy className="h-5 w-5" />
                     )}
-                    </Button>
+                  </Button>
+                  {/* </div> */}
                 </div>
-                </div>
-            ))}
+              ))}
             </div>
-        ))}
+          ))}
         </div>
 
       </CardContent>

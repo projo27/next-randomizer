@@ -91,7 +91,7 @@ export default function CoinFlipper() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
+        <div className="flex justify-center items-center min-h-[120px] gap-8 flex-wrap">
           {(isFlipping ? Array(parseInt(numberOfCoins, 10)).fill(null) : results).map((result, i) => (
              <div key={i} className={`coin ${isFlipping ? 'flipping' : ''}`}>
                 <div className="coin-inner">

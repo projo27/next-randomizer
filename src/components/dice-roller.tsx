@@ -30,12 +30,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const diceIcons = [
-  <Dice1 key={1} className="h-24 w-24" />,
-  <Dice2 key={2} className="h-24 w-24" />,
-  <Dice3 key={3} className="h-24 w-24" />,
-  <Dice4 key={4} className="h-24 w-24" />,
-  <Dice5 key={5} className="h-24 w-24" />,
-  <Dice6 key={6} className="h-24 w-24" />,
+  <Dice1 key={1} className="h-32 w-32" />,
+  <Dice2 key={2} className="h-32 w-32" />,
+  <Dice3 key={3} className="h-32 w-32" />,
+  <Dice4 key={4} className="h-32 w-32" />,
+  <Dice5 key={5} className="h-32 w-32" />,
+  <Dice6 key={6} className="h-32 w-32" />,
 ];
 
 // const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
