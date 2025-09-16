@@ -24,29 +24,43 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { COUNTRY_CODES } from "@/lib/country-codes";
 
 const YOUTUBE_CATEGORIES = [
-    "Music",
-    "Comedy",
-    "Gaming",
-    "Science & Technology",
-    "Movie Trailers",
-    "Documentaries",
-    "Travel Vlogs",
-    "Cooking Tutorials",
-    "DIY & Crafts",
-    "Film & Animation",
-    "Autos & Vehicles",
-    "Pets & Animals",
-    "Sports",
-    "Entertainment",
-    "News & Politics",
-    "Howto & Style",
-    "Education",
-    "People & Blogs"
+    { categoryId: "1", videoCategory: "Film & Animation" },
+    { categoryId: "2", videoCategory: "Autos & Vehicles" },
+    { categoryId: "10", videoCategory: "Music" },
+    { categoryId: "15", videoCategory: "Pets & Animals" },
+    { categoryId: "17", videoCategory: "Sports" },
+    { categoryId: "18", videoCategory: "Short Movies" },
+    { categoryId: "19", videoCategory: "Travel & Events" },
+    { categoryId: "20", videoCategory: "Gaming" },
+    { categoryId: "21", videoCategory: "Videoblogging" },
+    { categoryId: "22", videoCategory: "People & Blogs" },
+    { categoryId: "23", videoCategory: "Comedy" },
+    { categoryId: "24", videoCategory: "Entertainment" },
+    { categoryId: "25", videoCategory: "News & Politics" },
+    { categoryId: "26", videoCategory: "Howto & Style" },
+    { categoryId: "27", videoCategory: "Education" },
+    { categoryId: "28", videoCategory: "Science & Technology" },
+    { categoryId: "29", videoCategory: "Nonprofits & Activism" },
+    { categoryId: "30", videoCategory: "Movies" },
+    { categoryId: "31", videoCategory: "Anime/Animation" },
+    { categoryId: "32", videoCategory: "Action/Adventure" },
+    { categoryId: "33", videoCategory: "Classics" },
+    { categoryId: "34", videoCategory: "Comedy" },
+    { categoryId: "35", videoCategory: "Documentary" },
+    { categoryId: "36", videoCategory: "Drama" },
+    { categoryId: "37", videoCategory: "Family" },
+    { categoryId: "38", videoCategory: "Foreign" },
+    { categoryId: "39", videoCategory: "Horror" },
+    { categoryId: "40", videoCategory: "Sci-Fi/Fantasy" },
+    { categoryId: "41", videoCategory: "Thriller" },
+    { categoryId: "42", videoCategory: "Shorts" },
+    { categoryId: "43", videoCategory: "Shows" },
+    { categoryId: "44", videoCategory: "Trailers" },
 ];
 
 
 export default function YouTubeRandomizer() {
-  const [category, setCategory] = useState("all");
+  const [categoryId, setCategoryId] = useState("all");
   const [regionCode, setRegionCode] = useState("all");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isRandomizing, setIsRandomizing] = useState(false);
@@ -58,15 +72,15 @@ export default function YouTubeRandomizer() {
     setVideoUrl(null);
 
     try {
-        const queryCategory = category === 'all' 
-            ? YOUTUBE_CATEGORIES[Math.floor(Math.random() * YOUTUBE_CATEGORIES.length)]
-            : category;
+        const queryCategoryId = categoryId === 'all' 
+            ? YOUTUBE_CATEGORIES[Math.floor(Math.random() * YOUTUBE_CATEGORIES.length)].categoryId
+            : categoryId;
 
         const queryRegionCode = regionCode === 'all'
             ? undefined
             : regionCode;
 
-        const result = await recommendVideo({ category: queryCategory, regionCode: queryRegionCode });
+        const result = await recommendVideo({ videoCategoryId: queryCategoryId, regionCode: queryRegionCode });
         
         if (result.videoId) {
             setVideoUrl(`https://www.youtube.com/embed/${result.videoId}`);
@@ -95,8 +109,8 @@ export default function YouTubeRandomizer() {
             <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="youtube-category">Video Category</Label>
             <Select
-                value={category}
-                onValueChange={setCategory}
+                value={categoryId}
+                onValueChange={setCategoryId}
                 disabled={isRandomizing}
             >
                 <SelectTrigger id="youtube-category">
@@ -105,8 +119,8 @@ export default function YouTubeRandomizer() {
                 <SelectContent>
                 <SelectItem value="all">All Categories (Random)</SelectItem>
                 {YOUTUBE_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                    {cat}
+                    <SelectItem key={cat.categoryId} value={cat.categoryId}>
+                    {cat.videoCategory}
                     </SelectItem>
                 ))}
                 </SelectContent>

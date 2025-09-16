@@ -7,7 +7,7 @@ import { searchVideos } from '@/services/youtube';
 import { z } from 'zod';
 
 const VideoRecommenderInputSchema = z.object({
-  category: z.string().describe('The video category to search for (e.g., "Music", "Comedy", "Gaming").'),
+  videoCategoryId: z.string().optional().describe('The YouTube video category ID.'),
   regionCode: z.string().optional().describe('The ISO 3166-1 alpha-2 country code (e.g., US, ID, GB).'),
 });
 type VideoRecommenderInput = z.infer<typeof VideoRecommenderInputSchema>;
@@ -26,7 +26,7 @@ export async function recommendVideo(input: VideoRecommenderInput): Promise<Vide
     }
   
     // Search for popular videos in the given category
-    const videoIds = await searchVideos(validatedInput.data.category, validatedInput.data.regionCode);
+    const videoIds = await searchVideos(validatedInput.data.videoCategoryId, validatedInput.data.regionCode);
 
     if (!videoIds || videoIds.length === 0) {
         // Return an empty string if no videos are found, the UI will handle this

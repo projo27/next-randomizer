@@ -7,33 +7,28 @@ import { google } from 'googleapis';
 const youtube = google.youtube('v3');
 
 /**
- * Searches for popular videos on YouTube based on a query.
- * @param query The search query (e.g., category).
+ * Searches for popular videos on YouTube based on a category ID.
+ * @param videoCategoryId The ID of the video category.
  * @param regionCode The ISO 3166-1 alpha-2 country code.
  * @returns A promise that resolves to an array of video IDs.
  */
-export async function searchVideos(query: string, regionCode?: string): Promise<string[]> {
+export async function searchVideos(videoCategoryId?: string, regionCode?: string): Promise<string[]> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     throw new Error('YouTube API Key is not configured. Please set YOUTUBE_API_KEY environment variable.');
   }
-  
-  console.info(query, regionCode);
 
   try {
-    const response = await youtube.search.list({
-      key: apiKey,
-      part: ['id'],
-      q: query,
-      type: ['video'],
-      videoEmbeddable: 'true',
-      maxResults: 25, // Get a decent number of results for variety
-      order: 'relevance',
-      safeSearch: 'moderate',
-      regionCode: regionCode,
+    const response = await youtube.videos.list({
+        key: apiKey,
+        part: ['id'],
+        chart: 'mostPopular',
+        videoCategoryId: videoCategoryId,
+        regionCode: regionCode,
+        maxResults: 50, // Get a decent number of results for variety
     });
     
-    const videoIds = response.data.items?.map(item => item.id?.videoId).filter((id): id is string => !!id);
+    const videoIds = response.data.items?.map(item => item.id).filter((id): id is string => !!id);
     
     return videoIds || [];
 
@@ -46,6 +41,11 @@ export async function searchVideos(query: string, regionCode?: string): Promise<
         const reason = apiError.errors[0].reason;
         if (reason === 'keyInvalid' || reason === 'ipRefererBlocked' || reason === 'accessNotConfigured' || reason === 'forbidden') {
              throw new Error(`The YouTube API key is invalid or misconfigured. Reason: ${reason}`);
+        }
+         // Handle cases where a category might not be available for a region
+        if (reason === 'processingFailure' || apiError.code === 400) {
+          console.warn(`Could not fetch chart for category ${videoCategoryId} in region ${regionCode}. It might not be available.`);
+          return []; // Return empty array to allow frontend to handle it gracefully
         }
     }
     throw new Error('An unexpected error occurred while fetching videos from YouTube.');
