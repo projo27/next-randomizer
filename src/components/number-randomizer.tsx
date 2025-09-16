@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,63 +16,109 @@ import AnimatedResult from "./animated-result";
 import { Label } from "@/components/ui/label";
 import { Wand2 } from "lucide-react";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { Alert, AlertDescription } from "./ui/alert";
+import AnimatedResultList from "./animated-result-list";
+import { useToast } from "@/hooks/use-toast";
 
 export default function NumberRandomizer() {
   const [min, setMin] = useState("1");
   const [max, setMax] = useState("100");
-  const [result, setResult] = useState<number | null>(null);
+  const [count, setCount] = useState("1");
+  const [result, setResult] = useState<number[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isRandomizing, setIsRandomizing] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { toast } = useToast();
 
   const handleRandomize = () => {
     triggerRateLimit();
+    setError(null);
+    setResult(null);
+    setIsCopied(false);
+
     const minNum = parseFloat(min);
     const maxNum = parseFloat(max);
+    const countNum = parseInt(count, 10);
 
-    const decimalDigit = Math.max(getDecimalDigits(minNum), getDecimalDigits(maxNum));
+    if (isNaN(minNum) || isNaN(maxNum) || isNaN(countNum)) {
+      setError("Please enter valid numbers for all fields.");
+      return;
+    }
+    
+    if (countNum <= 0) {
+        setError("Number of results must be at least 1.");
+        return;
+    }
 
-    if (isNaN(minNum) || isNaN(maxNum)) {
-      setResult(null);
+    if (minNum >= maxNum) {
+      setError("Minimum must be less than maximum.");
+      return;
+    }
+    
+    const isIntegerRange = Number.isInteger(minNum) && Number.isInteger(maxNum) && getDecimalDigits(minNum) === 0 && getDecimalDigits(maxNum) === 0;
+
+    if (isIntegerRange && countNum > (maxNum - minNum + 1)) {
+        setError(`Cannot generate ${countNum} unique integers from a range of only ${maxNum - minNum + 1} possibilities.`);
+        return;
+    }
+    if (countNum > 1000) {
+      setError("Cannot generate more than 1000 numbers at a time.");
       return;
     }
 
-    if(minNum > maxNum) {
-      setMin(maxNum.toString());
-      setMax(minNum.toString())
-    }
+    setIsRandomizing(true);
+    
+    setTimeout(() => {
+        const decimalDigits = Math.max(getDecimalDigits(min), getDecimalDigits(max));
+        const resultsSet = new Set<number>();
+        let attempts = 0;
 
-    const randomNumber = Math.random() * (maxNum - minNum) + minNum;
+        while(resultsSet.size < countNum && attempts < countNum * 10) {
+            const randomNumber = Math.random() * (maxNum - minNum) + minNum;
+            const roundedNumber = parseFloat(randomNumber.toFixed(decimalDigits));
+            resultsSet.add(roundedNumber);
+            attempts++;
+        }
+        
+        const finalResults = Array.from(resultsSet);
+        if(finalResults.length < countNum) {
+            setError(`Could only generate ${finalResults.length} unique numbers. Try a larger range or fewer numbers.`);
+        }
+        setResult(finalResults.sort((a,b) => a - b));
+        setIsRandomizing(false);
 
-    console.log(randomNumber.toFixed(decimalDigit), "digit ", decimalDigit);
-
-    setResult(Number(randomNumber.toFixed(decimalDigit)));
+    }, 500); // Animation delay
   };
 
-  function getDecimalDigits(number: number) : number {
-    // Convert the number to a string
-    const numberString = number.toString();
-  
-    // Find the index of the decimal point
-    const decimalIndex = numberString.indexOf('.');
-  
-    // If there's no decimal point, return an empty string or handle as needed
-    if (decimalIndex === -1) {
-      return 0; // Or return null, 0, etc., depending on desired behavior
+  const handleCopyResult = () => {
+    if (!result) return;
+    const resultString = result.join("\n");
+    navigator.clipboard.writeText(resultString);
+    setIsCopied(true);
+    toast({
+      title: "Copied!",
+      description: "Result copied to clipboard.",
+    });
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+
+  function getDecimalDigits(value: string): number {
+    if (value.includes('.')) {
+      return value.split('.')[1].length;
     }
-  
-    // Extract the substring after the decimal point
-    const decimalDigits = numberString.substring(decimalIndex + 1).length;
-  
-    return Number(decimalDigits);
+    return 0;
   }
 
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Number Randomizer</CardTitle>
-        <CardDescription>Pick a random number from a given range.</CardDescription>
+        <CardDescription>Pick one or more random numbers from a given range.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="min">Minimum</Label>
             <Input
@@ -80,6 +127,7 @@ export default function NumberRandomizer() {
               value={min}
               onChange={(e) => setMin(e.target.value)}
               step="any"
+              disabled={isRandomizing || isRateLimited}
             />
           </div>
           <div className="grid w-full items-center gap-1.5">
@@ -90,20 +138,50 @@ export default function NumberRandomizer() {
               value={max}
               onChange={(e) => setMax(e.target.value)}
               step="any"
+              disabled={isRandomizing || isRateLimited}
+            />
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="count">Number of Results</Label>
+            <Input
+              id="count"
+              type="number"
+              min="1"
+              max="1000"
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              disabled={isRandomizing || isRateLimited}
             />
           </div>
         </div>
+         {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleRandomize}
-          disabled={isRateLimited}
+          disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRateLimited ? "Please wait..." : "Randomize!"}
+          {isRandomizing ? "Generating..." : isRateLimited ? "Please wait..." : "Randomize!"}
         </Button>
-        {result !== null && <AnimatedResult result={result} />}
+        {result && result.length === 1 && !isRandomizing && (
+          <AnimatedResult result={result[0]} handleCopyResult={handleCopyResult} />
+        )}
+        {(isRandomizing || (result && result.length > 1)) && (
+           <AnimatedResultList
+            isShuffling={isRandomizing}
+            shuffledItems={result ? result.map(r => r.toString()) : []}
+            isResultCopied={isCopied}
+            handleCopyResult={handleCopyResult}
+            title="Random Numbers"
+            itemClassName="text-lg font-mono"
+           />
+        )}
       </CardFooter>
     </Card>
   );
