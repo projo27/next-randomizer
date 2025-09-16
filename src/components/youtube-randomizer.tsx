@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Wand2, Youtube } from "lucide-react";
-import { recommendVideo } from "@/ai/flows/youtube-video-recommender-flow";
+import { recommendVideo } from "@/app/actions/youtube-actions";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const YOUTUBE_CATEGORIES = [
@@ -68,9 +68,9 @@ export default function YouTubeRandomizer() {
             setError("Could not find a video for this category. Please try another one.");
         }
 
-    } catch (err) {
+    } catch (err: any) {
         console.error("Failed to get video recommendation:", err);
-        setError("Sorry, I couldn't get a video right now. Please check if the API key is set up correctly and try again.");
+        setError(err.message || "An unexpected error occurred. Please check the console for details.");
     } finally {
         setIsRandomizing(false);
     }
