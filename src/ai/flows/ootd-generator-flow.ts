@@ -118,7 +118,11 @@ const ootdImageGeneratorFlow = ai.defineFlow(
   async (input) => {
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A full-body, high-quality, realistic fashion photograph of an outfit displayed on a mannequin that reflects a {{gender}} body type for a person who is {{height}}cm tall and weighs {{weight}}kg. The photo must not show a human face. The background should be a clean, minimalist studio setting. The outfit is described as: "{{outfitDescription}}"`,
+      prompt: `A full-body, high-quality, realistic fashion photograph of a person wearing an outfit.
+The person should reflect a {{gender}} body type appropriate for someone who is {{height}}cm tall and weighs {{weight}}kg.
+The photo must be shot from a distance or an angle where the person's face is not visible.
+The background should be a clean, minimalist studio setting to keep focus on the clothes.
+The outfit is described as: "{{outfitDescription}}"`,
       promptVariables: input,
     });
     return { imageUrl: media.url };
