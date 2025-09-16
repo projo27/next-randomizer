@@ -96,7 +96,7 @@ export default function TravelRandomizer() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Countries (Random)</SelectItem>
-              {COUNTRIES_DATA.map((country) => (
+              {COUNTRIES_DATA.sort((a, b) => a.country.localeCompare(b.country)).map((country) => (
                 <SelectItem key={country.country} value={country.country}>
                   {country.country}
                 </SelectItem>
