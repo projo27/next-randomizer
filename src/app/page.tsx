@@ -107,8 +107,7 @@ export default function Home() {
             </TabsTrigger>
             <TabsTrigger
               value="emoji"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h
--10"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
               <Smile className="h-5 w-5" />
               <span>Emoji</span>

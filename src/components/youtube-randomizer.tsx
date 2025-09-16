@@ -19,33 +19,52 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Wand2, Youtube } from "lucide-react";
-import { YOUTUBE_CATEGORIES, ALL_VIDEO_IDS } from "@/lib/youtube-data";
+import { recommendVideo } from "@/ai/flows/youtube-video-recommender-flow";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+
+const YOUTUBE_CATEGORIES = [
+    "Music",
+    "Comedy",
+    "Gaming",
+    "Science & Technology",
+    "Movie Trailers",
+    "Documentaries",
+    "Travel Vlogs",
+    "Cooking Tutorials",
+    "DIY & Crafts"
+];
+
 
 export default function YouTubeRandomizer() {
   const [category, setCategory] = useState("all");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isRandomizing, setIsRandomizing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     setIsRandomizing(true);
-    let videoId: string;
+    setError(null);
+    setVideoUrl(null);
 
-    if (category === "all") {
-      // Pick from all available videos
-      const randomIndex = Math.floor(Math.random() * ALL_VIDEO_IDS.length);
-      videoId = ALL_VIDEO_IDS[randomIndex];
-    } else {
-      // Pick from the selected category
-      const categoryVideos = YOUTUBE_CATEGORIES[category as keyof typeof YOUTUBE_CATEGORIES];
-      const randomIndex = Math.floor(Math.random() * categoryVideos.length);
-      videoId = categoryVideos[randomIndex];
+    try {
+        const queryCategory = category === 'all' 
+            ? YOUTUBE_CATEGORIES[Math.floor(Math.random() * YOUTUBE_CATEGORIES.length)]
+            : category;
+
+        const result = await recommendVideo({ category: queryCategory });
+        
+        if (result.videoId) {
+            setVideoUrl(`https://www.youtube.com/embed/${result.videoId}`);
+        } else {
+            setError("Could not find a video for this category. Please try another one.");
+        }
+
+    } catch (err) {
+        console.error("Failed to get video recommendation:", err);
+        setError("Sorry, I couldn't get a video right now. Please check if the API key is set up correctly and try again.");
+    } finally {
+        setIsRandomizing(false);
     }
-
-    // Fake delay for visual effect
-    setTimeout(() => {
-      setVideoUrl(`https://www.youtube.com/embed/${videoId}`);
-      setIsRandomizing(false);
-    }, 500);
   };
 
   return (
@@ -53,7 +72,7 @@ export default function YouTubeRandomizer() {
       <CardHeader>
         <CardTitle>YouTube Randomizer</CardTitle>
         <CardDescription>
-          Find a random YouTube video to watch from various categories.
+          Find a random YouTube video to watch from various categories. <i>Powered by YouTube Data API</i>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -68,8 +87,8 @@ export default function YouTubeRandomizer() {
               <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              {Object.keys(YOUTUBE_CATEGORIES).map((cat) => (
+              <SelectItem value="all">All Categories (Random)</SelectItem>
+              {YOUTUBE_CATEGORIES.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>
@@ -77,6 +96,13 @@ export default function YouTubeRandomizer() {
             </SelectContent>
           </Select>
         </div>
+
+        {error && (
+            <Alert variant="destructive" className="mt-4">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        )}
 
         <div className="aspect-video w-full bg-muted/50 rounded-lg flex items-center justify-center">
             {isRandomizing ? (
@@ -93,10 +119,10 @@ export default function YouTubeRandomizer() {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="rounded-lg"
+                    className="rounded-lg animate-fade-in"
                 ></iframe>
             ) : (
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <div className="flex flex-col items-center gap-2 text-muted-foreground text-center px-4">
                     <Youtube className="h-12 w-12" />
                     <p>Your random video will appear here</p>
                 </div>
