@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BrainCircuit, Check, Copy, Package, Image as ImageIcon, Sparkles } from "lucide-react";
+import { BrainCircuit, Check, Copy, Package, Image as ImageIcon, Sparkles, Mars, Venus, Ghost } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generateOotd, generateOotdImage, OotdGeneratorOutput } from "@/ai/flows/ootd-generator-flow";
 import { Skeleton } from "./ui/skeleton";
@@ -28,6 +28,7 @@ import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 
 const GENDERS = ["Male", "Female", "Unisex"];
+const ICONS = [<Mars/>, <Venus />, <Ghost />]
 const STYLES = [
   "All",
   "Casual",
@@ -44,11 +45,11 @@ const STYLES = [
 const SEASONS = ["Dry Season", "Rainy Season", "Snowy Season", "Autumn", "Spring"];
 
 export default function OotdGenerator() {
-  const [gender, setGender] = useState("Male");
+  const [gender, setGender] = useState("Female");
   const [style, setStyle] = useState("All");
   const [season, setSeason] = useState("Dry Season");
-  const [height, setHeight] = useState("175");
-  const [weight, setWeight] = useState("70");
+  const [height, setHeight] = useState("170");
+  const [weight, setWeight] = useState("60");
 
   const [result, setResult] = useState<OotdGeneratorOutput | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -86,7 +87,9 @@ export default function OotdGenerator() {
         outfitDescription: response.outfitDescription,
         gender,
         height: heightNum,
-        weight: weightNum
+        weight: weightNum,
+        items: response.items,
+        weightHealth: response.weightHealth
       })
         .then(imageResponse => {
             setImageUrl(imageResponse.imageUrl);
@@ -127,7 +130,7 @@ export default function OotdGenerator() {
       <CardHeader>
         <CardTitle>OOTD Generator</CardTitle>
         <CardDescription>
-          Get a random AI-powered outfit recommendation based on your style and the season.
+          Get a random AI-powered outfit recommendation based on your style and the season. <i>Powered by Gemini</i>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -139,7 +142,7 @@ export default function OotdGenerator() {
                 <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
               <SelectContent>
-                {GENDERS.map((g) => (
+                {GENDERS.map((g, idx) => (
                   <SelectItem key={g} value={g}>{g}</SelectItem>
                 ))}
               </SelectContent>

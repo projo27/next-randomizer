@@ -27,6 +27,7 @@ const OotdGeneratorOutputSchema = z.object({
   outfitDescription: z.string().describe('A creative and appealing description of the complete outfit.'),
   items: z.array(z.string()).describe('A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").'),
   styleUsed: z.string().describe('The specific fashion style that was chosen for the outfit, especially if the input was "All".'),
+  weightHealth: z.string().describe('The body type of the person based on their height and weight.')
 });
 export type OotdGeneratorOutput = z.infer<typeof OotdGeneratorOutputSchema>;
 
@@ -35,9 +36,10 @@ const OotdImageGeneratorInputSchema = z.object({
   gender: z.string().describe('The gender for the outfit (e.g., Male, Female).'),
   height: z.number().describe('The height of the person in centimeters.'),
   weight: z.number().describe('The weight of the person in kilograms.'),
+  items: z.array(z.string()).describe('A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").'),
+  weightHealth: z.string().describe('The body type of the person based on their height and weight.')
 });
 export type OotdImageGeneratorInput = z.infer<typeof OotdImageGeneratorInputSchema>;
-
 
 const OotdImageGeneratorOutputSchema = z.object({
   imageUrl: z.string().describe("A data URI of the generated image. Expected format: 'data:image/png;base64,<encoded_data>'."),
@@ -64,11 +66,11 @@ const ootdPrompt = ai.definePrompt({
   prompt: `You are a creative and knowledgeable fashion stylist. Your task is to generate a stylish and practical "Outfit of the Day" (OOTD) based on the user's preferences and body measurements.
 
 User Preferences:
+- Height: {{height}} cm
+- Weight: {{weight}} kg
 - Gender: {{gender}}
 - Fashion Style: {{style}}
 - Season: {{season}}
-- Height: {{height}} cm
-- Weight: {{weight}} kg
 
 Instructions:
 1.  If the style is "All", you must first randomly select one specific style from this list: Casual, Streetwear, Formal, Business Casual, Vintage, Bohemian, Minimalist, Sporty, Preppy, Grunge. Then, generate the outfit based on that chosen style.
@@ -80,7 +82,7 @@ Instructions:
 7.  Ensure the outfit is suitable for the specified season. For example, recommend warmer, layered clothing for 'Rainy Season' or light, breathable fabrics for 'Dry Season'.
 8.  All output must be in English.
 
-Example for 'Female', 'Casual', 'Dry Season', '165 cm', '60 kg':
+Example for 'Female', '165 cm', '100 kg', 'Casual', 'Dry Season':
 {
   "outfitDescription": "Stay cool and chic in the dry season with this refreshing and classic combo. A lightweight white linen blouse paired with high-waisted khaki culottes creates a comfortable and elegant silhouette that flatters your frame. Espadrille sandals and a straw tote bag add the perfect summer touch.",
   "items": [
@@ -90,7 +92,8 @@ Example for 'Female', 'Casual', 'Dry Season', '165 cm', '60 kg':
     "Woven straw tote bag",
     "Cat-eye sunglasses"
   ],
-  "styleUsed": "Casual"
+  "styleUsed": "Casual",
+  "weightHealth: "Obese"
 }
 
 Generate an OOTD now based on the user's preferences.`,
@@ -116,15 +119,19 @@ const ootdImageGeneratorFlow = ai.defineFlow(
     outputSchema: OotdImageGeneratorOutputSchema,
   },
   async (input) => {
+    const { outfitDescription, gender, height, weight, items, weightHealth  } = input;
+    const prompt = `The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
+A full-body, high-quality, realistic fashion photograph of a person wearing an outfit.
+The outfit is described as: "${outfitDescription}"
+The outfit items is: "${items.join("\n")}"
+The photo must be shot from a distance or an angle where the person's face is not visible.
+The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
+    console.log(prompt, input);
+
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
-      prompt: `A full-body, high-quality, realistic fashion photograph of a person wearing an outfit.
-The person should reflect a {{gender}} body type appropriate for someone who is {{height}}cm tall and weighs {{weight}}kg.
-The photo must be shot from a distance or an angle where the person's face is not visible.
-The background should be a clean, minimalist studio setting to keep focus on the clothes.
-The outfit is described as: "{{outfitDescription}}"`,
-      promptVariables: input,
+      prompt: prompt
     });
-    return { imageUrl: media.url };
+    return { imageUrl: media?.url || "" };
   }
 );

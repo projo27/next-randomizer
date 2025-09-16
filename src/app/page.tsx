@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -24,6 +24,7 @@ import ColorPaletteGenerator from "@/components/color-palette-generator";
 import NumberBaseRandomizer from "@/components/number-base-randomizer";
 import ImageRandomizer from "@/components/image-randomizer";
 import OotdGenerator from "@/components/ootd-generator";
+import TravelRandomizer from "@/components/travel-randomizer";
 
 export default function Home() {
   return (
@@ -47,6 +48,13 @@ export default function Home() {
               <span>Number</span>
             </TabsTrigger>
             <TabsTrigger
+              value="sequence"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <ListOrdered className="h-5 w-5" />
+              <span>Sequence</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="password"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
@@ -54,39 +62,18 @@ export default function Home() {
               <span>Password</span>
             </TabsTrigger>
             <TabsTrigger
-              value="news"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Newspaper className="h-5 w-5" />
-              <span>News</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="dice"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Dices className="h-5 w-5" />
-              <span>Dice</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="sequence"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <ListOrdered className="h-5 w-5" />
-              <span>Sequence</span>
-            </TabsTrigger>
-             <TabsTrigger
-              value="team"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Users className="h-5 w-5" />
-              <span>Team</span>
-            </TabsTrigger>
-             <TabsTrigger
               value="date"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
               <CalendarDays className="h-5 w-5" />
               <span>Date</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="team"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Users className="h-5 w-5" />
+              <span>Team</span>
             </TabsTrigger>
             <TabsTrigger
               value="coin"
@@ -96,12 +83,13 @@ export default function Home() {
               <span>Coin</span>
             </TabsTrigger>
             <TabsTrigger
-              value="spinner"
+              value="dice"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
-              <Disc className="h-5 w-5" />
-              <span>Spinner</span>
+              <Dices className="h-5 w-5" />
+              <span>Dice</span>
             </TabsTrigger>
+            
             <TabsTrigger
               value="card"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
@@ -124,13 +112,6 @@ export default function Home() {
               <span>Emoji</span>
             </TabsTrigger>
             <TabsTrigger
-              value="compass"
-              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
-            >
-              <Compass className="h-5 w-5" />
-              <span>Compass</span>
-            </TabsTrigger>
-            <TabsTrigger
               value="palette"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
@@ -145,6 +126,22 @@ export default function Home() {
               <span>Base</span>
             </TabsTrigger>
             <TabsTrigger
+              value="spinner"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Disc className="h-5 w-5" />
+              <span>Spinner</span>
+            </TabsTrigger>
+            
+            <TabsTrigger
+              value="compass"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Compass className="h-5 w-5" />
+              <span>Compass</span>
+            </TabsTrigger>
+            
+            <TabsTrigger
               value="image"
               className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
             >
@@ -157,6 +154,20 @@ export default function Home() {
             >
               <Shirt className="h-5 w-5" />
               <span>OOTD</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="travel"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Plane className="h-5 w-5" />
+              <span>Travel</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="news"
+              className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+            >
+              <Newspaper className="h-5 w-5" />
+              <span>News</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="list" forceMount>
@@ -180,7 +191,7 @@ export default function Home() {
           <TabsContent value="team" forceMount>
             <TeamShuffler />
           </TabsContent>
-           <TabsContent value="date" forceMount>
+          <TabsContent value="date" forceMount>
             <DateRandomizer />
           </TabsContent>
           <TabsContent value="coin" forceMount>
@@ -212,6 +223,9 @@ export default function Home() {
           </TabsContent>
           <TabsContent value="ootd" forceMount>
             <OotdGenerator />
+          </TabsContent>
+          <TabsContent value="travel" forceMount>
+            <TravelRandomizer />
           </TabsContent>
         </Tabs>
       </main>
