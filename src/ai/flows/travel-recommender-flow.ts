@@ -27,7 +27,7 @@ export type CityRecommenderOutput = z.infer<typeof CityRecommenderOutputSchema>;
 const CityRecommenderAIOutputSchema = z.object({
     city: z.string().describe('The recommended city to visit.'),
     description: z.string().describe('A short, compelling reason why this city is the best choice for a traveler.'),
-    unsplashPhotoId: z.string().describe('An ID of a real, high-quality, relevant photo from Unsplash. For example, for Paris, a valid ID would be "62u_kTTmJ0o".'),
+    unsplashPhotoId: z.string().describe('An ID of a real, high-quality, relevant photo from Unsplash. For example, for Paris, a valid ID would be "1-fp-T5i20k".'),
 });
 
 export async function recommendCity(input: CityRecommenderInput): Promise<CityRecommenderOutput> {
@@ -51,7 +51,7 @@ Cities to choose from: {{cities}}
 Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.
 
 Also, provide an ID for a stunning, realistic photo of the city you recommended from Unsplash. It should be just the ID, not the full URL.
-For example, for a photo of Paris, a valid ID would be "62u_kTTmJ0o".`,
+For example, for a photo of Paris, a valid ID would be "1-fp-T5i20k".`,
 });
 
 const cityRecommenderFlow = ai.defineFlow(
