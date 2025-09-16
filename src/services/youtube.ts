@@ -10,9 +10,10 @@ const youtube = google.youtube('v3');
  * Searches for popular videos on YouTube based on a category ID.
  * @param videoCategoryId The ID of the video category.
  * @param regionCode The ISO 3166-1 alpha-2 country code.
+ * @param relevanceLanguage The ISO 639-1 two-letter language code.
  * @returns A promise that resolves to an array of video IDs.
  */
-export async function searchVideos(videoCategoryId?: string, regionCode?: string): Promise<string[]> {
+export async function searchVideos(videoCategoryId?: string, regionCode?: string, relevanceLanguage?: string): Promise<string[]> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     throw new Error('YouTube API Key is not configured. Please set YOUTUBE_API_KEY environment variable.');
@@ -25,7 +26,9 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
       type: ['video'],
       maxResults: 50,
       videoEmbeddable: 'true',
-      q: 'popular videos' // General query for broad results
+      q: 'all', // General query for broad results
+      videoDefinition: 'high',
+      videoDuration: 'long',
     };
 
     if (regionCode) {
@@ -34,6 +37,9 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
     if (videoCategoryId) {
       params.videoCategoryId = videoCategoryId;
     }
+    if (relevanceLanguage) {
+      params.relevanceLanguage = relevanceLanguage;
+    }
 
     console.log("YouTube API Params:", params);
 
@@ -41,6 +47,8 @@ export async function searchVideos(videoCategoryId?: string, regionCode?: string
     const response = await youtube.search.list(params);
 
     const videoIds = response.data.items?.map(item => item.id?.videoId).filter((id): id is string => !!id);
+
+    console.log(videoIds);
 
     return videoIds || [];
 
