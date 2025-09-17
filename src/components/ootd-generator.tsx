@@ -224,14 +224,7 @@ export default function OotdGenerator() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-4">
-        <Button
-          onClick={handleGenerate}
-          disabled={isLoading || isRateLimited}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-        >
-          <BrainCircuit className="mr-2 h-4 w-4" />
-          {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Generate my OOTD!"}
-        </Button>
+
         {error && (
           <Alert variant="destructive" className="mt-4 w-full">
             <AlertTitle>Error</AlertTitle>
@@ -308,8 +301,8 @@ export default function OotdGenerator() {
                         </div>
                       </DialogTrigger>
                       <DialogContent className="max-w-3xl p-0">
-                         <DialogTitle className="sr-only">Outfit Visualization Zoom</DialogTitle>
-                         <DialogDescription className="sr-only">A larger view of the generated outfit image.</DialogDescription>
+                        <DialogTitle className="sr-only">Outfit Visualization Zoom</DialogTitle>
+                        <DialogDescription className="sr-only">A larger view of the generated outfit image.</DialogDescription>
                         <Image src={imageUrl} alt="Generated outfit" width={1024} height={1024} className="rounded-md object-contain" />
                       </DialogContent>
                     </Dialog>
@@ -325,6 +318,14 @@ export default function OotdGenerator() {
             </Card>
           </div>
         )}
+        <Button
+          onClick={handleGenerate}
+          disabled={isLoading || isRateLimited}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
+          <BrainCircuit className="mr-2 h-4 w-4" />
+          {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Generate my OOTD!"}
+        </Button>
       </CardFooter>
     </Card>
   );
