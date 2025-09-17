@@ -8,7 +8,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube } from "lucide-react";
+import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand } from "lucide-react";
 import ListRandomizer from "@/components/list-randomizer";
 import NumberRandomizer from "@/components/number-randomizer";
 import PasswordGenerator from "@/components/password-generator";
@@ -112,8 +112,8 @@ function HomePageContent() {
           value="rps"
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
         >
-          <RockPaperScissorsIcon className="h-5 w-5" />
-          <span>RPS</span>
+          <Hand className="h-5 w-5" />
+          <span>Rock Paper Scissor</span>
         </TabsTrigger>
         <TabsTrigger
           value="card"

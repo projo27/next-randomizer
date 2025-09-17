@@ -10,26 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { HeadsIcon } from "./icons/heads-icon";
 import { TailsIcon } from "./icons/tails-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { cn } from "@/lib/utils";
 
-type CoinResult = "Heads" | "Tails";
+type CoinSide = "Heads" | "Tails";
 
 export default function CoinFlipper() {
-  const [numberOfCoins, setNumberOfCoins] = useState("1");
-  const [results, setResults] = useState<CoinResult[]>([]);
+  const [result, setResult] = useState<CoinSide | null>(null);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [previousResult, setPreviousResult] = useState<CoinSide>("Heads");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
@@ -39,93 +32,69 @@ export default function CoinFlipper() {
     triggerRateLimit();
     setIsFlipping(true);
     setIsCopied(false);
-    
-    const numCoins = parseInt(numberOfCoins, 10);
-    const newResults: CoinResult[] = [];
-    for (let i = 0; i < numCoins; i++) {
-      newResults.push(Math.random() < 0.5 ? "Heads" : "Tails");
+    if(result) {
+        setPreviousResult(result);
     }
     
+    const newResult: CoinSide = Math.random() < 0.5 ? "Heads" : "Tails";
+
     setTimeout(() => {
-        setResults(newResults);
-        setIsFlipping(false);
+      setResult(newResult);
+      setIsFlipping(false);
     }, 1000); // Animation duration
   };
   
-  const headsCount = results.filter(r => r === "Heads").length;
-  const tailsCount = results.filter(r => r === "Tails").length;
-  
   const handleCopy = () => {
-    if (results.length === 0) return;
-    const resultString = `Heads: ${headsCount}, Tails: ${tailsCount}\nDetails: ${results.join(", ")}`;
-    navigator.clipboard.writeText(resultString);
+    if (!result) return;
+    navigator.clipboard.writeText(result);
     setIsCopied(true);
     toast({
       title: "Copied!",
-      description: "Coin flip result copied to clipboard.",
+      description: "Result copied to clipboard.",
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
+
+  const currentDisplay = result || "Heads";
+  const previousDisplay = previousResult || "Tails";
 
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Coin Flipper</CardTitle>
         <CardDescription>
-          Flip one or more coins and see the result.
+          Flip a coin to get Heads or Tails.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Label htmlFor="num-coins">Number of Coins</Label>
-          <Select
-            value={numberOfCoins}
-            onValueChange={setNumberOfCoins}
-            disabled={isFlipping || isRateLimited}
-          >
-            <SelectTrigger id="num-coins" className="w-24">
-              <SelectValue placeholder="1" />
-            </SelectTrigger>
-            <SelectContent>
-              {[...Array(10)].map((_, i) => (
-                <SelectItem key={i + 1} value={(i + 1).toString()}>
-                  {i + 1}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex justify-center items-center min-h-[120px] gap-8 flex-wrap">
-          {(isFlipping ? Array(parseInt(numberOfCoins, 10)).fill(null) : results).map((result, i) => (
-             <div key={i} className={`coin ${isFlipping ? 'flipping' : ''}`}>
+        <div className="relative flex justify-center items-center min-h-[160px] p-4 bg-muted/50 rounded-lg">
+            <div className={cn("coin", isFlipping && "flipping")}>
                 <div className="coin-inner">
                     <div className="coin-front">
-                        {result === "Heads" ? <HeadsIcon /> : <TailsIcon />}
+                        {currentDisplay === 'Heads' ? <HeadsIcon /> : <TailsIcon />}
                     </div>
                     <div className="coin-back">
-                        {/* Show the opposite for the back during flip */}
-                        {result === "Heads" ? <TailsIcon /> : <HeadsIcon />}
+                        {previousDisplay === 'Heads' ? <HeadsIcon /> : <TailsIcon />}
                     </div>
                 </div>
             </div>
-          ))}
         </div>
-         {!isFlipping && results.length > 0 && (
-          <div className="text-center relative pt-4">
-            <p className="text-lg font-bold">
-              Heads: {headsCount}, Tails: {tailsCount}
-            </p>
-             <div className="absolute -top-2 right-0">
-                <Button variant="ghost" size="icon" onClick={handleCopy}>
-                  {isCopied ? (
-                    <Check className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <Copy className="h-5 w-5" />
-                  )}
-                </Button>
+
+        {result && !isFlipping && (
+           <div className="relative text-center">
+             <h3 className="text-3xl font-bold text-accent">{result}</h3>
+            <div className="absolute -top-2 right-0">
+              <Button variant="ghost" size="icon" onClick={handleCopy}>
+                {isCopied ? (
+                  <Check className="h-5 w-5 text-green-500" />
+                ) : (
+                  <Copy className="h-5 w-5" />
+                )}
+              </Button>
             </div>
           </div>
         )}
+        
       </CardContent>
       <CardFooter>
         <Button
@@ -134,7 +103,7 @@ export default function CoinFlipper() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isFlipping ? "Flipping..." : isRateLimited ? "Please wait..." : "Flip Coins!"}
+          {isFlipping ? "Flipping..." : isRateLimited ? "Please wait..." : "Flip Coin"}
         </Button>
       </CardFooter>
     </Card>
