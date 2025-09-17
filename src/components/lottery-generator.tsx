@@ -84,15 +84,15 @@ export default function LotteryGenerator() {
     // Start the countdown toast
     let countdown = dur;
     const { id: toastId, update } = toast({
-      // title: "Generating...",
-      description: <div>Count Down in  <span className="text-3xl">{countdown}s</span></div>,
+      title: "Counting Down in...",
+      description: <span className="text-3xl">{countdown}s</span>,
       duration: (dur + 2) * 1000,
     });
 
     countdownIntervalRef.current = setInterval(() => {
       countdown--;
       if (countdown > 0) {
-        update({ id: toastId, description:  <div className="flex flex-row items-center">Count Down in  <span className="text-3xl">{countdown}s</span></div> });
+        update({ id: toastId, description: <span className="text-3xl">{countdown}s</span>});
       }
     }, 1000);
 
@@ -110,7 +110,7 @@ export default function LotteryGenerator() {
       setResult(finalResult);
       setIsGenerating(false);
 
-      update({ id: toastId, description: `Your new combination is: ${finalResult}`, hidden: true });
+      update({ id: toastId, title: '', description: `Lottery Number ${finalResult} WIN`, hidden: true });
 
     }, dur * 1000);
   };
@@ -129,14 +129,14 @@ export default function LotteryGenerator() {
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>Combination Generator</CardTitle>
+        <CardTitle>Lottery Generator</CardTitle>
         <CardDescription>
           Generate a random combination of numbers and/or letters.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          <div className="flex items-center gap-2 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="combination-length">Length</Label>
             <Input
               id="combination-length"
@@ -145,20 +145,10 @@ export default function LotteryGenerator() {
               max="100"
               value={length}
               onChange={(e) => setLength(e.target.value)}
-              className="w-20"
               disabled={isGenerating || isRateLimited}
             />
           </div>
-          <div className="flex items-center space-x-2 w-full">
-            <Switch
-              id="include-letters"
-              checked={includeLetters}
-              onCheckedChange={setIncludeLetters}
-              disabled={isGenerating || isRateLimited}
-            />
-            <Label htmlFor="include-letters">Include Letters</Label>
-          </div>
-          <div className="flex items-center gap-2 w-full">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="duration">Duration (s)</Label>
             <Input
               id="duration"
@@ -167,9 +157,17 @@ export default function LotteryGenerator() {
               max="30"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-20"
               disabled={isGenerating || isRateLimited}
             />
+          </div>
+          <div className="flex w-full items-center gap-2 space-x-2">
+            <Switch
+              id="include-letters"
+              checked={includeLetters}
+              onCheckedChange={setIncludeLetters}
+              disabled={isGenerating || isRateLimited}
+            />
+            <Label htmlFor="include-letters">Include Letters</Label>
           </div>
         </div>
 
