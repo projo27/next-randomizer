@@ -30,6 +30,8 @@ import ImageRandomizer from "@/components/image-randomizer";
 import OotdGenerator from "@/components/ootd-generator";
 import TravelRandomizer from "@/components/travel-randomizer";
 import YouTubeRandomizer from "@/components/youtube-randomizer";
+import RockPaperScissors from "@/components/rock-paper-scissors";
+import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
 import { Skeleton } from '@/components/ui/skeleton';
 
 function HomePageContent() {
@@ -106,7 +108,13 @@ function HomePageContent() {
           <Dices className="h-5 w-5" />
           <span>Dice</span>
         </TabsTrigger>
-        
+        <TabsTrigger
+          value="rps"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <RockPaperScissorsIcon className="h-5 w-5" />
+          <span>RPS</span>
+        </TabsTrigger>
         <TabsTrigger
           value="card"
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
@@ -226,6 +234,9 @@ function HomePageContent() {
       </TabsContent>
       <TabsContent value="card" forceMount>
         <CardDeckRandomizer />
+      </TabsContent>
+       <TabsContent value="rps" forceMount>
+        <RockPaperScissors />
       </TabsContent>
       <TabsContent value="lottery" forceMount>
         <LotteryGenerator />
