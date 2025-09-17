@@ -84,15 +84,15 @@ export default function LotteryGenerator() {
     // Start the countdown toast
     let countdown = dur;
     const { id: toastId, update } = toast({
-      title: "Generating...",
-      description: `Your combination will be ready in ${countdown} seconds.`,
+      // title: "Generating...",
+      description: <div>Count Down in  <span className="text-3xl">{countdown}s</span></div>,
       duration: (dur + 2) * 1000,
     });
-    
+
     countdownIntervalRef.current = setInterval(() => {
       countdown--;
       if (countdown > 0) {
-        update({ id: toastId, description: `Your combination will be ready in ${countdown} seconds.` });
+        update({ id: toastId, description:  <div className="flex flex-row items-center">Count Down in  <span className="text-3xl">{countdown}s</span></div> });
       }
     }, 1000);
 
@@ -109,7 +109,8 @@ export default function LotteryGenerator() {
       }
       setResult(finalResult);
       setIsGenerating(false);
-      update({ id: toastId, title: "Done!", description: `Your new combination is: ${finalResult}`});
+
+      update({ id: toastId, description: `Your new combination is: ${finalResult}`, hidden: true });
 
     }, dur * 1000);
   };
@@ -135,16 +136,7 @@ export default function LotteryGenerator() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="include-letters"
-              checked={includeLetters}
-              onCheckedChange={setIncludeLetters}
-              disabled={isGenerating || isRateLimited}
-            />
-            <Label htmlFor="include-letters">Include Letters</Label>
-          </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full">
             <Label htmlFor="combination-length">Length</Label>
             <Input
               id="combination-length"
@@ -157,7 +149,16 @@ export default function LotteryGenerator() {
               disabled={isGenerating || isRateLimited}
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center space-x-2 w-full">
+            <Switch
+              id="include-letters"
+              checked={includeLetters}
+              onCheckedChange={setIncludeLetters}
+              disabled={isGenerating || isRateLimited}
+            />
+            <Label htmlFor="include-letters">Include Letters</Label>
+          </div>
+          <div className="flex items-center gap-2 w-full">
             <Label htmlFor="duration">Duration (s)</Label>
             <Input
               id="duration"
@@ -171,24 +172,24 @@ export default function LotteryGenerator() {
             />
           </div>
         </div>
-        
+
         {(result || isGenerating) && (
-            <div className="relative min-h-[60px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
-                <p className="text-4xl tracking-widest text-accent font-mono select-all">
-                    {result}
-                </p>
-                 {result && !isGenerating && (
-                    <div className="absolute top-2 right-2">
-                         <Button variant="ghost" size="icon" onClick={handleCopy}>
-                            {isCopied ? (
-                                <Check className="h-5 w-5 text-green-500" />
-                            ) : (
-                                <Copy className="h-5 w-5" />
-                            )}
-                        </Button>
-                    </div>
-                )}
-            </div>
+          <div className="relative min-h-[60px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
+            <p className="text-4xl tracking-widest text-accent font-mono select-all">
+              {result}
+            </p>
+            {result && !isGenerating && (
+              <div className="absolute top-2 right-2">
+                <Button variant="ghost" size="icon" onClick={handleCopy}>
+                  {isCopied ? (
+                    <Check className="h-5 w-5 text-green-500" />
+                  ) : (
+                    <Copy className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         )}
 
         {error && (
