@@ -172,7 +172,7 @@ export default function LotteryGenerator() {
         </div>
 
         {(result || isGenerating) && (
-          <div className="relative min-h-[60px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
+          <div className="relative min-h-[60px] flex items-center justify-center bg-muted/50 rounded-lg p-8">
             <p className="text-4xl tracking-widest text-accent font-mono select-all">
               {result}
             </p>

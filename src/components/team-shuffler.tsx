@@ -19,6 +19,7 @@ import { Badge } from "./ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "./ui/switch";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { Skeleton } from "./ui/skeleton";
 
 type Participant = {
   name: string;
@@ -54,6 +55,7 @@ A. Person 2`);
 
   const [teamSize, setTeamSize] = useState("3");
   const [teams, setTeams] = useState<Team[]>([]);
+  const [isShuffling, setIsShuffling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
@@ -141,66 +143,73 @@ A. Person 2`);
     setError(null);
     setTeams([]);
     setIsResultCopied(false);
+    setIsShuffling(true);
 
-    let participants = parseParticipants();
-    if (!participants) return;
+    const participants = parseParticipants();
+    if (!participants) {
+      setIsShuffling(false);
+      return;
+    }
 
     const size = parseInt(teamSize, 10);
     if (isNaN(size) || size < 2) {
       setError("Team size must be at least 2.");
+      setIsShuffling(false);
       return;
     }
 
     if (participants.length < size) {
       setError("Not enough participants to form a single team.");
+      setIsShuffling(false);
       return;
     }
 
     const numTeams = Math.floor(participants.length / size);
     if (numTeams === 0) {
       setError("Not enough participants to form a single team.");
+      setIsShuffling(false);
       return;
     }
-    const newTeams: Team[] = Array.from({ length: numTeams }, () => ({
-      members: [],
-      totalLevel: 0,
-    }));
+    
+    // Fake delay for animation
+    setTimeout(() => {
+      const newTeams: Team[] = Array.from({ length: numTeams }, () => ({
+        members: [],
+        totalLevel: 0,
+      }));
 
-    if (useLevels) {
-      // Sort participants by level in descending order for balanced distribution
-      participants.sort((a, b) => b.level - a.level);
+      if (useLevels) {
+        participants.sort((a, b) => b.level - a.level);
+        participants.forEach((participant) => {
+          let bestTeam: Team | null = null;
+          let lowestLevel = Infinity;
 
-      // Distribute players using a greedy algorithm
-      participants.forEach((participant) => {
-        // Find the team with the lowest total level that is not yet full
-        let bestTeam: Team | null = null;
-        let lowestLevel = Infinity;
-
-        for (const team of newTeams) {
-          if (team.members.length < size && team.totalLevel < lowestLevel) {
-            lowestLevel = team.totalLevel;
-            bestTeam = team;
+          for (const team of newTeams) {
+            if (team.members.length < size && team.totalLevel < lowestLevel) {
+              lowestLevel = team.totalLevel;
+              bestTeam = team;
+            } else if (team.members.length < size && !bestTeam) {
+               // Fallback for teams with same total level
+               bestTeam = team;
+            }
           }
+          if (bestTeam) {
+            bestTeam.members.push(participant);
+            bestTeam.totalLevel += participant.level;
+          }
+        });
+      } else {
+        const shuffledParticipants = shuffleArray(participants);
+        for (let i = 0; i < numTeams * size; i++) {
+          const teamIndex = i % numTeams;
+          newTeams[teamIndex].members.push(shuffledParticipants[i]);
+          newTeams[teamIndex].totalLevel += shuffledParticipants[i].level;
         }
-
-        // If all teams are full, this logic might fail for remaining players
-        if (bestTeam) {
-          bestTeam.members.push(participant);
-          bestTeam.totalLevel += participant.level;
-        }
-      });
-    } else {
-      // Simple random shuffle
-      participants = shuffleArray(participants);
-      for (let i = 0; i < numTeams * size; i++) {
-        const teamIndex = i % numTeams;
-        newTeams[teamIndex].members.push(participants[i]);
-        newTeams[teamIndex].totalLevel += participants[i].level;
       }
-    }
 
-
-    setTeams(newTeams);
+      setTeams(newTeams);
+      setIsShuffling(false);
+    }, 1000);
   };
 
   const handleCopyInput = () => {
@@ -265,6 +274,7 @@ A. Person 2`);
               value={participantsText}
               onChange={(e) => setParticipantsText(e.target.value)}
               className="resize-none pr-20 mt-1"
+              disabled={isShuffling}
             />
             <div className="absolute top-2 right-2 flex flex-col gap-2">
               <Button variant="ghost" size="icon" onClick={handleCopyInput}>
@@ -288,6 +298,7 @@ A. Person 2`);
             min="2"
             value={teamSize}
             onChange={(e) => setTeamSize(e.target.value)}
+            disabled={isShuffling}
           />
         </div>
 
@@ -298,7 +309,22 @@ A. Person 2`);
           </Alert>
         )}
 
-        {teams.length > 0 && (
+        {isShuffling && (
+            <div className="mt-6 w-full space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(Math.floor(participantCount / parseInt(teamSize, 10)) || 1)].map((_, i) => (
+                        <div key={i} className="space-y-2 rounded-lg border p-4">
+                           <Skeleton className="h-6 w-1/2" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-3/4" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+
+        {!isShuffling && teams.length > 0 && (
           <div className="mt-6 w-full space-y-4 border-accent border-2 shadow-lg p-4 rounded-md">
             <div className="relative text-center">
               <h3 className="text-xl font-bold">Generated Teams</h3>
@@ -340,11 +366,11 @@ A. Person 2`);
       <CardFooter className="flex flex-col">
         <Button
           onClick={handleShuffle}
-          disabled={isRateLimited}
+          disabled={isRateLimited || isShuffling}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRateLimited ? "Please wait..." : "Shuffle into Teams!"}
+          {isShuffling ? "Shuffling..." : isRateLimited ? "Please wait..." : "Shuffle into Teams!"}
         </Button>
       </CardFooter>
     </Card>
