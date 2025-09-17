@@ -81,7 +81,7 @@ export default function YouTubeRandomizer() {
             : categoryId;
 
         const queryRegionCode = regionCode === 'all'
-            ? undefined
+            ? COUNTRY_CODES[Math.floor(Math.random() * COUNTRY_CODES.length)].code
             : regionCode;
 
         const result = await recommendVideo({ videoCategoryId: queryCategoryId, regionCode: queryRegionCode });

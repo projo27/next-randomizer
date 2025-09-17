@@ -65,7 +65,7 @@ export default function TravelRandomizer() {
       // 3. Get city recommendation from AI for the chosen country
       const result = await recommendCity({
         country: countryToProcess.country,
-        cities: countryToProcess.cities,
+        // cities: countryToProcess.cities,
       });
 
       setRecommendation({

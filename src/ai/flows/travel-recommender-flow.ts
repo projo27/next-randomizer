@@ -14,7 +14,7 @@ import { z } from 'genkit';
 
 const CityRecommenderInputSchema = z.object({
   country: z.string().describe('The country where the cities are located.'),
-  cities: z.array(z.string()).describe('A list of cities to choose from.'),
+  // cities: z.array(z.string()).describe('A list of cities to choose from.'),
 });
 export type CityRecommenderInput = z.infer<typeof CityRecommenderInputSchema>;
 
@@ -43,11 +43,10 @@ const cityRecommenderPrompt = ai.definePrompt({
     schema: CityRecommenderAIOutputSchema,
   },
   prompt: `You are a world-class travel expert providing recommendations.
-From the list of cities provided in {{country}}, pick the single best city for a tourist to visit.
+From the list of cities provided in {{country}}, pick the single random best city for a tourist to visit from the country.
+The city result must be difference from before result
 
-Cities to choose from: {{cities}}
-
-Provide a short, one-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.`,
+Provide a short, two-paragraph description explaining why it's a fantastic travel destination, highlighting its main attractions or what makes it unique.`,
 });
 
 const cityRecommenderFlow = ai.defineFlow(

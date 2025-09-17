@@ -220,7 +220,7 @@ export default function ImageRandomizer() {
         </div>
         
         {error && (
-          <Alert variant="destructive" className="mt-4">
+          <Alert variant="destructive" className="mt-4 hidden transition-all duration-700">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>

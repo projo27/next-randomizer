@@ -44,6 +44,22 @@ const STYLES = [
   "Grunge",
 ];
 const SEASONS = ["Dry Season", "Rainy Season", "Snowy Season", "Autumn", "Spring"];
+const POSES = [
+  "walking confidently with a purposeful stride",
+  "mid-stride, as if caught in a natural moment  ",
+  "turning slightly to look back over their shoulder  ",
+  "jumping lightly, with a sense of energy  ",
+  "running or jogging, with a dynamic feel  ",
+  "standing casually with hands in pockets  ",
+  "leaning against a wall or a railing  ",
+  "sitting on a stool with a relaxed posture  ",
+  "standing with arms crossed and a relaxed expression  ",
+  "looking away, creating a sense of a candid shot  ",
+  "standing tall and still like a statue  ",
+  "striking a powerful fashion model pose  ",
+  "one hand on their hip, with a confident stance  ",
+  "in a contemplative pose, looking down",
+];
 
 export default function OotdGenerator() {
   const [gender, setGender] = useState("Female");
