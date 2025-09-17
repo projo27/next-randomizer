@@ -124,12 +124,12 @@ const ootdImageGeneratorFlow = ai.defineFlow(
     const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle  } = input;
     const prompt = `The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
 A high-quality, realistic fashion photograph of a person wearing an outfit,
+Do not include any separate or floating items
 The outfit is described as: "${outfitDescription}"
 The person pose is ${pose}
 The camera angle is ${cameraAngle}.
 The outfit items is: "${items.join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blured, 
-Never show list of outfit items on the photo, only show the person and the outfit
 The background should fit with the person and clothes selected.`;
 // The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
     console.log(prompt);

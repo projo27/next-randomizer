@@ -30,7 +30,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 
-const GENDERS = ["Male", "Female", "Unisex"];
+const GENDERS = ["Male", "Female"];
 const ICONS = [<Mars />, <Venus />, <Ghost />]
 const STYLES = [
   "All",
@@ -45,7 +45,7 @@ const STYLES = [
   "Preppy",
   "Grunge",
 ];
-const SEASONS = ["Dry Season", "Rainy Season", "Snowy Season", "Autumn", "Spring"];
+const SEASONS = ["All", "Spring", "Summer", "Autumn/Fall", "Winter"];
 
 const POSES = [
   "walking confidently with a purposeful stride",
@@ -80,7 +80,7 @@ const CAMERA_ANGLES = [
 export default function OotdGenerator() {
   const [gender, setGender] = useState("Female");
   const [style, setStyle] = useState("All");
-  const [season, setSeason] = useState("Dry Season");
+  const [season, setSeason] = useState("All");
   const [height, setHeight] = useState("170");
   const [weight, setWeight] = useState("60");
 
@@ -114,7 +114,11 @@ export default function OotdGenerator() {
 
     try {
       // Generate text description first
-      const response = await generateOotd({ gender, style, season, height: heightNum, weight: weightNum });
+      const response = await generateOotd({
+        gender, style,
+        season: (season == "All" ? SEASONS[Math.floor(Math.random() * SEASONS.length)] : season),
+        height: heightNum, weight: weightNum
+      });
       setResult(response);
       setIsLoading(false); // Stop main loading state
 
@@ -232,16 +236,19 @@ export default function OotdGenerator() {
           </Alert>
         )}
         {isLoading && (
-          <div className="w-full space-y-4 mt-6">
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <div className="pt-4 space-y-2">
-              <Skeleton className="h-5 w-1/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-1/3" />
-              <Skeleton className="h-4 w-2/5" />
+          <div className="flex flex-row w-full h-auto gap-4">
+            <div className="w-1/2 space-y-4 mt-6">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-5/6" />
+              <div className="pt-4 space-y-2">
+                <Skeleton className="h-5 w-1/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-4 w-2/5" />
+              </div>
             </div>
+            <Skeleton className="h-60 w-1/2 mt-6" />
           </div>
         )}
         {(result || isGeneratingImage) && (
