@@ -27,7 +27,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 
 const GENDERS = ["Male", "Female", "Unisex"];
@@ -223,7 +223,7 @@ export default function OotdGenerator() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col items-start">
+      <CardFooter className="flex flex-col items-start gap-4">
         <Button
           onClick={handleGenerate}
           disabled={isLoading || isRateLimited}
@@ -252,7 +252,7 @@ export default function OotdGenerator() {
           </div>
         )}
         {(result || isGeneratingImage) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2 w-full">
             <Card className="bg-card/80">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Your OOTD Recommendation</CardTitle>
@@ -308,6 +308,8 @@ export default function OotdGenerator() {
                         </div>
                       </DialogTrigger>
                       <DialogContent className="max-w-3xl p-0">
+                         <DialogTitle className="sr-only">Outfit Visualization Zoom</DialogTitle>
+                         <DialogDescription className="sr-only">A larger view of the generated outfit image.</DialogDescription>
                         <Image src={imageUrl} alt="Generated outfit" width={1024} height={1024} className="rounded-md object-contain" />
                       </DialogContent>
                     </Dialog>
