@@ -8,8 +8,8 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 2000
+const TOAST_LIMIT = 3
+const TOAST_REMOVE_DELAY = 500000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -161,7 +161,6 @@ function toast({ ...props }: Toast) {
       onOpenChange: (open) => {
         if (!open) dismiss()
       },
-      duration: 2000
     },
   })
 

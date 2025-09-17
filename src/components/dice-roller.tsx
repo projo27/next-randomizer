@@ -71,9 +71,9 @@ export default function DiceRoller() {
       setIsRolling(false);
     }, 1000); // Duration of the animation
   };
-  
+
   const total = results.reduce((sum, val) => sum + val, 0);
-  
+
   const handleCopy = () => {
     if (results.length === 0) return;
     const resultString = `Total: ${total} (Rolls: ${results.join(", ")})`;
@@ -115,35 +115,38 @@ export default function DiceRoller() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
-          {isRolling &&
-            Array.from({ length: parseInt(numberOfDice, 10) }).map((_, i) => (
-              <div key={i} className={`dark:text-primary light:text-accent ${animationClass}`}>
-                {diceIcons[Math.floor(Math.random() * 6)]}
-              </div>
-            ))}
-          {!isRolling &&
-            results.length > 0 &&
-            results.map((result, i) => (
-              <div key={i} className="dark:text-primary light:text-accent">
-                {diceIcons[result - 1]}
-              </div>
-            ))}
-        </div>
-        {!isRolling && results.length > 0 && (
-          <div className="text-center relative">
-            <p className="text-lg font-bold">Total: {total}</p>
-             <div className="absolute -top-2 right-0">
-                <Button variant="ghost" size="icon" onClick={handleCopy}>
-                  {isCopied ? (
-                    <Check className="h-5 w-5 text-green-500" />
-                  ) : (
-                    <Copy className="h-5 w-5" />
-                  )}
-                </Button>
-            </div>
+        <div className="flex flex-col p-8 bg-muted/50 rounded-lg relative">
+          <div className="absolute top-2 right-2">
+            <Button variant="ghost" size="icon" onClick={handleCopy}>
+              {isCopied ? (
+                <Check className="h-5 w-5 text-green-500" />
+              ) : (
+                <Copy className="h-5 w-5" />
+              )}
+            </Button>
           </div>
-        )}
+          <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
+            {isRolling &&
+              Array.from({ length: parseInt(numberOfDice, 10) }).map((_, i) => (
+                <div key={i} className={`dark:text-primary light:text-accent ${animationClass}`}>
+                  {diceIcons[Math.floor(Math.random() * 6)]}
+                </div>
+              ))}
+            {!isRolling &&
+              results.length > 0 &&
+              results.map((result, i) => (
+                <div key={i} className="dark:text-primary light:text-accent">
+                  {diceIcons[result - 1]}
+                </div>
+              ))}
+          </div>
+          {!isRolling && results.length > 0 && (
+            <div className="text-center relative mt-6">
+              <p className="text-lg font-bold">Total: {total}</p>
+
+            </div>
+          )}
+        </div>
       </CardContent>
       <CardFooter>
         <Button

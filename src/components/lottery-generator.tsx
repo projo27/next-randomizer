@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const NUMBERS = "0123456789";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -23,11 +24,24 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
   const [length, setLength] = useState("6");
+  const [duration, setDuration] = useState("5");
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const { toast } = useToast();
+  const [error, setError] = useState<string | null>(null);
+  const { toast, dismiss } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    };
+  }, []);
+
 
   const handleGenerate = () => {
     if (isGenerating) return;
@@ -35,14 +49,18 @@ export default function LotteryGenerator() {
     setIsGenerating(true);
     setIsCopied(false);
     setResult(null);
+    setError(null);
 
     const len = parseInt(length, 10);
+    const dur = parseInt(duration, 10);
+
     if (isNaN(len) || len <= 0 || len > 100) {
-      toast({
-        title: "Invalid Length",
-        description: "Please enter a length between 1 and 100.",
-        variant: "destructive",
-      });
+      setError("Please enter a length between 1 and 100.");
+      setIsGenerating(false);
+      return;
+    }
+    if (isNaN(dur) || dur < 1 || dur > 30) {
+      setError("Please enter a duration between 1 and 30 seconds.");
       setIsGenerating(false);
       return;
     }
@@ -52,31 +70,48 @@ export default function LotteryGenerator() {
       characterSet += LETTERS;
     }
 
-    let generated = "";
-    for (let i = 0; i < len; i++) {
-      generated += characterSet.charAt(
-        Math.floor(Math.random() * characterSet.length)
-      );
-    }
-    
-    // Animate the result
-    let tempResult = "";
-    const interval = setInterval(() => {
-        tempResult = "";
-        for (let i = 0; i < len; i++) {
-            tempResult += characterSet.charAt(
-                Math.floor(Math.random() * characterSet.length)
-            );
-        }
-        setResult(tempResult);
+    // Start the visual animation of changing characters
+    animationIntervalRef.current = setInterval(() => {
+      let tempResult = "";
+      for (let i = 0; i < len; i++) {
+        tempResult += characterSet.charAt(
+          Math.floor(Math.random() * characterSet.length)
+        );
+      }
+      setResult(tempResult);
     }, 50);
 
+    // Start the countdown toast
+    let countdown = dur;
+    const { id: toastId, update } = toast({
+      title: "Generating...",
+      description: `Your combination will be ready in ${countdown} seconds.`,
+      duration: (dur + 2) * 1000,
+    });
+    
+    countdownIntervalRef.current = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        update({ id: toastId, description: `Your combination will be ready in ${countdown} seconds.` });
+      }
+    }, 1000);
 
+    // Stop everything after the duration
     setTimeout(() => {
-        clearInterval(interval);
-        setResult(generated);
-        setIsGenerating(false);
-    }, 5000);
+      if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+
+      let finalResult = "";
+      for (let i = 0; i < len; i++) {
+        finalResult += characterSet.charAt(
+          Math.floor(Math.random() * characterSet.length)
+        );
+      }
+      setResult(finalResult);
+      setIsGenerating(false);
+      update({ id: toastId, title: "Done!", description: `Your new combination is: ${finalResult}`});
+
+    }, dur * 1000);
   };
 
   const handleCopy = () => {
@@ -99,7 +134,7 @@ export default function LotteryGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           <div className="flex items-center space-x-2">
             <Switch
               id="include-letters"
@@ -122,11 +157,24 @@ export default function LotteryGenerator() {
               disabled={isGenerating || isRateLimited}
             />
           </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="duration">Duration (s)</Label>
+            <Input
+              id="duration"
+              type="number"
+              min="1"
+              max="30"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="w-20"
+              disabled={isGenerating || isRateLimited}
+            />
+          </div>
         </div>
         
         {(result || isGenerating) && (
             <div className="relative min-h-[60px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
-                <p className="text-4xl tracking-widest text-accent">
+                <p className="text-4xl tracking-widest text-accent font-mono select-all">
                     {result}
                 </p>
                  {result && !isGenerating && (
@@ -141,6 +189,13 @@ export default function LotteryGenerator() {
                     </div>
                 )}
             </div>
+        )}
+
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
       </CardContent>
