@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BrainCircuit, Check, Copy, Package, Image as ImageIcon, Sparkles, Mars, Venus, Ghost } from "lucide-react";
+import { BrainCircuit, Check, Copy, Package, Image as ImageIcon, Sparkles, Mars, Venus, Ghost, ZoomIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { generateOotd, generateOotdImage, OotdGeneratorOutput } from "@/ai/flows/ootd-generator-flow";
 import { Skeleton } from "./ui/skeleton";
@@ -27,9 +27,11 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { cn } from "@/lib/utils";
 
 const GENDERS = ["Male", "Female", "Unisex"];
-const ICONS = [<Mars/>, <Venus />, <Ghost />]
+const ICONS = [<Mars />, <Venus />, <Ghost />]
 const STYLES = [
   "All",
   "Casual",
@@ -44,22 +46,36 @@ const STYLES = [
   "Grunge",
 ];
 const SEASONS = ["Dry Season", "Rainy Season", "Snowy Season", "Autumn", "Spring"];
+
 const POSES = [
   "walking confidently with a purposeful stride",
-  "mid-stride, as if caught in a natural moment  ",
-  "turning slightly to look back over their shoulder  ",
-  "jumping lightly, with a sense of energy  ",
-  "running or jogging, with a dynamic feel  ",
-  "standing casually with hands in pockets  ",
-  "leaning against a wall or a railing  ",
-  "sitting on a stool with a relaxed posture  ",
-  "standing with arms crossed and a relaxed expression  ",
-  "looking away, creating a sense of a candid shot  ",
-  "standing tall and still like a statue  ",
-  "striking a powerful fashion model pose  ",
-  "one hand on their hip, with a confident stance  ",
+  "mid-stride, as if caught in a natural moment",
+  "turning slightly to look back over their shoulder",
+  "jumping lightly, with a sense of energy",
+  "running or jogging, with a dynamic feel",
+  "standing casually with hands in pockets",
+  "leaning against a wall or a railing",
+  "sitting on a stool with a relaxed posture",
+  "standing with arms crossed and a relaxed expression",
+  "looking away, creating a sense of a candid shot",
+  "standing tall and still like a statue",
+  "striking a powerful fashion model pose",
+  "one hand on their hip, with a confident stance",
   "in a contemplative pose, looking down",
 ];
+
+const CAMERA_ANGLES = [
+  "a direct frontal view, straight on",
+  "from a low angle, making the person look powerful",
+  "from a high angle, giving a slightly elevated perspective",
+  "from a waist-up, direct frontal view",
+  "from a slight front-diagonal angle",
+  "a full body shot from a dynamic front-diagonal view",
+  "a dramatic front-diagonal shot from a low angle",
+  "from a wide angle, capturing the person from a front-diagonal perspective",
+  "a cinematic shot with a wide-angle lens",
+  "a close-up portrait from a front-diagonal angle",
+]
 
 export default function OotdGenerator() {
   const [gender, setGender] = useState("Female");
@@ -101,7 +117,7 @@ export default function OotdGenerator() {
       const response = await generateOotd({ gender, style, season, height: heightNum, weight: weightNum });
       setResult(response);
       setIsLoading(false); // Stop main loading state
-      
+
       // Start async image generation
       setIsGeneratingImage(true);
       generateOotdImage({
@@ -110,21 +126,23 @@ export default function OotdGenerator() {
         height: heightNum,
         weight: weightNum,
         items: response.items,
-        weightHealth: response.weightHealth
+        weightHealth: response.weightHealth,
+        pose: POSES[Math.floor(Math.random() * POSES.length)],
+        cameraAngle: CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)],
       })
         .then(imageResponse => {
-            setImageUrl(imageResponse.imageUrl);
+          setImageUrl(imageResponse.imageUrl);
         })
         .catch(err => {
-            console.error("Image generation failed:", err);
-            toast({
-                variant: 'destructive',
-                title: 'Image Generation Failed',
-                description: 'Could not generate the outfit image. Please try again later.'
-            });
+          console.error("Image generation failed:", err);
+          toast({
+            variant: 'destructive',
+            title: 'Image Generation Failed',
+            description: 'Could not generate the outfit image. Please try again later.'
+          });
         })
         .finally(() => {
-            setIsGeneratingImage(false);
+          setIsGeneratingImage(false);
         });
 
     } catch (err) {
@@ -133,7 +151,7 @@ export default function OotdGenerator() {
       setIsLoading(false);
     }
   };
-  
+
   const handleCopy = () => {
     if (!result) return;
     const resultString = `Style: ${result.styleUsed}\n\nDescription:\n${result.outfitDescription}\n\nItems:\n- ${result.items.join('\n- ')}`;
@@ -215,10 +233,10 @@ export default function OotdGenerator() {
           {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Generate my OOTD!"}
         </Button>
         {error && (
-            <Alert variant="destructive" className="mt-4 w-full">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+          <Alert variant="destructive" className="mt-4 w-full">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
         {isLoading && (
           <div className="w-full space-y-4 mt-6">
@@ -226,70 +244,82 @@ export default function OotdGenerator() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
             <div className="pt-4 space-y-2">
-                <Skeleton className="h-5 w-1/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-1/3" />
-                <Skeleton className="h-4 w-2/5" />
+              <Skeleton className="h-5 w-1/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-4 w-2/5" />
             </div>
           </div>
         )}
         {(result || isGeneratingImage) && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 w-full">
             <Card className="bg-card/80">
-                <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Your OOTD Recommendation</CardTitle>
                 <Button variant="ghost" size="icon" onClick={handleCopy}>
-                    {isCopied ? (
+                  {isCopied ? (
                     <Check className="h-5 w-5 text-green-500" />
-                    ) : (
+                  ) : (
                     <Copy className="h-5 w-5" />
-                    )}
+                  )}
                 </Button>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                 <div>
-                    <Badge>{result?.styleUsed}</Badge>
-                 </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Badge>{result?.styleUsed}</Badge>
+                </div>
                 <p className="text-card-foreground/90 italic">
-                    "{result?.outfitDescription}"
+                  "{result?.outfitDescription}"
                 </p>
                 <div>
-                    <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <Package className="h-5 w-5" />
-                        Items You'll Need:
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1 text-card-foreground/80">
-                        {result?.items.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
-                    </ul>
+                  <h4 className="font-semibold flex items-center gap-2 mb-2">
+                    <Package className="h-5 w-5" />
+                    Items You'll Need:
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-card-foreground/80">
+                    {result?.items.map((item, index) => (
+                      <li key={index}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
-                </CardContent>
+              </CardContent>
             </Card>
 
             <Card className="bg-card/80">
-                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5" /> Outfit Visualization</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="aspect-square relative rounded-md overflow-hidden bg-muted flex items-center justify-center">
-                        {isGeneratingImage && (
-                            <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                                <Sparkles className="h-8 w-8 animate-pulse" />
-                                <p>Generating image...</p>
-                            </div>
-                        )}
-                        {imageUrl && (
-                            <Image src={imageUrl} alt="Generated outfit" fill className="object-cover animate-fade-in" />
-                        )}
-                        {!isGeneratingImage && !imageUrl && result && (
-                            <div className="flex flex-col items-center gap-2 text-muted-foreground text-center p-4">
-                                <ImageIcon className="h-8 w-8" />
-                                <p>Image will appear here</p>
-                            </div>
-                        )}
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5" /> Outfit Visualization</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-square relative rounded-md overflow-hidden bg-muted flex items-center justify-center group">
+                  {isGeneratingImage && (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <Sparkles className="h-8 w-8 animate-pulse" />
+                      <p>Generating image...</p>
                     </div>
-                </CardContent>
+                  )}
+                  {imageUrl && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <div className="cursor-pointer">
+                          <Image src={imageUrl} alt="Generated outfit" fill className="object-cover animate-fade-in" />
+                          <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ZoomIn className="h-12 w-12 text-white" />
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl p-0">
+                        <Image src={imageUrl} alt="Generated outfit" width={1024} height={1024} className="rounded-md object-contain" />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                  {!isGeneratingImage && !imageUrl && result && (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground text-center p-4">
+                      <ImageIcon className="h-8 w-8" />
+                      <p>Image will appear here</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}

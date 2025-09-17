@@ -37,7 +37,9 @@ const OotdImageGeneratorInputSchema = z.object({
   height: z.number().describe('The height of the person in centimeters.'),
   weight: z.number().describe('The weight of the person in kilograms.'),
   items: z.array(z.string()).describe('A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").'),
-  weightHealth: z.string().describe('The body type of the person based on their height and weight.')
+  weightHealth: z.string().describe('The body type of the person based on their height and weight.'),
+  pose: z.string().describe('The pose of the person in the outfit'),
+  cameraAngle: z.string().describe('The camera angle of the outfit'),
 });
 export type OotdImageGeneratorInput = z.infer<typeof OotdImageGeneratorInputSchema>;
 
@@ -119,20 +121,25 @@ const ootdImageGeneratorFlow = ai.defineFlow(
     outputSchema: OotdImageGeneratorOutputSchema,
   },
   async (input) => {
-    const { outfitDescription, gender, height, weight, items, weightHealth  } = input;
+    const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle  } = input;
     const prompt = `The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
 A high-quality, realistic fashion photograph of a person wearing an outfit,
 The outfit is described as: "${outfitDescription}"
+The person pose is ${pose}
+The camera angle is ${cameraAngle}.
 The outfit items is: "${items.join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blured, 
-The photo captured from front-diagonal shot with a cinematic feel.
 No items on the photo, only show the person and the outfit
-The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
-    console.log(prompt, input);
+The background should fit with the person and clothes selected.`;
+// The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
+    console.log(prompt);
 
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
       prompt: prompt
+    }).catch(err => {
+      console.error(err);
+      return { media: null };
     });
     return { imageUrl: media?.url || "" };
   }
