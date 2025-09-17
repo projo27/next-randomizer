@@ -129,13 +129,17 @@ The person pose is ${pose}
 The camera angle is ${cameraAngle}.
 The outfit items is: "${items.join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blured, 
-No outfit items on the photo, only show the person and the outfit
+Never show list of outfit items on the photo, only show the person and the outfit
 The background should fit with the person and clothes selected.`;
 // The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
     console.log(prompt);
 
+    // googleai/imagen-4.0-fast-generate-001
+    // imagen-3.0-generate-002
+    // gemini-2.5-flash-lite-001
+    
     const { media } = await ai.generate({
-      model: 'googleai/imagen-2.0-fast-generate-001',
+      model: 'googleai/imagen-3.0-generate-002',
       prompt: prompt
     }).catch(err => {
       console.error(err);
