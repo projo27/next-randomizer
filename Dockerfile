@@ -1,36 +1,34 @@
-# Stage 1: Dependensi
-FROM node:20-alpine AS deps
+# Stage 1: Build the application
+FROM node:18-alpine AS builder
+
+# Set working directory
 WORKDIR /app
 
-# Salin file package.json dan package-lock.json (jika ada)
-COPY package.json ./
-# Instal dependensi
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Stage 2: Pembangun
-FROM node:20-alpine AS builder
-WORKDIR /app
-# Salin dependensi dari stage sebelumnya
-COPY --from=deps /app/node_modules ./node_modules
-# Salin sisa kode aplikasi
+# Copy the rest of the application source code
 COPY . .
 
-# Bangun aplikasi Next.js untuk produksi
+# Build the Next.js application
 RUN npm run build
 
-# Stage 3: Produksi
-FROM node:20-alpine AS runner
+# Stage 2: Create the production image
+FROM node:18-alpine
+
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-# Salin folder .next yang sudah dibangun dari stage builder
-COPY --from=builder /app/public ./public
+# Copy the built application from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/public ./public
 
+# Expose the port the app runs on
 EXPOSE 3000
 
-# Perintah untuk menjalankan aplikasi
+# Set the command to start the app
 CMD ["npm", "start"]

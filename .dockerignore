@@ -1,26 +1,31 @@
-# Dependensi
+# Docker ignore file
+
+# Git
+.git
+.gitignore
+
+# Node modules
 node_modules
 
-# Build artifacts
+# Next.js build output
 .next
-out
 
-# File Docker
-Dockerfile
-docker-compose.yml
-
-# Log
-*.log
-
-# File lokal
-.env
+# Local environment files
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local
-dev.env
 
-# Debugging
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
