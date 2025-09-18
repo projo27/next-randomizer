@@ -8,9 +8,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       # You can add other necessary environment variables here.
       # For example, if you have API keys in a .env file:
-      # env_file:
-      #   - .env
+    env_file:
+      - .env
     container_name: randomizer-app
