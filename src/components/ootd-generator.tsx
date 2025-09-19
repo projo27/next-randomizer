@@ -29,7 +29,6 @@ import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useAuth } from "@/contexts/auth-context";
 
 const GENDERS = ["Male", "Female"];
 const ICONS = [<Mars />, <Venus />, <Ghost />]
@@ -79,7 +78,6 @@ const CAMERA_ANGLES = [
 ]
 
 export default function OotdGenerator() {
-  const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [gender, setGender] = useState("Female");
   const [style, setStyle] = useState("All");
   const [season, setSeason] = useState("All");
@@ -169,43 +167,6 @@ export default function OotdGenerator() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-
-  if (authLoading) {
-    return (
-      <Card className="w-full shadow-lg border-none">
-        <CardHeader>
-          <Skeleton className="h-8 w-1/2" />
-          <Skeleton className="h-4 w-3/4" />
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-48 bg-muted rounded-lg">
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (!user) {
-    return (
-      <Card className="w-full shadow-lg border-none">
-        <CardHeader>
-          <CardTitle>OOTD Generator</CardTitle>
-          <CardDescription>
-            Get a random AI-powered outfit recommendation.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center h-48 bg-muted/50 rounded-lg text-center p-8">
-            <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold">Maaf Fitur ini hanya tersedia bagi user yang terdaftar</h3>
-            <p className="text-muted-foreground mt-2">Silakan login untuk menggunakan OOTD Generator dan fitur AI lainnya.</p>
-            <Button onClick={signInWithGoogle} className="mt-6">Login with Google</Button>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
 
   return (
     <Card className="w-full shadow-lg border-none">
