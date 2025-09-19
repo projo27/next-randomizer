@@ -33,6 +33,7 @@ export default function FirebaseLogin() {
     try {
       await signInWithPopup(auth, provider);
     } catch (error) {
+      console.log(error);
       alert("Login gagal");
     }
   };
