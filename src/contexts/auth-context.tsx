@@ -1,9 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth, provider, signInWithPopup, signOut } from '@/lib/firebase-auth';
-import { Skeleton } from '@/components/ui/skeleton';
+import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
+import { auth, provider, signInWithRedirect, signOut } from '@/lib/firebase-auth';
 
 interface AuthContextType {
     user: User | null;
@@ -19,9 +18,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setUser(user);
-            setLoading(false);
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setUser(user);
+                setLoading(false);
+            } else {
+                // Check if there is a redirect result
+                try {
+                    const result = await getRedirectResult(auth);
+                    if (result) {
+                        setUser(result.user);
+                    }
+                } catch (error) {
+                    console.error("Error getting redirect result: ", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
         });
 
         return () => unsubscribe();
@@ -29,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const signInWithGoogle = async () => {
         try {
-            await signInWithPopup(auth, provider);
+            await signInWithRedirect(auth, provider);
         } catch (error) {
             console.error("Error signing in with Google: ", error);
         }
@@ -40,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return (
         <AuthContext.Provider value={value}>
             {children}
-        </AuthContext.Provider>
+        </Auth-Context.Provider>
     );
 };
 

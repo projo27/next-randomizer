@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User, signInWithRedirect } from "firebase/auth";
 
 // Firebase config Anda
 const firebaseConfig = {
@@ -31,7 +31,7 @@ export default function FirebaseLogin() {
 
   const handleLogin = async () => {
     try {
-      await signInWithPopup(auth, provider);
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.log(error);
       alert("Login gagal");
