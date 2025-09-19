@@ -18,6 +18,8 @@ USER appuser
 # install dependencies
 RUN npm install
 
+RUN npm install firebase
+
 # RUN npm install -g nodemon
 
 # copy semua file (tetapi di-compose sudah dimount, ini optional kalau butuh build image awal)

@@ -33,6 +33,7 @@ import YouTubeRandomizer from "@/components/youtube-randomizer";
 import RockPaperScissors from "@/components/rock-paper-scissors";
 import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
 import { Skeleton } from '@/components/ui/skeleton';
+import FirebaseLogin from "@/components/firebase-login";
 
 function HomePageContent() {
   const router = useRouter();
@@ -282,6 +283,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
+      <FirebaseLogin />
       <main className="w-full max-w-6xl mx-auto mt-12">
         <Suspense fallback={<HomePageFallback />}>
           <HomePageContent />
