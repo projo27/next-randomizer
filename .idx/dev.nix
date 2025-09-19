@@ -16,7 +16,8 @@
     # Disabling because we are using prod backends right now
     detect = false;
     projectId = "demo-app";
-    services = ["auth" "firestore"];
+    services = ["auth"];
+    # services = ["auth" "firestore"];
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
