@@ -1,5 +1,6 @@
 import { Dice5 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import FirebaseLoginButton from "./firebase-login-button";
 
 export function Header() {
   return (
@@ -12,7 +13,8 @@ export function Header() {
             Randomizer
           </h1>
         </div>
-        <div className="flex-1 flex justify-end">
+        <div className="flex-1 flex justify-end items-center gap-2">
+          <FirebaseLoginButton />
           <ThemeToggle />
         </div>
       </div>
