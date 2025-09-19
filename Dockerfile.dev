@@ -1,0 +1,31 @@
+FROM node:18
+
+RUN useradd -ms /bin/sh -u 1001 appuser
+USER appuser
+
+# RUN mkdir -p /app
+# set working directory
+WORKDIR /app
+
+# copy package.json dan package-lock.json dulu
+COPY ./package*.json ./
+
+# Ubah kepemilikan file agar dapat diakses oleh appuser
+USER root
+RUN chown -R appuser:appuser /app
+USER appuser
+
+# install dependencies
+RUN npm install
+
+# RUN npm install -g nodemon
+
+# copy semua file (tetapi di-compose sudah dimount, ini optional kalau butuh build image awal)
+COPY --chown=appuser:appuser . /app
+
+# expose port
+EXPOSE 3000
+
+# default command (bisa dioverride di docker-compose)
+CMD ["npm", "run", "dev"]
+# CMD ["npx", "nodemon", "-L", "node_modules/.bin/next", "dev"]

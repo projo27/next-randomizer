@@ -196,7 +196,7 @@ function HomePageContent() {
         </TabsTrigger>
         <TabsTrigger
           value="news"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="hidden flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
         >
           <Newspaper className="h-5 w-5" />
           <span>News</span>

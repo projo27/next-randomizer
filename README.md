@@ -1,5 +1,6 @@
-# Firebase Studio
+Untuk running develop mode melalui docker
+> docker-compose build --no-cache
+> docker-compose run --watch
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+Jika kamu menggunakan vscode
+buka Container pada Sidebar > Pilih next-randomizer > attach VSCODE

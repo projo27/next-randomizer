@@ -1,16 +1,33 @@
-version: '3.8'
-
 services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules
+            - .next
+            - .git
+            - Dockerfile.dev
+            - docker-compose.yml
+            - .env
+        - action: rebuild
+          path: package.json
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
       # You can add other necessary environment variables here.
       # For example, if you have API keys in a .env file:
     env_file:
       - .env
     container_name: randomizer-app
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
