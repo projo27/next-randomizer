@@ -33,6 +33,7 @@ import YouTubeRandomizer from "@/components/youtube-randomizer";
 import RockPaperScissors from "@/components/rock-paper-scissors";
 import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
 import { Skeleton } from '@/components/ui/skeleton';
+import OotdGeneratorRunware from '@/components/ootd-generator-runware';
 
 function HomePageContent() {
   const router = useRouter();
@@ -188,6 +189,13 @@ function HomePageContent() {
           <span>OOTD</span>
         </TabsTrigger>
         <TabsTrigger
+          value="ootd-runware"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+        >
+          <Shirt className="h-5 w-5" />
+          <span>OOTD (Runware)</span>
+        </TabsTrigger>
+        <TabsTrigger
           value="travel"
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
         >
@@ -261,6 +269,9 @@ function HomePageContent() {
       </TabsContent>
       <TabsContent value="ootd" forceMount>
         <OotdGenerator />
+      </TabsContent>
+      <TabsContent value="ootd-runware" forceMount>
+        <OotdGeneratorRunware />
       </TabsContent>
       <TabsContent value="travel" forceMount>
         <TravelRandomizer />

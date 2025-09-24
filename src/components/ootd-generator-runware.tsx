@@ -28,7 +28,6 @@ import { Input } from "./ui/input";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
-// Ganti import berikut dengan runware.ai
 import { generateOotdRunware, generateOotdImageRunware, OotdGeneratorOutput } from "@/ai/flows/ootd-generator-runware";
 
 const GENDERS = ["Male", "Female"];
