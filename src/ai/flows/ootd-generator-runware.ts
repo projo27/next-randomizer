@@ -4,7 +4,7 @@
  * @fileOverview A flow for generating an "Outfit of the Day" (OOTD) recommendation, simulating a Runware.ai integration.
  *
  * - generateOotdRunware - A function that suggests an outfit based on user inputs.
- * - generateOotdImageRunware - A function that generates an image for a given outfit description.
+ * - generateOotdImageRunware - A function that generates an image for a given outfit description using the Runware.ai API.
  * - OotdGeneratorInput - The input type for the generateOotdRunware function.
  * - OotdGeneratorOutput - The return type for the generateOotdRunware function.
  * - OotdImageGeneratorInput - The input type for the generateOotdImageRunware function.
@@ -54,7 +54,7 @@ export async function generateOotdRunware(input: OotdGeneratorInput): Promise<Oo
 }
 
 export async function generateOotdImageRunware(input: OotdImageGeneratorInput): Promise<OotdImageGeneratorOutput> {
-  return ootdImageGeneratorFlow(input);
+  return ootdImageGeneratorRunwareFlow(input);
 }
 
 const ootdPrompt = ai.definePrompt({
@@ -100,7 +100,7 @@ const ootdGeneratorFlow = ai.defineFlow(
 );
 
 
-const ootdImageGeneratorFlow = ai.defineFlow(
+const ootdImageGeneratorRunwareFlow = ai.defineFlow(
   {
     name: 'ootdImageGeneratorRunwareFlow',
     inputSchema: OotdImageGeneratorInputSchema,
@@ -108,6 +108,7 @@ const ootdImageGeneratorFlow = ai.defineFlow(
   },
   async (input) => {
     const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle  } = input;
+    
     const prompt = `A high-quality, realistic fashion photograph of a person wearing an outfit, in the style of Runware.ai (edgy, futuristic).
 The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
 The outfit is described as: "${outfitDescription}"
@@ -116,14 +117,45 @@ The camera angle is ${cameraAngle}.
 The outfit items is: "${items.join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blurred. 
 The background should be a minimalist, slightly futuristic setting.`;
-    
-    const { media } = await ai.generate({
-      model: 'googleai/imagen-3.0-generate-002',
-      prompt: prompt
-    }).catch(err => {
+
+    const RUNWARE_API_KEY = process.env.RUNWARE_API_KEY;
+    if (!RUNWARE_API_KEY) {
+      throw new Error("Runware API key is not configured. Please set the RUNWARE_API_KEY environment variable.");
+    }
+
+    try {
+      const response = await fetch("https://api.runware.ai/v1/image-generation", {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RUNWARE_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          style: "cinematic-photo",
+          aspect_ratio: "1:1"
+        })
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("Runware API Error:", errorBody);
+        throw new Error(`Runware API request failed with status ${response.status}: ${errorBody}`);
+      }
+      
+      const data = await response.json();
+
+      if (data && data.image_output) {
+        const imageUrl = `data:image/jpeg;base64,${data.image_output}`;
+        return { imageUrl };
+      } else {
+        throw new Error("Invalid response format from Runware API.");
+      }
+
+    } catch (err) {
       console.error(err);
-      return { media: null };
-    });
-    return { imageUrl: media?.url || "" };
+      return { imageUrl: "" };
+    }
   }
 );
