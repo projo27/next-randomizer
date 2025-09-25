@@ -127,20 +127,17 @@ The background should be a minimalist, slightly futuristic setting.`;
     const runware = new Runware({ apiKey: RUNWARE_API_KEY });
 
     try {
-      const result = await runware.generate({
-        prompt: prompt,
-        style: 'photorealistic', // Using a relevant style from Runware
-        aspect_ratio: '1:1',
-        number_of_images: 1,
+      const images = await runware.requestImages({
+        positivePrompt: prompt,
       });
 
-      if (result.isSuccess && result.images && result.images.length > 0) {
-        const base64Image = result.images[0].base64;
+      if (images && images.length > 0) {
+        const base64Image = images[0].base64;
         const imageUrl = `data:image/jpeg;base64,${base64Image}`;
         return { imageUrl };
       } else {
-        console.error("Runware SDK Error:", result.error?.message);
-        throw new Error(`Runware API request failed: ${result.error?.message || 'Unknown error'}`);
+        console.error("Runware SDK Error: No images returned");
+        throw new Error(`Runware API request failed: No images returned`);
       }
 
     } catch (err: any) {
