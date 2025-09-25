@@ -1,10 +1,10 @@
 'use server';
 
 /**
- * @fileOverview A flow for generating an "Outfit of the Day" (OOTD) recommendation, simulating a Runware.ai integration.
+ * @fileOverview A flow for generating an "Outfit of the Day" (OOTD) recommendation, using the Runware.ai SDK.
  *
  * - generateOotdRunware - A function that suggests an outfit based on user inputs.
- * - generateOotdImageRunware - A function that generates an image for a given outfit description using the Runware.ai API.
+ * - generateOotdImageRunware - A function that generates an image for a given outfit description using the Runware.ai SDK.
  * - OotdGeneratorInput - The input type for the generateOotdRunware function.
  * - OotdGeneratorOutput - The return type for the generateOotdRunware function.
  * - OotdImageGeneratorInput - The input type for the generateOotdImageRunware function.
@@ -12,6 +12,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { Runware } from '@runware/sdk-js';
 import { z } from 'genkit';
 
 const OotdGeneratorInputSchema = z.object({
@@ -122,40 +123,29 @@ The background should be a minimalist, slightly futuristic setting.`;
     if (!RUNWARE_API_KEY) {
       throw new Error("Runware API key is not configured. Please set the RUNWARE_API_KEY environment variable.");
     }
+    
+    const runware = new Runware({ apiKey: RUNWARE_API_KEY });
 
     try {
-      const response = await fetch("https://api.runware.ai/v1/image-generation", {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RUNWARE_API_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          style: "cinematic-photo",
-          aspect_ratio: "1:1"
-        })
+      const result = await runware.images.generate({
+        prompt: prompt,
+        style: 'photorealistic', // Using a relevant style from Runware
+        aspect_ratio: '1:1',
+        number_of_images: 1,
       });
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Runware API Error:", errorBody);
-        throw new Error(`Runware API request failed with status ${response.status}: ${errorBody}`);
-      }
-      
-      const data = await response.json();
-
-      if (data && data.image_output) {
-        const imageUrl = `data:image/jpeg;base64,${data.image_output}`;
+      if (result.isSuccess && result.images && result.images.length > 0) {
+        const base64Image = result.images[0].base64;
+        const imageUrl = `data:image/jpeg;base64,${base64Image}`;
         return { imageUrl };
       } else {
-        throw new Error("Invalid response format from Runware API.");
+        console.error("Runware SDK Error:", result.error?.message);
+        throw new Error(`Runware API request failed: ${result.error?.message || 'Unknown error'}`);
       }
 
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      return { imageUrl: "" };
+      throw new Error(err.message || 'An unexpected error occurred while generating the image with Runware.');
     }
   }
 );
