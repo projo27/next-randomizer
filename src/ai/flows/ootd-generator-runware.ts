@@ -108,8 +108,8 @@ const ootdImageGeneratorRunwareFlow = ai.defineFlow(
     outputSchema: OotdImageGeneratorOutputSchema,
   },
   async (input) => {
-    const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle  } = input;
-    
+    const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle } = input;
+
     const prompt = `A high-quality, realistic fashion photograph of a person wearing an outfit, in the style of Runware.ai (edgy, futuristic).
 The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
 The outfit is described as: "${outfitDescription}"
@@ -123,16 +123,24 @@ The background should be a minimalist, slightly futuristic setting.`;
     if (!RUNWARE_API_KEY) {
       throw new Error("Runware API key is not configured. Please set the RUNWARE_API_KEY environment variable.");
     }
-    
-    const runware = new Runware({ apiKey: RUNWARE_API_KEY });
+
+    const runware = new Runware({
+      apiKey: RUNWARE_API_KEY,
+      shouldReconnect: true,
+      globalMaxRetries: 3,
+    });
 
     try {
       const images = await runware.requestImages({
         positivePrompt: prompt,
+        model: "runware:101@1",
+        width: 1024,
+        height: 1024,
+        outputType: "base64Data"
       });
 
       if (images && images.length > 0) {
-        const base64Image = images[0].base64;
+        const base64Image = images[0].imageBase64Data;
         const imageUrl = `data:image/jpeg;base64,${base64Image}`;
         return { imageUrl };
       } else {
@@ -143,6 +151,9 @@ The background should be a minimalist, slightly futuristic setting.`;
     } catch (err: any) {
       console.error(err);
       throw new Error(err.message || 'An unexpected error occurred while generating the image with Runware.');
+    }
+    finally {
+      runware.disconnect();
     }
   }
 );

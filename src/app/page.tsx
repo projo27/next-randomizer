@@ -183,7 +183,7 @@ function HomePageContent() {
         </TabsTrigger>
         <TabsTrigger
           value="ootd"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hidden"
         >
           <Shirt className="h-5 w-5" />
           <span>OOTD</span>
@@ -193,7 +193,7 @@ function HomePageContent() {
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
         >
           <Shirt className="h-5 w-5" />
-          <span>OOTD (Runware)</span>
+          <span>OOTD</span>
         </TabsTrigger>
         <TabsTrigger
           value="travel"

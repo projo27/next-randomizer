@@ -171,7 +171,7 @@ export default function OotdGeneratorRunware() {
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>OOTD Generator (Runware)</CardTitle>
+        <CardTitle>OOTD Generator</CardTitle>
         <CardDescription>
           Get a random AI-powered outfit recommendation based on your style and the season. <i>Powered by Runware.ai</i>
         </CardDescription>
