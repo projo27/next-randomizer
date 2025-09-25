@@ -127,7 +127,7 @@ The background should be a minimalist, slightly futuristic setting.`;
     const runware = new Runware({ apiKey: RUNWARE_API_KEY });
 
     try {
-      const result = await runware.images.generate({
+      const result = await runware.generate({
         prompt: prompt,
         style: 'photorealistic', // Using a relevant style from Runware
         aspect_ratio: '1:1',
