@@ -66,7 +66,7 @@ const ootdPrompt = ai.definePrompt({
   output: {
     schema: OotdGeneratorOutputSchema,
   },
-  prompt: `You are a fashion stylist powered by Runware.ai, known for edgy and futuristic styles. Your task is to generate a stylish and practical "Outfit of the Day" (OOTD) based on the user's preferences and body measurements.
+  prompt: `You are a fashion stylist, known for edgy and futuristic styles. Your task is to generate a stylish and practical "Outfit of the Day" (OOTD) based on the user's preferences and body measurements.
 
 User Preferences:
 - Height: {{height}} cm
@@ -79,7 +79,7 @@ Instructions:
 1.  If the style is "All", you must first randomly select one specific style from this list: Casual, Streetwear, Formal, Business Casual, Vintage, Bohemian, Minimalist, Sporty, Preppy, Grunge. Then, generate the outfit based on that chosen style.
 2.  Create a complete outfit recommendation including a top, bottom, footwear, and at least one accessory.
 3.  Consider the user's height and weight to suggest clothing that would be flattering for their body type.
-4.  Write a compelling and descriptive summary of the outfit in 'outfitDescription'. Make it sound fashionable and unique to the Runware.ai brand.
+4.  Write a compelling and descriptive summary of the outfit in 'outfitDescription'. Make it sound fashionable and unique to the Randomizer brand.
 5.  List the individual clothing and accessory items in the 'items' array. Be specific about colors and materials where appropriate.
 6.  Specify the style you chose in the 'styleUsed' field. If the user provided a specific style, use that one.
 7.  Ensure the outfit is suitable for the specified season.
@@ -94,7 +94,7 @@ const ootdGeneratorFlow = ai.defineFlow(
     inputSchema: OotdGeneratorInputSchema,
     outputSchema: OotdGeneratorOutputSchema,
   },
-  async (input) => {
+  async (input : any) => {
     const { output } = await ootdPrompt(input);
     return output!;
   }
@@ -107,17 +107,19 @@ const ootdImageGeneratorRunwareFlow = ai.defineFlow(
     inputSchema: OotdImageGeneratorInputSchema,
     outputSchema: OotdImageGeneratorOutputSchema,
   },
-  async (input) => {
+  async (input : any) => {
     const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle } = input;
 
     const prompt = `A high-quality, realistic fashion photograph of a person wearing an outfit, in the style of Runware.ai (edgy, futuristic).
-The person should reflect a ${gender} ${weightHealth} body type appropriate for someone who is ${height}cm tall and ${weight}kg weight.
+The person should reflect a ${gender} with ${weightHealth} body shape type appropriate for someone who is ${height} cm tall and ${weight} kg weight.
 The outfit is described as: "${outfitDescription}"
 The person pose is ${pose}
 The camera angle is ${cameraAngle}.
-The outfit items is: "${items.join("\n")}"
+The outfit items is: "${items.map((v: string) => '-'+v).join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blurred. 
-The background should be a minimalist, slightly futuristic setting.`;
+The background should be a minimalist and relate with the outfit.`;
+
+    console.log(prompt);
 
     const RUNWARE_API_KEY = process.env.RUNWARE_API_KEY;
     if (!RUNWARE_API_KEY) {
@@ -133,7 +135,8 @@ The background should be a minimalist, slightly futuristic setting.`;
     try {
       const images = await runware.requestImages({
         positivePrompt: prompt,
-        model: "runware:101@1",
+        model: "runware:108@1",
+        // model: "runware:101@1",
         width: 1024,
         height: 1024,
         outputType: "base64Data"
