@@ -1,12 +1,17 @@
 // src/components/LoginButton.tsx
-"use client";
+'use client';
 
 import { useAuth } from '@/context/AuthContext';
 import React from 'react';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { LogIn } from 'lucide-react';
 import { Button } from './ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 export default function FirebaseLoginButton() {
   // Mendapatkan tipe data yang aman dari useAuth()
@@ -42,27 +47,29 @@ export default function FirebaseLoginButton() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
-                <Avatar className="h-full [&&&]:rounded-sm p-0.5">
-                  {user.photoURL ?
-                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User Avatar'}
+                <Avatar className="h-[2rem] w-[2rem] [&&&]:rounded-sm p-0.5">
+                  {user.photoURL ? (
+                    <AvatarImage
+                      src={user.photoURL || undefined}
+                      alt={user.displayName || 'User Avatar'}
                       className="rounded-sm object-cover"
                     />
-                    :
+                  ) : (
                     <span className="font-bold text-lg">
-                      {(user.displayName || user.email || "U")
-                        .split(" ")
-                        .map(word => word[0])
-                        .join("")
+                      {(user.displayName || user.email || 'U')
+                        .split(' ')
+                        .map((word) => word[0])
+                        .join('')
                         .slice(0, 2)
                         .toUpperCase()}
                     </span>
-                  }
+                  )}
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem disabled>
-                {user.displayName || user.email || "User"}
+                {user.displayName || user.email || 'User'}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Sign Out
@@ -76,7 +83,8 @@ export default function FirebaseLoginButton() {
 
   return (
     <Button onClick={handleLogin} variant="outline">
-      <LogIn className="h-5 w-5" /> Login
+      <LogIn className="h-5 w-5" /> Login{' '}
+      <span className="hidden lg:block">for More Feature </span>
     </Button>
   );
 }

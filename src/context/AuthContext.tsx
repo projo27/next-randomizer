@@ -1,9 +1,18 @@
-"use client"; // Harus di client side
+'use client'; // Harus di client side
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, signInWithGoogle, signOut } from '@/lib/firebase-auth';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import {
+  onAuthStateChanged,
+  signInWithGoogle,
+  signOut,
+} from '@/lib/firebase-auth';
 import { auth } from '@/lib/firebase-config';
-import { User } from 'firebase/auth';
 import { AuthContextType, AuthUser } from '@/types/auth';
 
 // Nilai default untuk context
@@ -11,8 +20,8 @@ const defaultContextValue: AuthContextType = {
   user: null,
   loading: true,
   // Placeholder fungsi, akan diganti dengan implementasi asli
-  signInWithGoogle: () => Promise.reject('Not initialized'), 
-  signOut: () => Promise.reject('Not initialized'), 
+  signInWithGoogle: () => Promise.reject('Not initialized'),
+  signOut: () => Promise.reject('Not initialized'),
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
@@ -33,11 +42,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Mengamati perubahan status autentikasi
-    const unsubscribe = onAuthStateChanged(auth, (authUser: React.SetStateAction<AuthUser>) => {
-      // authUser otomatis bertipe User | null
-      setUser(authUser);
-      setLoading(false);
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (authUser: React.SetStateAction<AuthUser>) => {
+        // authUser otomatis bertipe User | null
+        setUser(authUser);
+        setLoading(false);
+      },
+    );
 
     // Cleanup: Membersihkan observer
     return () => unsubscribe();
@@ -55,9 +67,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
   //   return <div>Loading Authentication...</div>;
   // }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

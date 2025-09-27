@@ -1,45 +1,65 @@
-"use client";
+'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, Suspense } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand } from "lucide-react";
-import ListRandomizer from "@/components/list-randomizer";
-import NumberRandomizer from "@/components/number-randomizer";
-import PasswordGenerator from "@/components/password-generator";
-import RandomNews from "@/components/random-news";
-import DiceRoller from "@/components/dice-roller";
-import SequenceRandomizer from "@/components/sequence-randomizer";
-import { Header } from "@/components/header";
-import TeamShuffler from "@/components/team-shuffler";
-import DateRandomizer from "@/components/date-randomizer";
-import CoinFlipper from "@/components/coin-flipper";
-import Spinner from "@/components/spinner";
-import CardDeckRandomizer from "@/components/card-deck-randomizer";
-import LotteryGenerator from "@/components/lottery-generator";
-import EmojiGenerator from "@/components/emoji-generator";
-import CompassRandomizer from "@/components/compass-randomizer";
-import ColorPaletteGenerator from "@/components/color-palette-generator";
-import NumberBaseRandomizer from "@/components/number-base-randomizer";
-import ImageRandomizer from "@/components/image-randomizer";
-import OotdGenerator from "@/components/ootd-generator";
-import TravelRandomizer from "@/components/travel-randomizer";
-import YouTubeRandomizer from "@/components/youtube-randomizer";
-import RockPaperScissors from "@/components/rock-paper-scissors";
-import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
+  ListTodo,
+  Shuffle,
+  Lock,
+  Newspaper,
+  Dices,
+  ListOrdered,
+  Users,
+  CalendarDays,
+  CircleDollarSign,
+  Disc,
+  Spade,
+  Ticket,
+  Smile,
+  Compass,
+  Palette,
+  Binary,
+  Image as ImageIcon,
+  Shirt,
+  Plane,
+  Youtube,
+  Hand,
+} from 'lucide-react';
+import ListRandomizer from '@/components/list-randomizer';
+import NumberRandomizer from '@/components/number-randomizer';
+import PasswordGenerator from '@/components/password-generator';
+import RandomNews from '@/components/random-news';
+import DiceRoller from '@/components/dice-roller';
+import SequenceRandomizer from '@/components/sequence-randomizer';
+import { Header } from '@/components/header';
+import TeamShuffler from '@/components/team-shuffler';
+import DateRandomizer from '@/components/date-randomizer';
+import CoinFlipper from '@/components/coin-flipper';
+import Spinner from '@/components/spinner';
+import CardDeckRandomizer from '@/components/card-deck-randomizer';
+import LotteryGenerator from '@/components/lottery-generator';
+import EmojiGenerator from '@/components/emoji-generator';
+import CompassRandomizer from '@/components/compass-randomizer';
+import ColorPaletteGenerator from '@/components/color-palette-generator';
+import NumberBaseRandomizer from '@/components/number-base-randomizer';
+import ImageRandomizer from '@/components/image-randomizer';
+import OotdGenerator from '@/components/ootd-generator';
+import TravelRandomizer from '@/components/travel-randomizer';
+import YouTubeRandomizer from '@/components/youtube-randomizer';
+import RockPaperScissors from '@/components/rock-paper-scissors';
+import { RockPaperScissorsIcon } from '@/components/icons/rock-paper-scissors-icon';
 import { Skeleton } from '@/components/ui/skeleton';
 import OotdGeneratorRunware from '@/components/ootd-generator-runware';
+import TabContentGuard from '@/components/ui/tab-content-guard';
+import { useAuth } from '@/context/AuthContext';
 
 function HomePageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'list';
+  const { user } = useAuth();
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -47,7 +67,7 @@ function HomePageContent() {
       params.set('tab', value);
       router.push(pathname + '?' + params.toString());
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   return (
@@ -158,7 +178,7 @@ function HomePageContent() {
           <Disc className="h-5 w-5" />
           <span>Spinner</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="compass"
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
@@ -166,7 +186,7 @@ function HomePageContent() {
           <Compass className="h-5 w-5" />
           <span>Compass</span>
         </TabsTrigger>
-        
+
         <TabsTrigger
           value="image"
           className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
@@ -204,7 +224,7 @@ function HomePageContent() {
         </TabsTrigger>
         <TabsTrigger
           value="news"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="[&&&]:hidden flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
         >
           <Newspaper className="h-5 w-5" />
           <span>News</span>
@@ -243,7 +263,7 @@ function HomePageContent() {
       <TabsContent value="card" forceMount>
         <CardDeckRandomizer />
       </TabsContent>
-       <TabsContent value="rps" forceMount>
+      <TabsContent value="rps" forceMount>
         <RockPaperScissors />
       </TabsContent>
       <TabsContent value="lottery" forceMount>
@@ -265,16 +285,24 @@ function HomePageContent() {
         <ImageRandomizer />
       </TabsContent>
       <TabsContent value="youtube" forceMount>
-        <YouTubeRandomizer />
+        <TabContentGuard>
+          <YouTubeRandomizer user={user} />
+        </TabContentGuard>
       </TabsContent>
       <TabsContent value="ootd" forceMount>
-        <OotdGenerator />
+        <TabContentGuard>
+          <OotdGenerator />
+        </TabContentGuard>
       </TabsContent>
       <TabsContent value="ootd-runware" forceMount>
-        <OotdGeneratorRunware />
+        <TabContentGuard>
+          <OotdGeneratorRunware />
+        </TabContentGuard>
       </TabsContent>
       <TabsContent value="travel" forceMount>
-        <TravelRandomizer />
+        <TabContentGuard>
+          <TravelRandomizer />
+        </TabContentGuard>
       </TabsContent>
     </Tabs>
   );
@@ -282,18 +310,18 @@ function HomePageContent() {
 
 function HomePageFallback() {
   return (
-    <div className='w-full space-y-4'>
+    <div className="w-full space-y-4">
       <Skeleton className="h-10 w-full" />
       <Skeleton className="h-64 w-full" />
     </div>
-  )
+  );
 }
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
-      <main className="w-full max-w-6xl mx-auto mt-12">
+      <main className="w-full max-w-6xl mx-auto mt-6">
         <Suspense fallback={<HomePageFallback />}>
           <HomePageContent />
         </Suspense>
