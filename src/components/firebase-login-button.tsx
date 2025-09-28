@@ -1,17 +1,17 @@
 // src/components/LoginButton.tsx
-'use client';
+"use client";
 
-import { useAuth } from '@/context/AuthContext';
-import React from 'react';
-import { Avatar, AvatarImage } from './ui/avatar';
-import { LogIn } from 'lucide-react';
-import { Button } from './ui/button';
+import { useAuth } from "@/context/AuthContext";
+import React from "react";
+import { Avatar, AvatarImage } from "./ui/avatar";
+import { LogIn } from "lucide-react";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from "./ui/dropdown-menu";
 
 export default function FirebaseLoginButton() {
   // Mendapatkan tipe data yang aman dari useAuth()
@@ -22,7 +22,7 @@ export default function FirebaseLoginButton() {
       await signInWithGoogle();
       // alert('Login berhasil!');
     } catch (error) {
-      alert('Login Failed. Please try again.');
+      alert("Login Failed. Please try again.");
       // Penanganan error yang lebih spesifik di sini
     }
   };
@@ -31,7 +31,7 @@ export default function FirebaseLoginButton() {
     try {
       await signOut();
     } catch (error) {
-      console.error('Logout gagal:', error);
+      console.error("Logout gagal:", error);
     }
   };
 
@@ -40,7 +40,14 @@ export default function FirebaseLoginButton() {
   }
 
   if (user) {
-    console.log(user);
+    const avatarLetter = (user.displayName || user.email || "U")
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+    // console.log(user);
     return (
       <div className="flex items-center">
         <p>
@@ -51,25 +58,18 @@ export default function FirebaseLoginButton() {
                   {user.photoURL ? (
                     <AvatarImage
                       src={user.photoURL || undefined}
-                      alt={user.displayName || 'User Avatar'}
+                      alt={avatarLetter}
                       className="rounded-sm object-cover"
                     />
                   ) : (
-                    <span className="font-bold text-lg">
-                      {(user.displayName || user.email || 'U')
-                        .split(' ')
-                        .map((word) => word[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </span>
+                    <span className="font-bold text-lg">{avatarLetter}</span>
                   )}
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem disabled>
-                {user.displayName || user.email || 'User'}
+                {user.displayName || user.email || "User"}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Sign Out
@@ -83,7 +83,7 @@ export default function FirebaseLoginButton() {
 
   return (
     <Button onClick={handleLogin} variant="outline">
-      <LogIn className="h-5 w-5" /> Login{' '}
+      <LogIn className="h-5 w-5" /> Login{" "}
       <span className="hidden lg:block">for More Feature </span>
     </Button>
   );

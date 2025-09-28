@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, Suspense } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, Suspense } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ListTodo,
   Shuffle,
@@ -25,155 +25,156 @@ import {
   Plane,
   Youtube,
   Hand,
-} from 'lucide-react';
-import ListRandomizer from '@/components/list-randomizer';
-import NumberRandomizer from '@/components/number-randomizer';
-import PasswordGenerator from '@/components/password-generator';
-import RandomNews from '@/components/random-news';
-import DiceRoller from '@/components/dice-roller';
-import SequenceRandomizer from '@/components/sequence-randomizer';
-import { Header } from '@/components/header';
-import TeamShuffler from '@/components/team-shuffler';
-import DateRandomizer from '@/components/date-randomizer';
-import CoinFlipper from '@/components/coin-flipper';
-import Spinner from '@/components/spinner';
-import CardDeckRandomizer from '@/components/card-deck-randomizer';
-import LotteryGenerator from '@/components/lottery-generator';
-import EmojiGenerator from '@/components/emoji-generator';
-import CompassRandomizer from '@/components/compass-randomizer';
-import ColorPaletteGenerator from '@/components/color-palette-generator';
-import NumberBaseRandomizer from '@/components/number-base-randomizer';
-import ImageRandomizer from '@/components/image-randomizer';
-import OotdGenerator from '@/components/ootd-generator';
-import TravelRandomizer from '@/components/travel-randomizer';
-import YouTubeRandomizer from '@/components/youtube-randomizer';
-import RockPaperScissors from '@/components/rock-paper-scissors';
-import { RockPaperScissorsIcon } from '@/components/icons/rock-paper-scissors-icon';
-import { Skeleton } from '@/components/ui/skeleton';
-import OotdGeneratorRunware from '@/components/ootd-generator-runware';
-import TabContentGuard from '@/components/ui/tab-content-guard';
-import { useAuth } from '@/context/AuthContext';
+} from "lucide-react";
+import ListRandomizer from "@/components/list-randomizer";
+import NumberRandomizer from "@/components/number-randomizer";
+import PasswordGenerator from "@/components/password-generator";
+import RandomNews from "@/components/random-news";
+import DiceRoller from "@/components/dice-roller";
+import SequenceRandomizer from "@/components/sequence-randomizer";
+import { Header } from "@/components/header";
+import TeamShuffler from "@/components/team-shuffler";
+import DateRandomizer from "@/components/date-randomizer";
+import CoinFlipper from "@/components/coin-flipper";
+import Spinner from "@/components/spinner";
+import CardDeckRandomizer from "@/components/card-deck-randomizer";
+import LotteryGenerator from "@/components/lottery-generator";
+import EmojiGenerator from "@/components/emoji-generator";
+import CompassRandomizer from "@/components/compass-randomizer";
+import ColorPaletteGenerator from "@/components/color-palette-generator";
+import NumberBaseRandomizer from "@/components/number-base-randomizer";
+import ImageRandomizer from "@/components/image-randomizer";
+import OotdGenerator from "@/components/ootd-generator";
+import TravelRandomizer from "@/components/travel-randomizer";
+import YouTubeRandomizer from "@/components/youtube-randomizer";
+import RockPaperScissors from "@/components/rock-paper-scissors";
+import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
+import { Skeleton } from "@/components/ui/skeleton";
+import OotdGeneratorRunware from "@/components/ootd-generator-runware";
+import TabContentGuard from "@/components/ui/tab-content-guard";
+import { useAuth } from "@/context/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 function HomePageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'list';
+  const activeTab = searchParams.get("tab") || "list";
   const { user } = useAuth();
 
   const handleTabChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set('tab', value);
-      router.push(pathname + '?' + params.toString());
+      params.set("tab", value);
+      router.push(pathname + "?" + params.toString());
     },
     [pathname, router, searchParams],
   );
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto">
+      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2">
         <TabsTrigger
           value="list"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <ListTodo className="h-5 w-5" />
           <span>List</span>
         </TabsTrigger>
         <TabsTrigger
           value="number"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Shuffle className="h-5 w-5" />
           <span>Number</span>
         </TabsTrigger>
         <TabsTrigger
           value="sequence"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <ListOrdered className="h-5 w-5" />
           <span>Sequence</span>
         </TabsTrigger>
         <TabsTrigger
           value="password"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Lock className="h-5 w-5" />
           <span>Password</span>
         </TabsTrigger>
         <TabsTrigger
           value="date"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <CalendarDays className="h-5 w-5" />
           <span>Date</span>
         </TabsTrigger>
         <TabsTrigger
           value="team"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Users className="h-5 w-5" />
           <span>Team</span>
         </TabsTrigger>
         <TabsTrigger
           value="coin"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <CircleDollarSign className="h-5 w-5" />
           <span>Coin</span>
         </TabsTrigger>
         <TabsTrigger
           value="dice"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Dices className="h-5 w-5" />
           <span>Dice</span>
         </TabsTrigger>
         <TabsTrigger
           value="rps"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Hand className="h-5 w-5" />
           <span>Rock Paper Scissor</span>
         </TabsTrigger>
         <TabsTrigger
           value="card"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Spade className="h-5 w-5" />
           <span>Card</span>
         </TabsTrigger>
         <TabsTrigger
           value="lottery"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Ticket className="h-5 w-5" />
           <span>Lottery</span>
         </TabsTrigger>
         <TabsTrigger
           value="emoji"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Smile className="h-5 w-5" />
           <span>Emoji</span>
         </TabsTrigger>
         <TabsTrigger
           value="palette"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Palette className="h-5 w-5" />
           <span>Palette</span>
         </TabsTrigger>
         <TabsTrigger
           value="base"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Binary className="h-5 w-5" />
           <span>Base</span>
         </TabsTrigger>
         <TabsTrigger
           value="spinner"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Disc className="h-5 w-5" />
           <span>Spinner</span>
@@ -181,7 +182,7 @@ function HomePageContent() {
 
         <TabsTrigger
           value="compass"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Compass className="h-5 w-5" />
           <span>Compass</span>
@@ -189,14 +190,14 @@ function HomePageContent() {
 
         <TabsTrigger
           value="image"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <ImageIcon className="h-5 w-5" />
           <span>Image</span>
         </TabsTrigger>
         <TabsTrigger
           value="youtube"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Youtube className="h-5 w-5" />
           <span>YouTube</span>
@@ -210,21 +211,21 @@ function HomePageContent() {
         </TabsTrigger>
         <TabsTrigger
           value="ootd-runware"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Shirt className="h-5 w-5" />
           <span>OOTD</span>
         </TabsTrigger>
         <TabsTrigger
           value="travel"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Plane className="h-5 w-5" />
           <span>Travel</span>
         </TabsTrigger>
         <TabsTrigger
           value="news"
-          className="[&&&]:hidden flex flex-col xl:flex-row gap-2 h-14 xl:h-10"
+          className="[&&&]:hidden flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
         >
           <Newspaper className="h-5 w-5" />
           <span>News</span>

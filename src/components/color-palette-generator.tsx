@@ -23,7 +23,14 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
-type ColorScheme = "analogous" | "monochromatic" | "complementary" | "split-complementary" | "triadic" | "tetradic" | "square";
+type ColorScheme =
+  | "analogous"
+  | "monochromatic"
+  | "complementary"
+  | "split-complementary"
+  | "triadic"
+  | "tetradic"
+  | "square";
 
 function hslToHex(h: number, s: number, l: number): string {
   l /= 100;
@@ -59,7 +66,7 @@ export default function ColorPaletteGenerator() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   const generatePalettes = () => {
-    if(isGenerating) return;
+    if (isGenerating) return;
     triggerRateLimit();
     setIsGenerating(true);
     setCopiedColor(null);
@@ -82,7 +89,13 @@ export default function ColorPaletteGenerator() {
           for (let i = 0; i < count; i++) {
             const l = lightness - 15 + (i / (count - 1)) * 30;
             const s = saturation - 10 + (i / (count - 1)) * 20;
-            newPalette.push(hslToHex(baseHue, Math.min(100, Math.max(20, s)), Math.min(95, Math.max(15, l))));
+            newPalette.push(
+              hslToHex(
+                baseHue,
+                Math.min(100, Math.max(20, s)),
+                Math.min(95, Math.max(15, l)),
+              ),
+            );
           }
           break;
         case "complementary":
@@ -114,17 +127,22 @@ export default function ColorPaletteGenerator() {
           break;
       }
 
-      if (scheme !== 'monochromatic') {
+      if (scheme !== "monochromatic") {
         for (let i = 0; i < count; i++) {
           const hue = hues[i % hues.length];
-          const l = lightness - (i * 3) + Math.random() * 6;
-          const s = saturation - (i * 2) + Math.random() * 4;
-          newPalette.push(hslToHex(hue, Math.min(100, Math.max(40, s)), Math.min(95, Math.max(20, l))));
+          const l = lightness - i * 3 + Math.random() * 6;
+          const s = saturation - i * 2 + Math.random() * 4;
+          newPalette.push(
+            hslToHex(
+              hue,
+              Math.min(100, Math.max(40, s)),
+              Math.min(95, Math.max(20, l)),
+            ),
+          );
         }
       }
       allNewPalettes.push(newPalette);
     }
-
 
     setTimeout(() => {
       setPalettes(allNewPalettes);
@@ -143,7 +161,7 @@ export default function ColorPaletteGenerator() {
     toast({
       title: "Copied!",
       description: `${color} copied to clipboard.`,
-      duration: 1600
+      duration: 1600,
     });
     setTimeout(() => setCopiedColor(null), 2000);
   };
@@ -189,7 +207,9 @@ export default function ColorPaletteGenerator() {
               </SelectTrigger>
               <SelectContent>
                 {[...Array(7)].map((_, i) => (
-                  <SelectItem key={i + 1} value={(i + 1).toString()}>{i + 1}</SelectItem>
+                  <SelectItem key={i + 1} value={(i + 1).toString()}>
+                    {i + 1}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -208,7 +228,9 @@ export default function ColorPaletteGenerator() {
                 <SelectItem value="analogous">Analogous</SelectItem>
                 <SelectItem value="monochromatic">Monochromatic</SelectItem>
                 <SelectItem value="complementary">Complementary</SelectItem>
-                <SelectItem value="split-complementary">Split-Complementary</SelectItem>
+                <SelectItem value="split-complementary">
+                  Split-Complementary
+                </SelectItem>
                 <SelectItem value="triadic">Triadic</SelectItem>
                 <SelectItem value="tetradic">Tetradic</SelectItem>
                 <SelectItem value="square">Square</SelectItem>
@@ -219,15 +241,21 @@ export default function ColorPaletteGenerator() {
 
         <div className="space-y-4">
           {palettes.map((palette, pIndex) => (
-            <div key={pIndex} className="flex flex-col md:flex-row rounded-lg overflow-hidden min-h-[100px] shadow-inner">
+            <div
+              key={pIndex}
+              className="flex flex-col md:flex-row rounded-lg overflow-hidden min-h-[100px] shadow-inner"
+            >
               {palette.map((color, cIndex) => (
                 <div
                   key={cIndex}
                   className={cn(
                     "flex-1 flex flex-col justify-end items-strech text-center transition-all duration-500 w-full min-h-32",
-                    isGenerating && "opacity-50"
+                    isGenerating && "opacity-50",
                   )}
-                  style={{ backgroundColor: color, color: getBestTextColor(color) }}
+                  style={{
+                    backgroundColor: color,
+                    color: getBestTextColor(color),
+                  }}
                 >
                   {/* <div className=""> */}
 
@@ -237,7 +265,9 @@ export default function ColorPaletteGenerator() {
                     className="rounded-none hover:bg-white/30 p-2 flex flex-row items-center justify-center w-full h-1/3"
                     onClick={() => handleCopy(color)}
                   >
-                    <span className="font-mono text-sm md:text-base">{color}</span>
+                    <span className="font-mono text-sm md:text-base">
+                      {color}
+                    </span>
                     {copiedColor === color ? (
                       <Check className="h-5 w-5" />
                     ) : (
@@ -250,7 +280,6 @@ export default function ColorPaletteGenerator() {
             </div>
           ))}
         </div>
-
       </CardContent>
       <CardFooter>
         <Button
@@ -259,7 +288,11 @@ export default function ColorPaletteGenerator() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate New Palette(s)"}
+          {isGenerating
+            ? "Generating..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Generate New Palette(s)"}
         </Button>
       </CardFooter>
     </Card>
