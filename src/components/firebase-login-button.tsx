@@ -53,7 +53,11 @@ export default function FirebaseLoginButton() {
         <p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                className="ring-1 ring-accent dark:ring-0"
+              >
                 <Avatar className="h-[2rem] w-[2rem] [&&&]:rounded-sm p-0.5">
                   {user.photoURL ? (
                     <AvatarImage
@@ -82,7 +86,11 @@ export default function FirebaseLoginButton() {
   }
 
   return (
-    <Button onClick={handleLogin} variant="outline">
+    <Button
+      onClick={handleLogin}
+      variant="outline"
+      className="ring-1 ring-accent dark:ring-0"
+    >
       <LogIn className="h-5 w-5" /> Login{" "}
       <span className="hidden lg:block">for More Feature </span>
     </Button>

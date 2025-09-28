@@ -54,6 +54,7 @@ import OotdGeneratorRunware from "@/components/ootd-generator-runware";
 import TabContentGuard from "@/components/ui/tab-content-guard";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 function HomePageContent() {
   const router = useRouter();
@@ -71,240 +72,235 @@ function HomePageContent() {
     [pathname, router, searchParams],
   );
 
+  const triggerList = [
+    {
+      value: "list",
+      text: "List",
+      hidden: false,
+      badge: "",
+      icon: <ListTodo className="h-5 w-5" />,
+      content: <ListRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "number",
+      text: "Number",
+      hidden: false,
+      badge: "",
+      icon: <Shuffle className="h-5 w-5" />,
+      content: <NumberRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "sequence",
+      text: "Sequence",
+      hidden: false,
+      badge: "",
+      icon: <ListOrdered className="h-5 w-5" />,
+      content: <SequenceRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "password",
+      text: "Password",
+      hidden: false,
+      badge: "",
+      icon: <Lock className="h-5 w-5" />,
+      content: <PasswordGenerator />,
+      contentGuard: false,
+    },
+    {
+      value: "date",
+      text: "Date",
+      hidden: false,
+      badge: "",
+      icon: <CalendarDays className="h-5 w-5" />,
+      content: <DateRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "team",
+      text: "Team",
+      hidden: false,
+      badge: "",
+      icon: <Users className="h-5 w-5" />,
+      content: <TeamShuffler />,
+      contentGuard: false,
+    },
+    {
+      value: "coin",
+      text: "Coin",
+      hidden: false,
+      badge: "",
+      icon: <CircleDollarSign className="h-5 w-5" />,
+      content: <CoinFlipper />,
+      contentGuard: false,
+    },
+    {
+      value: "dice",
+      text: "Dice",
+      hidden: false,
+      badge: "",
+      icon: <Dices className="h-5 w-5" />,
+      content: <DiceRoller />,
+      contentGuard: false,
+    },
+    {
+      value: "rps",
+      text: "Rock Paper Scissor",
+      hidden: false,
+      badge: "",
+      icon: <Hand className="h-5 w-5" />,
+      content: <RockPaperScissors />,
+      contentGuard: false,
+    },
+    {
+      value: "card",
+      text: "Card",
+      hidden: false,
+      badge: "",
+      icon: <Spade className="h-5 w-5" />,
+      content: <CardDeckRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "lottery",
+      text: "Lottery",
+      hidden: false,
+      badge: "",
+      icon: <Ticket className="h-5 w-5" />,
+      content: <LotteryGenerator />,
+      contentGuard: false,
+    },
+    {
+      value: "emoji",
+      text: "Emoji",
+      hidden: false,
+      badge: "",
+      icon: <Smile className="h-5 w-5" />,
+      content: <EmojiGenerator />,
+      contentGuard: false,
+    },
+    {
+      value: "palette",
+      text: "Palette",
+      hidden: false,
+      badge: "",
+      icon: <Palette className="h-5 w-5" />,
+      content: <ColorPaletteGenerator />,
+      contentGuard: false,
+    },
+    {
+      value: "base",
+      text: "Base",
+      hidden: false,
+      badge: "",
+      icon: <Binary className="h-5 w-5" />,
+      content: <NumberBaseRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "spinner",
+      text: "Spinner",
+      hidden: false,
+      badge: "",
+      icon: <Disc className="h-5 w-5" />,
+      content: <Spinner />,
+      contentGuard: false,
+    },
+    {
+      value: "compass",
+      text: "Compass",
+      hidden: false,
+      badge: "",
+      icon: <Compass className="h-5 w-5" />,
+      content: <CompassRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "image",
+      text: "Image",
+      hidden: false,
+      badge: "",
+      icon: <ImageIcon className="h-5 w-5" />,
+      content: <ImageRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "youtube",
+      text: "YouTube",
+      hidden: false,
+      badge: "",
+      icon: <Youtube className="h-5 w-5" />,
+      content: <YouTubeRandomizer user={user} />,
+      contentGuard: true,
+    },
+    {
+      value: "ootd",
+      text: "OOTD",
+      hidden: true,
+      badge: "",
+      icon: <Shirt className="h-5 w-5" />,
+      content: <OotdGenerator />,
+      contentGuard: true,
+    },
+    {
+      value: "ootd-runware",
+      text: "OOTD",
+      hidden: false,
+      badge: "",
+      icon: <Shirt className="h-5 w-5" />,
+      content: <OotdGeneratorRunware />,
+      contentGuard: true,
+    },
+    {
+      value: "travel",
+      text: "Travel",
+      hidden: false,
+      badge: "",
+      icon: <Plane className="h-5 w-5" />,
+      content: <TravelRandomizer />,
+      contentGuard: true,
+    },
+    {
+      value: "news",
+      text: "News",
+      hidden: true,
+      badge: "",
+      icon: <Newspaper className="h-5 w-5" />,
+      content: <RandomNews />,
+      contentGuard: true,
+    },
+  ];
+
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2">
-        <TabsTrigger
-          value="list"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <ListTodo className="h-5 w-5" />
-          <span>List</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="number"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Shuffle className="h-5 w-5" />
-          <span>Number</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="sequence"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <ListOrdered className="h-5 w-5" />
-          <span>Sequence</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="password"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Lock className="h-5 w-5" />
-          <span>Password</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="date"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <CalendarDays className="h-5 w-5" />
-          <span>Date</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="team"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Users className="h-5 w-5" />
-          <span>Team</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="coin"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <CircleDollarSign className="h-5 w-5" />
-          <span>Coin</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="dice"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Dices className="h-5 w-5" />
-          <span>Dice</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="rps"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Hand className="h-5 w-5" />
-          <span>Rock Paper Scissor</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="card"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Spade className="h-5 w-5" />
-          <span>Card</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="lottery"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Ticket className="h-5 w-5" />
-          <span>Lottery</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="emoji"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Smile className="h-5 w-5" />
-          <span>Emoji</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="palette"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Palette className="h-5 w-5" />
-          <span>Palette</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="base"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Binary className="h-5 w-5" />
-          <span>Base</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="spinner"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Disc className="h-5 w-5" />
-          <span>Spinner</span>
-        </TabsTrigger>
-
-        <TabsTrigger
-          value="compass"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Compass className="h-5 w-5" />
-          <span>Compass</span>
-        </TabsTrigger>
-
-        <TabsTrigger
-          value="image"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <ImageIcon className="h-5 w-5" />
-          <span>Image</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="youtube"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Youtube className="h-5 w-5" />
-          <span>YouTube</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="ootd"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hidden"
-        >
-          <Shirt className="h-5 w-5" />
-          <span>OOTD</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="ootd-runware"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Shirt className="h-5 w-5" />
-          <span>OOTD</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="travel"
-          className="flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Plane className="h-5 w-5" />
-          <span>Travel</span>
-        </TabsTrigger>
-        <TabsTrigger
-          value="news"
-          className="[&&&]:hidden flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary"
-        >
-          <Newspaper className="h-5 w-5" />
-          <span>News</span>
-        </TabsTrigger>
+      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
+        {/* Tabs Trigger */}
+        {triggerList.map((item) => (
+          <TabsTrigger
+            key={item.value}
+            value={item.value}
+            className={cn(
+              `flex flex-col xl:flex-row gap-2 h-14 xl:h-10 hover:ring-2 hover:ring-primary-foreground hover:dark:ring-primary`,
+              item.hidden ? "[&&&]:hidden" : "",
+            )}
+          >
+            {item.icon}
+            <span>{item.text}</span>
+          </TabsTrigger>
+        ))}
       </TabsList>
-      <TabsContent value="list" forceMount>
-        <ListRandomizer />
-      </TabsContent>
-      <TabsContent value="number" forceMount>
-        <NumberRandomizer />
-      </TabsContent>
-      <TabsContent value="password" forceMount>
-        <PasswordGenerator />
-      </TabsContent>
-      <TabsContent value="news" forceMount>
-        <RandomNews />
-      </TabsContent>
-      <TabsContent value="dice" forceMount>
-        <DiceRoller />
-      </TabsContent>
-      <TabsContent value="sequence" forceMount>
-        <SequenceRandomizer />
-      </TabsContent>
-      <TabsContent value="team" forceMount>
-        <TeamShuffler />
-      </TabsContent>
-      <TabsContent value="date" forceMount>
-        <DateRandomizer />
-      </TabsContent>
-      <TabsContent value="coin" forceMount>
-        <CoinFlipper />
-      </TabsContent>
-      <TabsContent value="spinner" forceMount>
-        <Spinner />
-      </TabsContent>
-      <TabsContent value="card" forceMount>
-        <CardDeckRandomizer />
-      </TabsContent>
-      <TabsContent value="rps" forceMount>
-        <RockPaperScissors />
-      </TabsContent>
-      <TabsContent value="lottery" forceMount>
-        <LotteryGenerator />
-      </TabsContent>
-      <TabsContent value="emoji" forceMount>
-        <EmojiGenerator />
-      </TabsContent>
-      <TabsContent value="compass" forceMount>
-        <CompassRandomizer />
-      </TabsContent>
-      <TabsContent value="palette" forceMount>
-        <ColorPaletteGenerator />
-      </TabsContent>
-      <TabsContent value="base" forceMount>
-        <NumberBaseRandomizer />
-      </TabsContent>
-      <TabsContent value="image" forceMount>
-        <ImageRandomizer />
-      </TabsContent>
-      <TabsContent value="youtube" forceMount>
-        <TabContentGuard>
-          <YouTubeRandomizer user={user} />
-        </TabContentGuard>
-      </TabsContent>
-      <TabsContent value="ootd" forceMount>
-        <TabContentGuard>
-          <OotdGenerator />
-        </TabContentGuard>
-      </TabsContent>
-      <TabsContent value="ootd-runware" forceMount>
-        <TabContentGuard>
-          <OotdGeneratorRunware />
-        </TabContentGuard>
-      </TabsContent>
-      <TabsContent value="travel" forceMount>
-        <TabContentGuard>
-          <TravelRandomizer />
-        </TabContentGuard>
-      </TabsContent>
+      {/* Tabs Content */}
+      {triggerList.map((item) => (
+        <TabsContent key={item.value} value={item.value} forceMount>
+          {item.contentGuard ? (
+            <TabContentGuard>{item.content}</TabContentGuard>
+          ) : (
+            item.content
+          )}
+        </TabsContent>
+      ))}
     </Tabs>
   );
 }
