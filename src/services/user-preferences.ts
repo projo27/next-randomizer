@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { db } from '@/lib/firebase-config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from "@/lib/firebase-config";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
-const USER_PREFERENCE_COLLECTION = "preferences";
+const USER_PREFERENCE_COLLECTION = "userPreferences";
 
 /**
  * Saves the user's theme preference to Firestore.
@@ -19,7 +19,7 @@ export async function saveThemePreference(
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     await setDoc(userPrefRef, { theme }, { merge: true });
   } catch (error) {
-    console.error('Error saving theme preference:', error);
+    console.error("Error saving theme preference:", error);
     // Optionally re-throw or handle the error as needed
   }
 }
@@ -42,7 +42,7 @@ export async function getThemePreference(
     }
     return null;
   } catch (error) {
-    console.error('Error getting theme preference:', error);
+    console.error("Error getting theme preference:", error);
     return null;
   }
 }
