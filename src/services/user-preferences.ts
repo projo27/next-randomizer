@@ -3,6 +3,8 @@
 import { db } from '@/lib/firebase-config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
+const USER_PREFERENCE_COLLECTION = "preferences";
+
 /**
  * Saves the user's theme preference to Firestore.
  * @param userId The ID of the user.
@@ -14,7 +16,7 @@ export async function saveThemePreference(
 ): Promise<void> {
   if (!userId || !theme) return;
   try {
-    const userPrefRef = doc(db, 'preferences', userId);
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     await setDoc(userPrefRef, { theme }, { merge: true });
   } catch (error) {
     console.error('Error saving theme preference:', error);
@@ -32,7 +34,7 @@ export async function getThemePreference(
 ): Promise<string | null> {
   if (!userId) return null;
   try {
-    const userPrefRef = doc(db, 'preferences', userId);
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     const docSnap = await getDoc(userPrefRef);
 
     if (docSnap.exists() && docSnap.data().theme) {
