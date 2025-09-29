@@ -3,6 +3,8 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useAuth } from "@/context/AuthContext";
+import { saveThemePreference } from "@/services/user-preferences";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +16,14 @@ import {
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
+  const { user } = useAuth();
+
+  const handleThemeChange = (theme: string) => {
+    setTheme(theme);
+    if (user) {
+      saveThemePreference(user.uid, theme);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -29,13 +39,13 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
