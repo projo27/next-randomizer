@@ -47,6 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const handleUserAuth = useCallback(
     async (authUser: AuthUser) => {
       if (authUser) {
+        console.log(authUser)
         // User logged in, try to fetch their theme
         const savedTheme = await getThemePreference(authUser.uid);
         if (savedTheme) {
