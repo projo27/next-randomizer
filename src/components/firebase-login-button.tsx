@@ -49,39 +49,33 @@ export default function FirebaseLoginButton() {
 
     // console.log(user);
     return (
-      <div className="flex items-center">
-        <p>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="ring-1 ring-accent dark:ring-0"
-              >
-                <Avatar className="h-[2rem] w-[2rem] [&&&]:rounded-sm p-0.5">
-                  {user.photoURL ? (
-                    <AvatarImage
-                      src={user.photoURL || undefined}
-                      alt={avatarLetter}
-                      className="rounded-sm object-cover"
-                    />
-                  ) : (
-                    <span className="font-bold text-lg">{avatarLetter}</span>
-                  )}
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem disabled>
-                {user.displayName || user.email || "User"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </p>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="ring-1 ring-accent dark:ring-0"
+          >
+            <Avatar className="h-[2rem] w-[2rem] [&&&]:rounded-sm p-0.5">
+              {user.photoURL ? (
+                <AvatarImage
+                  src={user.photoURL || undefined}
+                  alt={avatarLetter}
+                  className="rounded-sm object-cover"
+                />
+              ) : (
+                <span className="font-bold text-lg">{avatarLetter}</span>
+              )}
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem disabled>
+            {user.displayName || user.email || "User"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Sign Out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 

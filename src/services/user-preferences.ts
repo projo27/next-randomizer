@@ -35,6 +35,8 @@ export async function getThemePreference(
   if (!userId) return null;
   try {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    userPrefRef.path;
+    console.log(userPrefRef.path, userId, USER_PREFERENCE_COLLECTION);
     const docSnap = await getDoc(userPrefRef);
 
     if (docSnap.exists() && docSnap.data().theme) {
