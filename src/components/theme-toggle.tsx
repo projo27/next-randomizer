@@ -11,19 +11,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
 
-  const handleThemeChange = (theme: string) => {
-    setTheme(theme);
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
     if (user) {
-      saveThemePreference(user.uid, theme);
+      saveThemePreference(user.uid, newTheme);
     }
   };
 
@@ -41,14 +40,24 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup
-          value={theme}
-          onValueChange={handleThemeChange}
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("light")}
+          className={cn({ "bg-accent": theme === "light" })}
         >
-          <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("dark")}
+          className={cn({ "bg-accent": theme === "dark" })}
+        >
+          Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("system")}
+          className={cn({ "bg-accent": theme === "system" })}
+        >
+          System
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
