@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -22,6 +23,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { cn } from "@/lib/utils";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -68,9 +70,9 @@ export default function DiceRoller() {
 
   const total = results.reduce((sum, val) => sum + val, 0);
   const numDice = parseInt(numberOfDice, 10);
-  // displayArray: when rolling -> placeholders (null), when results present -> results, otherwise default single 6
-  const displayArray: (number | null)[] = isRolling
-    ? Array.from({ length: numDice }).map(() => null)
+  // displayArray: when rolling -> placeholders (e.g., 1), when results present -> results, otherwise default single 6
+  const displayArray: number[] = isRolling
+    ? Array.from({ length: numDice }).map(() => 1) // Use 1 as placeholder for animation
     : results.length > 0
       ? results
       : [6];
@@ -128,12 +130,14 @@ export default function DiceRoller() {
           </div>
           <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
             {displayArray.map((result, i) => (
-              <div key={i} className="dark:text-primary light:text-accent">
-                {result !== null ? (
-                  diceIcons[result - 1]
-                ) : (
-                  <div className={`h-32 w-32 ${animationClass}`} />
+              <div
+                key={i}
+                className={cn(
+                  "dark:text-primary light:text-accent",
+                  isRolling && animationClass
                 )}
+              >
+                {diceIcons[result - 1]}
               </div>
             ))}
           </div>
