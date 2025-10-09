@@ -34,11 +34,53 @@ const diceIcons = [
   <Dice6 key={6} className="h-32 w-32" />,
 ];
 
-// const animations = ["animate-spin-dice", "animate-flip-dice", "animate-bounce-dice"];
 const animations = ["animate-spin-dice"];
+
+const Polyhedron = ({ sides, result, isRolling }: { sides: number, result: number, isRolling: boolean }) => {
+    let shapeClass, textClass;
+
+    switch (sides) {
+        case 4: shapeClass = "w-28 h-28 clip-triangle"; break;
+        case 8: shapeClass = "w-28 h-28 clip-diamond"; break;
+        case 10: shapeClass = "w-28 h-28 clip-pentagon"; break;
+        case 12: shapeClass = "w-28 h-28 clip-dodecagon"; break;
+        case 20: shapeClass = "w-28 h-28 clip-icosagon"; break;
+        default: shapeClass = "w-28 h-28 rounded-lg"; break;
+    }
+    
+    return (
+        <div className={cn("relative flex items-center justify-center bg-muted dark:bg-muted/50 border-2 border-accent text-accent", shapeClass, isRolling && "animate-spin-dice")}>
+             <span className="text-4xl font-bold">{result}</span>
+        </div>
+    )
+}
+
+// Add CSS for custom shapes in globals.css if needed, or use inline styles/tailwind plugins
+// For simplicity, we'll approximate with basic shapes and text.
+const DiceDisplay = ({ type, result, isRolling, animationClass }: { type: number, result: number, isRolling: boolean, animationClass: string }) => {
+    if (type === 6) {
+        return (
+            <div className={cn("dark:text-primary light:text-accent", isRolling && animationClass)}>
+                {diceIcons[result - 1] || diceIcons[0]}
+            </div>
+        );
+    }
+    
+    // Fallback for other dice types
+    return (
+      <div className={cn(
+        "flex items-center justify-center w-32 h-32 bg-muted/80 border-2 border-accent rounded-lg text-accent",
+        isRolling && animationClass
+      )}>
+        <span className="text-5xl font-bold">{result}</span>
+      </div>
+    );
+};
+
 
 export default function DiceRoller() {
   const [numberOfDice, setNumberOfDice] = useState("1");
+  const [diceType, setDiceType] = useState("6");
   const [results, setResults] = useState<number[]>([]);
   const [isRolling, setIsRolling] = useState(false);
   const [animationClass, setAnimationClass] = useState("animate-spin-dice");
@@ -51,15 +93,15 @@ export default function DiceRoller() {
     triggerRateLimit();
     setIsRolling(true);
     setIsCopied(false);
-    // Select a random animation
-    const randomAnimation =
-      animations[Math.floor(Math.random() * animations.length)];
+    
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
     setAnimationClass(randomAnimation);
 
     const numDice = parseInt(numberOfDice, 10);
+    const numSides = parseInt(diceType, 10);
     const newResults: number[] = [];
     for (let i = 0; i < numDice; i++) {
-      newResults.push(Math.floor(Math.random() * 6) + 1);
+      newResults.push(Math.floor(Math.random() * numSides) + 1);
     }
 
     setTimeout(() => {
@@ -70,12 +112,13 @@ export default function DiceRoller() {
 
   const total = results.reduce((sum, val) => sum + val, 0);
   const numDice = parseInt(numberOfDice, 10);
-  // displayArray: when rolling -> placeholders (e.g., 1), when results present -> results, otherwise default single 6
+  const numSides = parseInt(diceType, 10);
+
   const displayArray: number[] = isRolling
-    ? Array.from({ length: numDice }).map(() => 1) // Use 1 as placeholder for animation
+    ? Array.from({ length: numDice }).map(() => Math.floor(Math.random() * numSides) + 1)
     : results.length > 0
       ? results
-      : [6];
+      : [numSides];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -98,29 +141,51 @@ export default function DiceRoller() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Label htmlFor="num-dice">Number of Dice</Label>
-          <Select
-            value={numberOfDice}
-            onValueChange={setNumberOfDice}
-            disabled={isRolling || isRateLimited}
-          >
-            <SelectTrigger id="num-dice" className="w-24">
-              <SelectValue placeholder="1" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-              <SelectItem value="3">3</SelectItem>
-              <SelectItem value="4">4</SelectItem>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="6">6</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="dice-type">Dice Type</Label>
+            <Select
+              value={diceType}
+              onValueChange={setDiceType}
+              disabled={isRolling || isRateLimited}
+            >
+              <SelectTrigger id="dice-type" className="w-28">
+                <SelectValue placeholder="D6" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="4">D4</SelectItem>
+                <SelectItem value="6">D6</SelectItem>
+                <SelectItem value="8">D8</SelectItem>
+                <SelectItem value="10">D10</SelectItem>
+                <SelectItem value="12">D12</SelectItem>
+                <SelectItem value="20">D20</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="num-dice">Number of Dice</Label>
+            <Select
+              value={numberOfDice}
+              onValueChange={setNumberOfDice}
+              disabled={isRolling || isRateLimited}
+            >
+              <SelectTrigger id="num-dice" className="w-24">
+                <SelectValue placeholder="1" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="6">6</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex flex-col p-8 bg-muted/50 rounded-lg relative">
           <div className="absolute top-2 right-2">
-            <Button variant="ghost" size="icon" onClick={handleCopy}>
+            <Button variant="ghost" size="icon" onClick={handleCopy} disabled={isRolling || results.length === 0}>
               {isCopied ? (
                 <Check className="h-5 w-5 text-green-500" />
               ) : (
@@ -130,15 +195,7 @@ export default function DiceRoller() {
           </div>
           <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
             {displayArray.map((result, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "dark:text-primary light:text-accent",
-                  isRolling && animationClass
-                )}
-              >
-                {diceIcons[result - 1]}
-              </div>
+               <DiceDisplay key={i} type={numSides} result={result} isRolling={isRolling} animationClass={animationClass}/>
             ))}
           </div>
           {!isRolling && results.length > 0 && (
