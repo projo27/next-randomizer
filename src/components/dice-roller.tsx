@@ -19,14 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Wand2, Copy, Check } from "lucide-react";
-import {
-  Dice1,
-  Dice2,
-  Dice3,
-  Dice4,
-  Dice5,
-  Dice6,
-} from "lucide-react";
+import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 
@@ -57,7 +50,8 @@ export default function DiceRoller() {
     setIsRolling(true);
     setIsCopied(false);
     // Select a random animation
-    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    const randomAnimation =
+      animations[Math.floor(Math.random() * animations.length)];
     setAnimationClass(randomAnimation);
 
     const numDice = parseInt(numberOfDice, 10);
@@ -73,6 +67,13 @@ export default function DiceRoller() {
   };
 
   const total = results.reduce((sum, val) => sum + val, 0);
+  const numDice = parseInt(numberOfDice, 10);
+  // displayArray: when rolling -> placeholders (null), when results present -> results, otherwise default single 6
+  const displayArray: (number | null)[] = isRolling
+    ? Array.from({ length: numDice }).map(() => null)
+    : results.length > 0
+      ? results
+      : [6];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -126,24 +127,19 @@ export default function DiceRoller() {
             </Button>
           </div>
           <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
-            {isRolling &&
-              Array.from({ length: parseInt(numberOfDice, 10) }).map((_, i) => (
-                <div key={i} className={`dark:text-primary light:text-accent ${animationClass}`}>
-                  {diceIcons[Math.floor(Math.random() * 6)]}
-                </div>
-              ))}
-            {!isRolling &&
-              results.length > 0 &&
-              results.map((result, i) => (
-                <div key={i} className="dark:text-primary light:text-accent">
-                  {diceIcons[result - 1]}
-                </div>
-              ))}
+            {displayArray.map((result, i) => (
+              <div key={i} className="dark:text-primary light:text-accent">
+                {result !== null ? (
+                  diceIcons[result - 1]
+                ) : (
+                  <div className={`h-32 w-32 ${animationClass}`} />
+                )}
+              </div>
+            ))}
           </div>
           {!isRolling && results.length > 0 && (
             <div className="text-center relative mt-6">
               <p className="text-lg font-bold">Total: {total}</p>
-
             </div>
           )}
         </div>
@@ -155,7 +151,11 @@ export default function DiceRoller() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRolling ? "Rolling..." : isRateLimited ? "Please wait..." : "Roll Dice!"}
+          {isRolling
+            ? "Rolling..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Roll Dice!"}
         </Button>
       </CardFooter>
     </Card>

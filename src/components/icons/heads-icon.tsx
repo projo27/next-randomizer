@@ -1,13 +1,19 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-export function HeadsIcon() {
-    return (
-        <Image 
-            src="/coin_head.png" 
-            alt="Heads" 
-            width={100} 
-            height={100} 
-            className="rounded-full"
-        />
-    );
+export function HeadsIcon({
+  width = 100,
+  height = 100,
+}: {
+  width?: number;
+  height?: number;
+}) {
+  return (
+    <Image
+      src="/coin_head.png"
+      alt="Heads"
+      width={width}
+      height={height}
+      className="rounded-full"
+    />
+  );
 }

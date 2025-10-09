@@ -138,8 +138,8 @@
 
   .coin {
     perspective: 1000px;
-    width: 100px;
-    height: 100px;
+    width: 132px;
+    height: 132px;
   }
 
   .coin-inner {

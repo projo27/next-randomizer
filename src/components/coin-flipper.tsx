@@ -52,8 +52,14 @@ export default function CoinFlipper() {
     }, 1000); // Animation duration
   };
 
-  const headsCount = results.filter(r => r === "Heads").length;
-  const tailsCount = results.filter(r => r === "Tails").length;
+  const headsCount = results.filter((r) => r === "Heads").length;
+  const tailsCount = results.filter((r) => r === "Tails").length;
+  const numCoins = parseInt(numberOfCoins, 10);
+  const displayArray: (CoinResult | null)[] = isFlipping
+    ? Array(numCoins).fill(null)
+    : results.length
+      ? results
+      : ["Heads"];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -105,16 +111,24 @@ export default function CoinFlipper() {
               )}
             </Button>
           </div>
-          <div className="flex justify-center items-center min-h-[120px] gap-8 flex-wrap">
-            {(isFlipping ? Array(parseInt(numberOfCoins, 10)).fill(null) : results).map((result, i) => (
-              <div key={i} className={`coin ${isFlipping ? 'flipping' : ''}`}>
+          <div className="flex justify-center items-center min-h-[240px] gap-8 flex-wrap">
+            {displayArray.map((result, i) => (
+              <div key={i} className={`coin ${isFlipping ? "flipping" : ""}`}>
                 <div className="coin-inner">
                   <div className="coin-front">
-                    {result === "Heads" ? <HeadsIcon /> : <TailsIcon />}
+                    {result === "Heads" ? (
+                      <HeadsIcon width={200} height={200} />
+                    ) : (
+                      <TailsIcon width={200} height={200} />
+                    )}
                   </div>
                   <div className="coin-back">
                     {/* Show the opposite for the back during flip */}
-                    {result === "Heads" ? <TailsIcon /> : <HeadsIcon />}
+                    {result === "Heads" ? (
+                      <TailsIcon width={200} height={200} />
+                    ) : (
+                      <HeadsIcon width={200} height={200} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -136,7 +150,11 @@ export default function CoinFlipper() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isFlipping ? "Flipping..." : isRateLimited ? "Please wait..." : "Flip Coins!"}
+          {isFlipping
+            ? "Flipping..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Flip Coins!"}
         </Button>
       </CardFooter>
     </Card>

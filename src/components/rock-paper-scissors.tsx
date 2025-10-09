@@ -57,7 +57,7 @@ export default function RockPaperScissors() {
       setIsPlaying(false);
     }, 1000); // Animation duration
   };
-  
+
   const handleCopy = () => {
     if (results.length === 0) return;
     const resultString = results.join(", ");
@@ -70,7 +70,9 @@ export default function RockPaperScissors() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const displayedResults = isPlaying ? Array(parseInt(numberOfPlays, 10)).fill(null) : results;
+  const displayedResults = isPlaying
+    ? Array(parseInt(numberOfPlays, 10)).fill(null)
+    : results;
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -104,39 +106,46 @@ export default function RockPaperScissors() {
             </SelectContent>
           </Select>
         </div>
-        <div className="relative flex justify-center items-center min-h-[160px] gap-8 flex-wrap p-4 bg-muted/50 rounded-lg">
+        <div className="relative flex justify-center items-center min-h-[200px] gap-8 flex-wrap p-4 bg-muted/50 rounded-lg">
           {displayedResults.length > 0 ? (
             <>
               {displayedResults.map((result, i) => {
-                const prevResult = previousResults[i] || MOVES[Math.floor(Math.random() * 3)];
-                const finalResult = result || MOVES[Math.floor(Math.random() * 3)];
+                const prevResult =
+                  previousResults[i] || MOVES[Math.floor(Math.random() * 3)];
+                const finalResult =
+                  result || MOVES[Math.floor(Math.random() * 3)];
                 return (
-                  <div key={i} className={`coin ${isPlaying ? 'flipping' : ''}`}>
+                  <div
+                    key={i}
+                    className={`coin ${isPlaying ? "flipping" : ""}`}
+                  >
                     <div className="coin-inner text-7xl">
                       <div className="coin-front">
-                        {EMOJIS[finalResult]}
+                        {EMOJIS[finalResult as RpsResult]}
                       </div>
                       <div className="coin-back">
-                        {EMOJIS[prevResult]}
+                        {EMOJIS[prevResult as RpsResult]}
                       </div>
                     </div>
                   </div>
                 );
               })}
               {!isPlaying && results.length > 0 && (
-                <div className="absolute -top-4 -right-2">
-                    <Button variant="ghost" size="icon" onClick={handleCopy}>
-                      {isCopied ? (
-                        <Check className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <Copy className="h-5 w-5" />
-                      )}
-                    </Button>
+                <div className="absolute top-2 right-2">
+                  <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    {isCopied ? (
+                      <Check className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Copy className="h-5 w-5" />
+                    )}
+                  </Button>
                 </div>
               )}
             </>
           ) : (
-            <p className="text-muted-foreground">Your game results will appear here.</p>
+            <p className="text-muted-foreground">
+              Your game results will appear here.
+            </p>
           )}
         </div>
       </CardContent>
@@ -147,7 +156,11 @@ export default function RockPaperScissors() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isPlaying ? "Playing..." : isRateLimited ? "Please wait..." : "Play!"}
+          {isPlaying
+            ? "Playing..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Play!"}
         </Button>
       </CardFooter>
     </Card>
