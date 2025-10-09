@@ -40,33 +40,15 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="flex flex-col gap-1">
-        <DropdownMenuItem
-          onClick={() => theme != "light" && handleThemeChange("light")}
-          className={cn(
-            { "bg-accent": theme === "light" },
-            { "hover:cursor-pointer": theme !== "light" },
-          )}
-        >
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => theme != "dark" && handleThemeChange("dark")}
-          className={cn(
-            { "bg-accent": theme === "dark" },
-            { "hover:cursor-pointer": theme !== "dark" },
-          )}
-        >
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => theme != "system" && handleThemeChange("system")}
-          className={cn(
-            { "bg-accent": theme === "system" },
-            { "hover:cursor-pointer": theme !== "system" },
-          )}
-        >
-          System
-        </DropdownMenuItem>
+        {
+          ["light", "dark", "system"].map((val) =>
+            <DropdownMenuItem key={val} onClick={() => theme != val && handleThemeChange(val)}
+              className={cn(
+                { "bg-accent": theme === val },
+                { "hover:cursor-pointer": theme !== val },
+              )}>{val}</DropdownMenuItem>
+          )
+        }
       </DropdownMenuContent>
     </DropdownMenu>
   );
