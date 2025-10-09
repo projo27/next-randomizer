@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -14,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { generateRandomNumberInBases } from "@/app/actions/number-base-action";
 
 interface Result {
   decimal: number;
@@ -34,7 +36,7 @@ export default function NumberBaseRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -48,29 +50,18 @@ export default function NumberBaseRandomizer() {
       return;
     }
 
-    if (minNum >= maxNum) {
-      setError("Minimum number must be less than the maximum number.");
-      return;
-    }
-
-    if (maxNum > 1000000) {
-      setError("Maximum number cannot be greater than 1,000,000 to ensure performance.");
-      return;
-    }
-
     setIsGenerating(true);
 
-    const randomNumber = Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum;
-
-    setTimeout(() => {
-      setResult({
-        decimal: randomNumber,
-        binary: randomNumber.toString(2),
-        octal: randomNumber.toString(8),
-        hex: randomNumber.toString(16).toUpperCase(),
-      });
-      setIsGenerating(false);
-    }, 500);
+    try {
+        const newResult = await generateRandomNumberInBases(minNum, maxNum);
+        setTimeout(() => {
+          setResult(newResult);
+          setIsGenerating(false);
+        }, 500);
+    } catch(e: any) {
+        setError(e.message);
+        setIsGenerating(false);
+    }
   };
 
   const handleCopy = (key: keyof Result, value: string | number) => {

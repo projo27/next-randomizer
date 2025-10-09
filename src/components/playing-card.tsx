@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Heart, Diamond, Club, Spade } from 'lucide-react';
 import { JokerIcon } from './icons/joker-icon';
+import type { CardType } from '@/app/actions/card-deck-action';
 
 const suitIcons = {
   H: <Heart className="h-4 w-4 fill-current" />,
@@ -11,15 +13,7 @@ const suitIcons = {
   Joker: <JokerIcon className="h-6 w-6" />,
 };
 
-type Suit = keyof typeof suitIcons;
-type Rank = "A" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "Joker";
-
-export type Card = {
-  suit: Suit;
-  rank: Rank;
-};
-
-interface PlayingCardProps extends Card {
+interface PlayingCardProps extends CardType {
   className?: string;
 }
 

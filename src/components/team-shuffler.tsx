@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Wand2, Star, Users, Copy, Check, Trash2, PlusCircle, Edit } from "lucide-react";
+import { Wand2, Star, Copy, Check, Trash2, PlusCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ import { Switch } from "./ui/switch";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Skeleton } from "./ui/skeleton";
 import { cn } from "@/lib/utils";
+import { shuffleTeams } from "@/app/actions/team-shuffler-action";
 
 type Participant = {
   id: string;
@@ -72,7 +73,6 @@ export default function TeamShuffler() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  // Sync between panel view (participants array) and textarea view (participantsText)
   useEffect(() => {
     if (inputMode === 'textarea') {
       const text = participants.map(p => `${p.name} ${p.level}`).join('\n');
@@ -85,7 +85,6 @@ export default function TeamShuffler() {
     const newMode = checked ? 'textarea' : 'panel';
     setInputMode(newMode);
 
-    // If switching from textarea to panel, parse the text
     if (newMode === 'panel') {
       parseParticipantsFromText(participantsText);
     }
@@ -94,7 +93,6 @@ export default function TeamShuffler() {
   const handleUseLevelsChange = (checked: boolean) => {
     setUseLevels(checked);
     if (!checked) {
-      // When disabling levels, set all to a default level of 1
       setParticipants(prev => prev.map(p => ({ ...p, level: 1 })));
     }
   };
@@ -113,7 +111,7 @@ export default function TeamShuffler() {
         name = parts.slice(0, parts.length - 1).join(" ");
         if (!name || isNaN(levelPart) || levelPart < 1 || levelPart > 5) {
           parseError = `Invalid line: "${line}". Format: "Name Level" (1-5).`;
-          level = 1; // default on error
+          level = 1; 
         } else {
           level = levelPart;
         }
@@ -128,16 +126,7 @@ export default function TeamShuffler() {
     return !parseError;
   };
 
-  function shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  const handleShuffle = () => {
+  const handleShuffle = async () => {
     triggerRateLimit();
     setError(null);
     setTeams([]);
@@ -151,7 +140,6 @@ export default function TeamShuffler() {
         setIsShuffling(false);
         return;
       }
-      // Re-fetch participants after parsing
       const lines = participantsText.split("\n").map((line) => line.trim()).filter((line) => line);
       currentParticipants = lines.map((line, index) => {
           let name: string;
@@ -176,44 +164,16 @@ export default function TeamShuffler() {
       return;
     }
 
-    if (currentParticipants.length < size) {
-      setError("Not enough participants to form a single team.");
-      setIsShuffling(false);
-      return;
+    try {
+        const newTeams = await shuffleTeams(currentParticipants, size, useLevels);
+        setTimeout(() => {
+            setTeams(newTeams);
+            setIsShuffling(false);
+        }, 1000);
+    } catch(e: any) {
+        setError(e.message);
+        setIsShuffling(false);
     }
-
-    const numTeams = Math.floor(currentParticipants.length / size);
-    if (numTeams === 0) {
-      setError("Not enough participants to form a single team.");
-      setIsShuffling(false);
-      return;
-    }
-    
-    setTimeout(() => {
-      const newTeams: Team[] = Array.from({ length: numTeams }, () => ({ members: [], totalLevel: 0 }));
-
-      if (useLevels) {
-        currentParticipants.sort((a, b) => b.level - a.level);
-        currentParticipants.forEach((participant) => {
-          newTeams.sort((a, b) => a.totalLevel - b.totalLevel);
-          const teamToJoin = newTeams.find(team => team.members.length < size);
-          if (teamToJoin) {
-            teamToJoin.members.push(participant);
-            teamToJoin.totalLevel += participant.level;
-          }
-        });
-      } else {
-        const shuffledParticipants = shuffleArray(currentParticipants);
-        for (let i = 0; i < numTeams * size; i++) {
-          const teamIndex = i % numTeams;
-          newTeams[teamIndex].members.push(shuffledParticipants[i]);
-          newTeams[teamIndex].totalLevel += shuffledParticipants[i].level;
-        }
-      }
-
-      setTeams(newTeams);
-      setIsShuffling(false);
-    }, 1000);
   };
 
   const handleCopyResult = () => {
@@ -395,5 +355,3 @@ export default function TeamShuffler() {
     </Card>
   );
 }
-
-

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -15,35 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import PlayingCard, { Card as CardType } from "./playing-card";
+import PlayingCard from "./playing-card";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
-
-const SUITS = ["S", "C", "H", "D"] as const;
-const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"] as const;
-
-function createDeck(includeJokers: boolean): CardType[] {
-  const deck: CardType[] = [];
-  for (const suit of SUITS) {
-    for (const rank of RANKS) {
-      deck.push({ suit, rank });
-    }
-  }
-  if (includeJokers) {
-    deck.push({ suit: "Joker", rank: "Joker" });
-    deck.push({ suit: "Joker", rank: "Joker" });
-  }
-  return deck;
-}
-
-function shuffleDeck(deck: CardType[]): CardType[] {
-  const shuffled = [...deck];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { drawCards, CardType } from "@/app/actions/card-deck-action";
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
@@ -55,9 +31,9 @@ export default function CardDeckRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const deck = useMemo(() => createDeck(includeJokers), [includeJokers]);
+  const deckSize = useMemo(() => includeJokers ? 54 : 52, [includeJokers]);
 
-  const handleDraw = () => {
+  const handleDraw = async () => {
     if (isDrawing) return;
     triggerRateLimit();
     setError(null);
@@ -68,21 +44,24 @@ export default function CardDeckRandomizer() {
       setError("Please enter a valid number of cards to draw.");
       return;
     }
-    if (count > deck.length) {
-      setError(`You can't draw more cards than are in the deck (${deck.length}).`);
+    if (count > deckSize) {
+      setError(`You can't draw more cards than are in the deck (${deckSize}).`);
       return;
     }
 
     setIsDrawing(true);
     setDrawnCards([]);
 
-    const shuffledDeck = shuffleDeck(deck);
-    const newDrawnCards = shuffledDeck.slice(0, count);
-
-    setTimeout(() => {
-      setDrawnCards(newDrawnCards);
-      setIsDrawing(false);
-    }, 1000); // Animation duration
+    try {
+        const newDrawnCards = await drawCards(includeJokers, count);
+        setTimeout(() => {
+          setDrawnCards(newDrawnCards);
+          setIsDrawing(false);
+        }, 1000); // Animation duration
+    } catch(e: any) {
+        setError(e.message);
+        setIsDrawing(false);
+    }
   };
   
   const handleCopyResult = () => {
@@ -118,7 +97,7 @@ export default function CardDeckRandomizer() {
                 id="num-to-draw"
                 type="number"
                 min="1"
-                max={deck.length}
+                max={deckSize}
                 value={numToDraw}
                 onChange={(e) => setNumToDraw(e.target.value)}
                 className="w-20"

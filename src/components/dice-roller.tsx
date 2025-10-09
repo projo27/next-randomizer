@@ -24,6 +24,7 @@ import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { cn } from "@/lib/utils";
+import { rollDice } from "@/app/actions/dice-roller-action";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -36,32 +37,12 @@ const diceIcons = [
 
 const animations = ["animate-spin-dice"];
 
-const Polyhedron = ({ sides, result, isRolling }: { sides: number, result: number, isRolling: boolean }) => {
-    let shapeClass, textClass;
-
-    switch (sides) {
-        case 4: shapeClass = "w-28 h-28 clip-triangle"; break;
-        case 8: shapeClass = "w-28 h-28 clip-diamond"; break;
-        case 10: shapeClass = "w-28 h-28 clip-pentagon"; break;
-        case 12: shapeClass = "w-28 h-28 clip-dodecagon"; break;
-        case 20: shapeClass = "w-28 h-28 clip-icosagon"; break;
-        default: shapeClass = "w-28 h-28 rounded-lg"; break;
-    }
-    
-    return (
-        <div className={cn("relative flex items-center justify-center bg-muted dark:bg-muted/50 border-2 border-accent text-accent", shapeClass, isRolling && "animate-spin-dice")}>
-             <span className="text-4xl font-bold">{result}</span>
-        </div>
-    )
-}
-
-// Add CSS for custom shapes in globals.css if needed, or use inline styles/tailwind plugins
-// For simplicity, we'll approximate with basic shapes and text.
 const DiceDisplay = ({ type, result, isRolling, animationClass }: { type: number, result: number, isRolling: boolean, animationClass: string }) => {
     if (type === 6) {
+        const iconToShow = isRolling ? diceIcons[0] : (diceIcons[result - 1] || diceIcons[0]);
         return (
             <div className={cn("dark:text-primary light:text-accent", isRolling && animationClass)}>
-                {diceIcons[result - 1] || diceIcons[0]}
+                {iconToShow}
             </div>
         );
     }
@@ -72,11 +53,10 @@ const DiceDisplay = ({ type, result, isRolling, animationClass }: { type: number
         "flex items-center justify-center w-32 h-32 bg-muted/80 border-2 border-accent rounded-lg text-accent",
         isRolling && animationClass
       )}>
-        <span className="text-5xl font-bold">{result}</span>
+        <span className="text-5xl font-bold">{isRolling ? '?' : result}</span>
       </div>
     );
 };
-
 
 export default function DiceRoller() {
   const [numberOfDice, setNumberOfDice] = useState("1");
@@ -88,7 +68,7 @@ export default function DiceRoller() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handleRoll = () => {
+  const handleRoll = async () => {
     if (isRolling) return;
     triggerRateLimit();
     setIsRolling(true);
@@ -99,15 +79,16 @@ export default function DiceRoller() {
 
     const numDice = parseInt(numberOfDice, 10);
     const numSides = parseInt(diceType, 10);
-    const newResults: number[] = [];
-    for (let i = 0; i < numDice; i++) {
-      newResults.push(Math.floor(Math.random() * numSides) + 1);
+    
+    try {
+        const newResults = await rollDice(numDice, numSides);
+        setTimeout(() => {
+          setResults(newResults);
+          setIsRolling(false);
+        }, 1000); // Duration of the animation
+    } catch(e) {
+        setIsRolling(false);
     }
-
-    setTimeout(() => {
-      setResults(newResults);
-      setIsRolling(false);
-    }, 1000); // Duration of the animation
   };
 
   const total = results.reduce((sum, val) => sum + val, 0);
@@ -115,7 +96,7 @@ export default function DiceRoller() {
   const numSides = parseInt(diceType, 10);
 
   const displayArray: number[] = isRolling
-    ? Array.from({ length: numDice }).map(() => Math.floor(Math.random() * numSides) + 1)
+    ? Array.from({ length: numDice }).map(() => 1) // Just a placeholder for animation
     : results.length > 0
       ? results
       : [numSides];

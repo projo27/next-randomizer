@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,9 +25,10 @@ import {
 import { DatePicker } from '@/components/date-picker';
 import { Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Alert, AlertDescription } from './ui/alert';
 import AnimatedResultList from './animated-result-list';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
+import { randomizeDates } from '@/app/actions/date-randomizer-action';
 
 export default function DateRandomizer() {
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -46,7 +48,6 @@ export default function DateRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
   useEffect(() => {
-    // Initialize dates on the client to avoid hydration mismatch
     const now = new Date();
     const nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);
@@ -54,7 +55,7 @@ export default function DateRandomizer() {
     setEndDate(nextMonth);
   }, []);
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     triggerRateLimit();
     setError(null);
     setResults([]);
@@ -77,11 +78,10 @@ export default function DateRandomizer() {
     }
 
     if (startDate > endDate) {
-      let dateDiff = startDate.getTime() - endDate.getTime();
-      setStartDate(endDate);
-      setEndDate(startDate);
+        setStartDate(endDate);
+        setEndDate(startDate);
     }
-
+    
     const dayDifference =
       (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1;
     if (count > 1000 || (count > dayDifference && !includeTime)) {
@@ -91,70 +91,23 @@ export default function DateRandomizer() {
       setIsRandomizing(false);
       return;
     }
-    if (count > 1000) {
-      setError(`Cannot generate more than 1000 unique dates.`);
-      setIsRandomizing(false);
-      return;
-    }
 
-    const tempStartDate = new Date(startDate);
-    const tempEndDate = new Date(endDate);
-
-    if (includeTime) {
-      const [startHours, startMinutes] = startTime.split(':').map(Number);
-      const [endHours, endMinutes] = endTime.split(':').map(Number);
-      tempStartDate.setHours(startHours, startMinutes, 0, 0);
-      tempEndDate.setHours(endHours, endMinutes, 0, 0);
-
-      if (tempStartDate.getTime() >= tempEndDate.getTime()) {
+    if (includeTime && startTime >= endTime) {
         setError('Start time must be before end time.');
         setIsRandomizing(false);
         return;
-      }
-    } else {
-      tempStartDate.setHours(0, 0, 0, 0);
-      tempEndDate.setHours(23, 59, 59, 999);
     }
-
-    const startMs = tempStartDate.getTime();
-    const endMs = tempEndDate.getTime();
-    const generatedDates: Date[] = [];
-    const generatedTimestamps = new Set();
-
-    // Safety break to prevent infinite loops
-    let maxTries = count * 100;
-
-    while (generatedDates.length < count && maxTries > 0) {
-      const randomMs = startMs + Math.random() * (endMs - startMs);
-      const randomDate = new Date(randomMs);
-
-      if (!includeTime) {
-        randomDate.setHours(0, 0, 0, 0); // Normalize to the start of the day
-      }
-
-      const timestamp = randomDate.getTime();
-
-      if (!generatedTimestamps.has(timestamp)) {
-        generatedTimestamps.add(timestamp);
-        generatedDates.push(randomDate);
-      }
-      maxTries--;
+    
+    try {
+        const serverResult = await randomizeDates(startDate, endDate, count, includeTime, startTime, endTime);
+        setTimeout(() => {
+          setResults(serverResult.map(d => new Date(d))); // Re-hydrate date objects
+          setIsRandomizing(false);
+        }, 500);
+    } catch(e: any) {
+        setError(e.message);
+        setIsRandomizing(false);
     }
-
-    if (maxTries === 0) {
-      setError(
-        'Could not generate the requested number of unique dates. Try a larger date/time range.',
-      );
-      setIsRandomizing(false);
-      return;
-    }
-
-    generatedDates.sort((a, b) => a.getTime() - b.getTime());
-
-    setTimeout(() => {
-      setResults(generatedDates);
-      setIsRandomizing(false);
-    }, 500); // Fake delay for animation
   };
 
   const getFormatString = () => {

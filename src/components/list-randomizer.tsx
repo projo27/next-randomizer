@@ -18,24 +18,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
 import AnimatedResultList from "./animated-result-list";
 import { Switch } from "./ui/switch";
+import { randomizeList } from "@/app/actions/list-randomizer-action";
 
 type Item = {
   id: string;
   value: string;
 };
-
-// Fisher-Yates (aka Knuth) Shuffle algorithm
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
 
 const initialItems: Item[] = [
     { id: '1', value: 'Apples' },
@@ -49,7 +40,7 @@ export default function ListRandomizer() {
   const [inputMode, setInputMode] = useState<'panel' | 'textarea'>('panel');
   
   const [count, setCount] = useState("1");
-  const [result, setResult] = useState<string | string[] | null>(null);
+  const [result, setResult] = useState<string[] | null>(null);
   const [options, setOptions] = useState<string[]>([]);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
@@ -82,7 +73,7 @@ export default function ListRandomizer() {
   };
 
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -107,31 +98,37 @@ export default function ListRandomizer() {
       setError("Please enter a valid number of items to pick (must be > 0).");
       return;
     }
-
-    if (numToPick > uniqueOptions.length) {
-      setError(`Cannot pick ${numToPick} items. There are only ${uniqueOptions.length} unique items in the list.`);
-      return;
-    }
-
+    
     setOptions(uniqueOptions);
 
     if (numToPick === 1) {
       setIsShuffling(false);
-      const randomIndex = Math.floor(Math.random() * uniqueOptions.length);
-      setResult(uniqueOptions[randomIndex]);
+      // Still set isShuffling to true for animation consistency on result component
+      try {
+        const serverResult = await randomizeList(uniqueOptions, numToPick);
+        setResult(serverResult);
+      } catch (e: any) {
+        setError(e.message);
+      }
     } else {
       setIsShuffling(true);
-      setTimeout(() => {
-        const shuffled = shuffleArray(uniqueOptions);
-        setResult(shuffled.slice(0, numToPick));
+      try {
+        const serverResult = await randomizeList(uniqueOptions, numToPick);
+        // Fake delay for animation
+        setTimeout(() => {
+          setResult(serverResult);
+          setIsShuffling(false);
+        }, 500);
+      } catch (e: any) {
+        setError(e.message);
         setIsShuffling(false);
-      }, 500);
+      }
     }
   };
 
   const handleCopyResult = () => {
     if (!result) return;
-    const resultString = Array.isArray(result) ? result.join("\n") : result;
+    const resultString = Array.isArray(result) ? result.join("\n") : result[0];
     navigator.clipboard.writeText(resultString);
     setIsResultCopied(true);
     toast({
@@ -222,10 +219,10 @@ Oranges`}
             onChange={(e) => setCount(e.target.value)}
           />
         </div>
-        {result && !Array.isArray(result) && (
-          <AnimatedResult result={result} options={options} handleCopyResult={handleCopyResult} />
+        {result && result.length === 1 && !isShuffling && (
+          <AnimatedResult result={result[0]} options={options} handleCopyResult={handleCopyResult} />
         )}
-        {(isShuffling || (result && Array.isArray(result))) && (
+        {(isShuffling || (result && result.length > 1)) && (
           <AnimatedResultList
             isShuffling={isShuffling}
             shuffledItems={Array.isArray(result) ? result : []}

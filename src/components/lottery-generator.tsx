@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -17,9 +18,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-
-const NUMBERS = "0123456789";
-const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+import { generateLottery } from "@/app/actions/lottery-generator-action";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
@@ -35,7 +34,6 @@ export default function LotteryGenerator() {
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
@@ -43,7 +41,7 @@ export default function LotteryGenerator() {
   }, []);
 
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (isGenerating) return;
     triggerRateLimit();
     setIsGenerating(true);
@@ -65,12 +63,8 @@ export default function LotteryGenerator() {
       return;
     }
 
-    let characterSet = NUMBERS;
-    if (includeLetters) {
-      characterSet += LETTERS;
-    }
+    const characterSet = includeLetters ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789";
 
-    // Start the visual animation of changing characters
     animationIntervalRef.current = setInterval(() => {
       let tempResult = "";
       for (let i = 0; i < len; i++) {
@@ -81,7 +75,6 @@ export default function LotteryGenerator() {
       setResult(tempResult);
     }, 50);
 
-    // Start the countdown toast
     let countdown = dur;
     const { id: toastId, update } = toast({
       title: "Counting Down in...",
@@ -96,23 +89,24 @@ export default function LotteryGenerator() {
       }
     }, 1000);
 
-    // Stop everything after the duration
-    setTimeout(() => {
-      if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
-      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    try {
+        const finalResult = await generateLottery(len, includeLetters);
+        setTimeout(() => {
+          if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+          if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+          
+          setResult(finalResult);
+          setIsGenerating(false);
 
-      let finalResult = "";
-      for (let i = 0; i < len; i++) {
-        finalResult += characterSet.charAt(
-          Math.floor(Math.random() * characterSet.length)
-        );
-      }
-      setResult(finalResult);
-      setIsGenerating(false);
-
-      update({ id: toastId, title: '', description: `Lottery Number ${finalResult} WIN`, hidden: true });
-
-    }, dur * 1000);
+          update({ id: toastId, title: 'Lottery Number WIN!', description: finalResult, hidden: true });
+        }, dur * 1000);
+    } catch(e: any) {
+        setError(e.message);
+        setIsGenerating(false);
+        if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+        dismiss(toastId);
+    }
   };
 
   const handleCopy = () => {

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,6 +22,7 @@ import {
 import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { playRps } from "@/app/actions/rock-paper-scissors-action";
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];
@@ -39,7 +41,7 @@ export default function RockPaperScissors() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     if (isPlaying) return;
     triggerRateLimit();
     setIsPlaying(true);
@@ -47,10 +49,7 @@ export default function RockPaperScissors() {
     setPreviousResults(results); // Save current results for the flip animation
 
     const numPlays = parseInt(numberOfPlays, 10);
-    const newResults: RpsResult[] = [];
-    for (let i = 0; i < numPlays; i++) {
-      newResults.push(MOVES[Math.floor(Math.random() * MOVES.length)]);
-    }
+    const newResults = await playRps(numPlays);
 
     setTimeout(() => {
       setResults(newResults);

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -16,6 +17,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { CompassIcon } from "./icons/compass-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { getRandomDirection } from "@/app/actions/compass-action";
 
 const DIRECTIONS: Record<string, number> = {
   "North": 0,
@@ -28,9 +30,6 @@ const DIRECTIONS: Record<string, number> = {
   "Northwest": 315,
 };
 
-const CARDINAL_DIRECTIONS = ["North", "East", "South", "West"];
-const INTERCARDINAL_DIRECTIONS = ["Northeast", "Southeast", "Southwest", "Northwest"];
-
 export default function CompassRandomizer() {
   const [includeIntercardinal, setIncludeIntercardinal] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -40,31 +39,29 @@ export default function CompassRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(4500); // Longer timeout to match animation
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     if (isRandomizing) return;
     triggerRateLimit();
     setIsRandomizing(true);
     setResult(null);
     setIsCopied(false);
 
-    const directions = includeIntercardinal
-      ? [...CARDINAL_DIRECTIONS, ...INTERCARDINAL_DIRECTIONS]
-      : CARDINAL_DIRECTIONS;
-    
-    const randomIndex = Math.floor(Math.random() * directions.length);
-    const winner = directions[randomIndex];
-    const targetRotation = DIRECTIONS[winner];
+    try {
+        const winner = await getRandomDirection(includeIntercardinal);
+        const targetRotation = DIRECTIONS[winner];
 
-    // Add multiple spins for visual effect
-    const spinCycles = 3 + Math.floor(Math.random() * 3);
-    const newRotation = rotation + (360 * spinCycles) + (360 - (rotation % 360)) + targetRotation;
-    
-    setRotation(newRotation);
+        const spinCycles = 3 + Math.floor(Math.random() * 3);
+        const newRotation = rotation + (360 * spinCycles) + (360 - (rotation % 360)) + targetRotation;
+        
+        setRotation(newRotation);
 
-    setTimeout(() => {
-      setResult(winner);
-      setIsRandomizing(false);
-    }, 4000); // Must match animation duration
+        setTimeout(() => {
+          setResult(winner);
+          setIsRandomizing(false);
+        }, 4000); // Must match animation duration
+    } catch (e) {
+        setIsRandomizing(false);
+    }
   };
 
   const handleCopy = () => {

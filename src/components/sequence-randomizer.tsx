@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,16 +16,7 @@ import { Wand2, Copy, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AnimatedResultList from "./animated-result-list";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
-
-// Fisher-Yates (aka Knuth) Shuffle algorithm
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { randomizeSequence } from "@/app/actions/sequence-randomizer-action";
 
 export default function SequenceRandomizer() {
   const [itemsText, setItemsText] = useState(`Participant 1
@@ -38,23 +30,28 @@ Participant 4`);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handleShuffle = () => {
+  const handleShuffle = async () => {
     triggerRateLimit();
     setIsShuffling(true);
     setShuffledItems([]);
+    setIsResultCopied(false);
+    
     const currentItems = itemsText
       .split("\n")
       .map((c) => c.trim())
       .filter((c) => c.length > 0);
 
     if (currentItems.length > 0) {
-      const newShuffledItems = shuffleArray(currentItems);
-      // Fake delay for animation effect
-      setTimeout(() => {
-        setShuffledItems(newShuffledItems);
+      try {
+        const newShuffledItems = await randomizeSequence(currentItems);
+        // Fake delay for animation effect
+        setTimeout(() => {
+          setShuffledItems(newShuffledItems);
+          setIsShuffling(false);
+        }, 500);
+      } catch (e) {
         setIsShuffling(false);
-        setIsResultCopied(false);
-      }, 500);
+      }
     } else {
       setIsShuffling(false);
     }

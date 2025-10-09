@@ -19,6 +19,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription } from "./ui/alert";
 import AnimatedResultList from "./animated-result-list";
 import { useToast } from "@/hooks/use-toast";
+import { randomizeNumber } from "@/app/actions/number-randomizer-action";
 
 export default function NumberRandomizer() {
   const [min, setMin] = useState("1");
@@ -31,7 +32,7 @@ export default function NumberRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { toast } = useToast();
 
-  const handleRandomize = () => {
+  const handleRandomize = async () => {
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -55,40 +56,20 @@ export default function NumberRandomizer() {
       setError("Minimum must be less than maximum.");
       return;
     }
-    
-    const isIntegerRange = Number.isInteger(minNum) && Number.isInteger(maxNum) && getDecimalDigits(min) === 0 && getDecimalDigits(max) === 0;
-
-    if (isIntegerRange && countNum > (maxNum - minNum + 1)) {
-        setError(`Cannot generate ${countNum} unique integers from a range of only ${maxNum - minNum + 1} possibilities.`);
-        return;
-    }
-    if (countNum > 1000) {
-      setError("Cannot generate more than 1000 numbers at a time.");
-      return;
-    }
 
     setIsRandomizing(true);
     
-    setTimeout(() => {
-        const decimalDigits = Math.max(getDecimalDigits(min), getDecimalDigits(max));
-        const resultsSet = new Set<number>();
-        let attempts = 0;
-
-        while(resultsSet.size < countNum && attempts < countNum * 10) {
-            const randomNumber = Math.random() * (maxNum - minNum) + minNum;
-            const roundedNumber = parseFloat(randomNumber.toFixed(decimalDigits));
-            resultsSet.add(roundedNumber);
-            attempts++;
-        }
-        
-        const finalResults = Array.from(resultsSet);
-        if(finalResults.length < countNum) {
-            setError(`Could only generate ${finalResults.length} unique numbers. Try a larger range or fewer numbers.`);
-        }
-        setResult(finalResults.sort((a,b) => a - b));
+    try {
+        const serverResult = await randomizeNumber(minNum, maxNum, countNum);
+        // Fake delay for animation
+        setTimeout(() => {
+            setResult(serverResult);
+            setIsRandomizing(false);
+        }, 500);
+    } catch (e: any) {
+        setError(e.message);
         setIsRandomizing(false);
-
-    }, 500); // Animation delay
+    }
   };
 
   const handleCopyResult = () => {
@@ -102,14 +83,6 @@ export default function NumberRandomizer() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-
-
-  function getDecimalDigits(value: string): number {
-    if (value.indexOf('.') > -1) {
-      return value.split('.')[1].length;
-    }
-    return 0;
-  }
 
   return (
     <Card className="w-full shadow-lg border-none">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -23,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { HeadsIcon } from "./icons/heads-icon";
 import { TailsIcon } from "./icons/tails-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { flipCoins } from "@/app/actions/coin-flipper-action";
 
 type CoinResult = "Heads" | "Tails";
 
@@ -34,17 +36,14 @@ export default function CoinFlipper() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
 
-  const handleFlip = () => {
+  const handleFlip = async () => {
     if (isFlipping) return;
     triggerRateLimit();
     setIsFlipping(true);
     setIsCopied(false);
 
     const numCoins = parseInt(numberOfCoins, 10);
-    const newResults: CoinResult[] = [];
-    for (let i = 0; i < numCoins; i++) {
-      newResults.push(Math.random() < 0.5 ? "Heads" : "Tails");
-    }
+    const newResults = await flipCoins(numCoins);
 
     setTimeout(() => {
       setResults(newResults);

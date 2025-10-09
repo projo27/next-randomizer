@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from "./ui/label";
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { getSpinnerWinner } from "@/app/actions/spinner-action";
 
 const WHEEL_COLORS = [
   "#FFC107", "#FF9800", "#FF5722", "#F44336",
@@ -25,7 +27,7 @@ const WHEEL_COLORS = [
 ];
 
 const getBestTextColor = (bgColor: string): string => {
-  const color = bgColor.substring(1); // strip #
+  const color = bgColor.substring(1);
   const rgb = parseInt(color, 16);
   const r = (rgb >> 16) & 0xff;
   const g = (rgb >> 8) & 0xff;
@@ -65,7 +67,7 @@ export default function Spinner() {
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(5500); // Longer timeout for animation
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(5500);
 
   const items = useMemo(() => itemsText.split("\n").map(i => i.trim()).filter(i => i), [itemsText]);
   
@@ -74,9 +76,9 @@ export default function Spinner() {
     return items.map(item => ({ name: item, value: 1 }));
   }, [items]);
   
-  const segmentAngle = 360 / items.length;
+  const segmentAngle = 360 / (items.length || 1);
 
-  const handleSpin = () => {
+  const handleSpin = async () => {
     if (items.length < 2) {
       toast({
         title: "Not enough items",
@@ -91,20 +93,28 @@ export default function Spinner() {
     setWinner(null);
     setIsResultCopied(false);
 
-    const randomAngle = Math.floor(Math.random() * 360);
+    // The server determines the winner
+    const newWinner = await getSpinnerWinner(items);
+    if (!newWinner) {
+      setIsSpinning(false);
+      return;
+    }
+
+    const winnerIndex = items.indexOf(newWinner);
+
+    // Calculate rotation to land on the winner
+    // The arrow points down (270deg on the chart). The chart starts at 0deg (3 o'clock).
+    const targetAngle = (winnerIndex * segmentAngle) + (segmentAngle / 2);
+    const offsetAngle = (270 - 90); // Adjust for arrow position and chart start
+    const randomAngleInSegment = (Math.random() - 0.5) * segmentAngle * 0.8;
+    const finalTargetAngle = (targetAngle + randomAngleInSegment) % 360;
+
     const spinCycles = 5 + Math.floor(Math.random() * 5);
-    const newRotation = rotation + (360 * spinCycles) + randomAngle;
+    const newRotation = rotation + (360 * spinCycles) + (360 - (rotation % 360)) - finalTargetAngle + offsetAngle;
     
     setRotation(newRotation);
 
     setTimeout(() => {
-      // The arrow points straight down, so the winning angle is 270 degrees.
-      const finalAngle = newRotation % 360;
-      // Adjust by 90 degrees because Pie chart starts at the 3 o'clock position.
-      const winningAngle = (360 - finalAngle + 270 - 90) % 360;
-      const winnerIndex = Math.floor(winningAngle / segmentAngle);
-      const newWinner = items[winnerIndex];
-
       setWinner(newWinner);
       setIsSpinning(false);
     }, 5000); // Must match animation duration
