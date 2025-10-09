@@ -39,22 +39,31 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="flex flex-col gap-1">
         <DropdownMenuItem
-          onClick={() => handleThemeChange("light")}
-          className={cn({ "bg-accent": theme === "light" })}
+          onClick={() => theme != "light" && handleThemeChange("light")}
+          className={cn(
+            { "bg-accent": theme === "light" },
+            { "hover:cursor-pointer": theme !== "light" },
+          )}
         >
           Light
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleThemeChange("dark")}
-          className={cn({ "bg-accent": theme === "dark" })}
+          onClick={() => theme != "dark" && handleThemeChange("dark")}
+          className={cn(
+            { "bg-accent": theme === "dark" },
+            { "hover:cursor-pointer": theme !== "dark" },
+          )}
         >
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => handleThemeChange("system")}
-          className={cn({ "bg-accent": theme === "system" })}
+          onClick={() => theme != "system" && handleThemeChange("system")}
+          className={cn(
+            { "bg-accent": theme === "system" },
+            { "hover:cursor-pointer": theme !== "system" },
+          )}
         >
           System
         </DropdownMenuItem>
