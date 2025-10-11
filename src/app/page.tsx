@@ -202,7 +202,7 @@ function HomePageContent() {
     {
       value: "spinner",
       text: "Spinner",
-      hidden: false,
+      hidden: true,
       badge: "",
       icon: <Disc className="h-5 w-5" />,
       content: <Spinner />,
@@ -211,7 +211,7 @@ function HomePageContent() {
     {
       value: "compass",
       text: "Compass",
-      hidden: false,
+      hidden: true,
       badge: "",
       icon: <Compass className="h-5 w-5" />,
       content: <CompassRandomizer />,
