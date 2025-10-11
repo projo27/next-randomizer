@@ -34,14 +34,14 @@ export default function TermsOfServicePage() {
                 </ul>
 
                 <h2>3. Intellectual Property</h2>
-                <p>The Service and its original content (excluding content provided by users), features, and functionality are and will remain the exclusive property of [Your Name/Company Name] and its licensors. The Tools and the website design are protected by copyright, trademark, and other laws.</p>
+                <p>The Service and its original content (excluding content provided by users), features, and functionality are and will remain the exclusive property of [Gisariweb] and its licensors. The Tools and the website design are protected by copyright, trademark, and other laws.</p>
 
                 <h2>4. Termination</h2>
                 <p>We may terminate or suspend your access to the Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever, including without limitation if you breach the Terms.</p>
                 <p>Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may discontinue using the Service or contact us for account deletion.</p>
 
                 <h2>5. Limitation of Liability</h2>
-                <p>In no event shall [Your Name/Company Name], nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:</p>
+                <p>In no event shall [Gisariweb], nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from:</p>
                 <ul>
                     <li>Your access to or use of, or inability to access or use, the Service.</li>
                     <li>Any content obtained from the Service.</li>
@@ -52,14 +52,14 @@ export default function TermsOfServicePage() {
                 <p>Your use of the Service is at your sole risk. The Service is provided on an "AS IS" and "AS AVAILABLE" basis. The Service is provided without warranties of any kind, whether express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, non-infringement, or course of performance.</p>
 
                 <h2>7. Governing Law</h2>
-                <p>These Terms shall be governed and construed in accordance with the laws of [Your Country/State], without regard to its conflict of law provisions.</p>
+                <p>These Terms shall be governed and construed in accordance with the laws of [Gisariweb], without regard to its conflict of law provisions.</p>
 
                 <h2>8. Changes to These Terms</h2>
                 <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will try to provide at least 30 days' notice prior to any new terms taking effect. By continuing to access or use our Service after any revisions become effective, you agree to be bound by the revised terms.</p>
 
                 <h2>9. Contact Us</h2>
                 <p>If you have any questions about these Terms, please contact us:</p>
-                <p>Email: [Your active email address, e.g., support@randomizer.fun]</p>
+                <p>Email: [support@randomizer.fun]</p>
             </main>
         </div>
     );

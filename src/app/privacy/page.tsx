@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
 
                 <h2>7. Contact Us</h2>
                 <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-                <p>Email: [Your active email address, e.g., support@randomizer.fun]</p>
+                <p>Email: [support@randomizer.fun]</p>
             </main>
         </div>
     );
