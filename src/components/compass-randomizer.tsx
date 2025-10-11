@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -20,14 +19,14 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getRandomDirection } from "@/app/actions/compass-action";
 
 const DIRECTIONS: Record<string, number> = {
-  "North": 0,
-  "Northeast": 45,
-  "East": 90,
-  "Southeast": 135,
-  "South": 180,
-  "Southwest": 225,
-  "West": 270,
-  "Northwest": 315,
+  North: 0,
+  Northeast: 45,
+  East: 90,
+  Southeast: 135,
+  South: 180,
+  Southwest: 225,
+  West: 270,
+  Northwest: 315,
 };
 
 export default function CompassRandomizer() {
@@ -47,20 +46,21 @@ export default function CompassRandomizer() {
     setIsCopied(false);
 
     try {
-        const winner = await getRandomDirection(includeIntercardinal);
-        const targetRotation = DIRECTIONS[winner];
+      const winner = await getRandomDirection(includeIntercardinal);
+      const targetRotation = DIRECTIONS[winner];
 
-        const spinCycles = 3 + Math.floor(Math.random() * 3);
-        const newRotation = rotation + (360 * spinCycles) + (360 - (rotation % 360)) + targetRotation;
-        
-        setRotation(newRotation);
+      const spinCycles = 3 + Math.floor(Math.random() * 3);
+      const newRotation =
+        rotation + 360 * spinCycles + (360 - (rotation % 360)) + targetRotation;
 
-        setTimeout(() => {
-          setResult(winner);
-          setIsRandomizing(false);
-        }, 4000); // Must match animation duration
-    } catch (e) {
+      setRotation(newRotation);
+
+      setTimeout(() => {
+        setResult(winner);
         setIsRandomizing(false);
+      }, 4000); // Must match animation duration
+    } catch (e) {
+      setIsRandomizing(false);
     }
   };
 
@@ -79,31 +79,31 @@ export default function CompassRandomizer() {
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Compass Randomizer</CardTitle>
-        <CardDescription>
-          Get a random compass direction.
-        </CardDescription>
+        <CardDescription>Get a random compass direction.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
         <div className="flex items-center justify-center space-x-2">
-          <Switch 
-            id="include-intercardinal" 
-            checked={includeIntercardinal} 
+          <Switch
+            id="include-intercardinal"
+            checked={includeIntercardinal}
             onCheckedChange={setIncludeIntercardinal}
             disabled={isRandomizing || isRateLimited}
           />
-          <Label htmlFor="include-intercardinal">Include Intercardinal Directions</Label>
+          <Label htmlFor="include-intercardinal">
+            Include Intercardinal Directions
+          </Label>
         </div>
 
         <div className="relative flex justify-center items-center h-52 w-52 mx-auto">
           <CompassIcon
-            className="w-full h-full text-muted-foreground transition-transform duration-[4000ms] ease-in-out"
+            className="w-full h-full text-muted-foreground transition-transform ease-in-out"
             style={{ transform: `rotate(${rotation}deg)` }}
           />
         </div>
 
         {result && !isRandomizing && (
           <div className="relative text-center">
-             <h3 className="text-3xl font-bold text-accent">{result}</h3>
+            <h3 className="text-3xl font-bold text-accent">{result}</h3>
             <div className="absolute -top-2 right-0">
               <Button variant="ghost" size="icon" onClick={handleCopy}>
                 {isCopied ? (
@@ -123,7 +123,11 @@ export default function CompassRandomizer() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isRandomizing ? "Spinning..." : isRateLimited ? "Please wait..." : "Randomize Direction"}
+          {isRandomizing
+            ? "Spinning..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Randomize Direction"}
         </Button>
       </CardFooter>
     </Card>

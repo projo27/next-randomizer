@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview A flow for generating an "Outfit of the Day" (OOTD) recommendation, using the Runware.ai SDK.
@@ -11,55 +11,96 @@
  * - OotdImageGeneratorOutput - The return type for the generateOotdImageRunware function.
  */
 
-import { ai } from '@/ai/genkit';
-import { Runware } from '@runware/sdk-js';
-import { z } from 'genkit';
+import { ai } from "@/ai/genkit";
+import { Runware } from "@runware/sdk-js";
+import { z } from "genkit";
 
 const OotdGeneratorInputSchema = z.object({
-  gender: z.string().describe('The gender for the outfit (e.g., Male, Female).'),
-  style: z.string().describe('The desired fashion style (e.g., Casual, Formal, Streetwear, or All for random).'),
-  season: z.string().describe('The current season (e.g., Rainy Season, Dry Season).'),
-  height: z.number().describe('The height of the person in centimeters.'),
-  weight: z.number().describe('The weight of the person in kilograms.'),
+  gender: z
+    .string()
+    .describe("The gender for the outfit (e.g., Male, Female)."),
+  style: z
+    .string()
+    .describe(
+      "The desired fashion style (e.g., Casual, Formal, Streetwear, or All for random).",
+    ),
+  season: z
+    .string()
+    .describe("The current season (e.g., Rainy Season, Dry Season)."),
+  height: z.number().describe("The height of the person in centimeters."),
+  weight: z.number().describe("The weight of the person in kilograms."),
 });
 export type OotdGeneratorInput = z.infer<typeof OotdGeneratorInputSchema>;
 
 const OotdGeneratorOutputSchema = z.object({
-  outfitDescription: z.string().describe('A creative and appealing description of the complete outfit.'),
-  items: z.array(z.string()).describe('A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").'),
-  styleUsed: z.string().describe('The specific fashion style that was chosen for the outfit, especially if the input was "All".'),
-  weightHealth: z.string().describe('The body type of the person based on their height and weight.')
+  outfitDescription: z
+    .string()
+    .describe("A creative and appealing description of the complete outfit."),
+  items: z
+    .array(z.string())
+    .describe(
+      'A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").',
+    ),
+  styleUsed: z
+    .string()
+    .describe(
+      'The specific fashion style that was chosen for the outfit, especially if the input was "All".',
+    ),
+  weightHealth: z
+    .string()
+    .describe("The body type of the person based on their height and weight."),
 });
 export type OotdGeneratorOutput = z.infer<typeof OotdGeneratorOutputSchema>;
 
 const OotdImageGeneratorInputSchema = z.object({
-  outfitDescription: z.string().describe('The description of the outfit to be visualized.'),
-  gender: z.string().describe('The gender for the outfit (e.g., Male, Female).'),
-  height: z.number().describe('The height of the person in centimeters.'),
-  weight: z.number().describe('The weight of the person in kilograms.'),
-  items: z.array(z.string()).describe('A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").'),
-  weightHealth: z.string().describe('The body type of the person based on their height and weight.'),
-  pose: z.string().describe('The pose of the person in the outfit'),
-  cameraAngle: z.string().describe('The camera angle of the outfit'),
+  outfitDescription: z
+    .string()
+    .describe("The description of the outfit to be visualized."),
+  gender: z
+    .string()
+    .describe("The gender for the outfit (e.g., Male, Female)."),
+  height: z.number().describe("The height of the person in centimeters."),
+  weight: z.number().describe("The weight of the person in kilograms."),
+  items: z
+    .array(z.string())
+    .describe(
+      'A list of individual clothing items that make up the outfit (e.g., "Blue flannel shirt", "Black denim jeans", "Leather boots").',
+    ),
+  weightHealth: z
+    .string()
+    .describe("The body type of the person based on their height and weight."),
+  pose: z.string().describe("The pose of the person in the outfit"),
+  cameraAngle: z.string().describe("The camera angle of the outfit"),
 });
-export type OotdImageGeneratorInput = z.infer<typeof OotdImageGeneratorInputSchema>;
+export type OotdImageGeneratorInput = z.infer<
+  typeof OotdImageGeneratorInputSchema
+>;
 
 const OotdImageGeneratorOutputSchema = z.object({
-  imageUrl: z.string().describe("A data URI of the generated image. Expected format: 'data:image/png;base64,<encoded_data>'."),
+  imageUrl: z
+    .string()
+    .describe(
+      "A data URI of the generated image. Expected format: 'data:image/png;base64,<encoded_data>'.",
+    ),
 });
-export type OotdImageGeneratorOutput = z.infer<typeof OotdImageGeneratorOutputSchema>;
+export type OotdImageGeneratorOutput = z.infer<
+  typeof OotdImageGeneratorOutputSchema
+>;
 
-
-export async function generateOotdRunware(input: OotdGeneratorInput): Promise<OotdGeneratorOutput> {
+export async function generateOotdRunware(
+  input: OotdGeneratorInput,
+): Promise<OotdGeneratorOutput> {
   return ootdGeneratorFlow(input);
 }
 
-export async function generateOotdImageRunware(input: OotdImageGeneratorInput): Promise<OotdImageGeneratorOutput> {
+export async function generateOotdImageRunware(
+  input: OotdImageGeneratorInput,
+): Promise<OotdImageGeneratorOutput> {
   return ootdImageGeneratorRunwareFlow(input);
 }
 
 const ootdPrompt = ai.definePrompt({
-  name: 'ootdGeneratorRunwarePrompt',
+  name: "ootdGeneratorRunwarePrompt",
   input: {
     schema: OotdGeneratorInputSchema,
   },
@@ -90,40 +131,50 @@ Generate an OOTD now based on the user's preferences.`,
 
 const ootdGeneratorFlow = ai.defineFlow(
   {
-    name: 'ootdGeneratorRunwareFlow',
+    name: "ootdGeneratorRunwareFlow",
     inputSchema: OotdGeneratorInputSchema,
     outputSchema: OotdGeneratorOutputSchema,
   },
-  async (input : any) => {
+  async (input: any) => {
     const { output } = await ootdPrompt(input);
     return output!;
-  }
+  },
 );
-
 
 const ootdImageGeneratorRunwareFlow = ai.defineFlow(
   {
-    name: 'ootdImageGeneratorRunwareFlow',
+    name: "ootdImageGeneratorRunwareFlow",
     inputSchema: OotdImageGeneratorInputSchema,
     outputSchema: OotdImageGeneratorOutputSchema,
   },
-  async (input : any) => {
-    const { outfitDescription, gender, height, weight, items, weightHealth, pose, cameraAngle } = input;
+  async (input: any) => {
+    const {
+      outfitDescription,
+      gender,
+      height,
+      weight,
+      items,
+      weightHealth,
+      pose,
+      cameraAngle,
+    } = input;
 
     const prompt = `A high-quality, realistic fashion photograph of a person wearing an outfit, in the style of Runware.ai (edgy, futuristic).
 The person should reflect a ${gender} with ${weightHealth} body shape type appropriate for someone who is ${height} cm tall and ${weight} kg weight.
 The outfit is described as: "${outfitDescription}"
 The person pose is ${pose}
 The camera angle is ${cameraAngle}.
-The outfit items is: "${items.map((v: string) => '-'+v).join("\n")}"
+The outfit items is: "${items.map((v: string) => "-" + v).join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blurred. 
 The background should be a minimalist and relate with the outfit.`;
 
-    console.log(prompt);
+    // console.log(prompt);
 
     const RUNWARE_API_KEY = process.env.RUNWARE_API_KEY;
     if (!RUNWARE_API_KEY) {
-      throw new Error("Runware API key is not configured. Please set the RUNWARE_API_KEY environment variable.");
+      throw new Error(
+        "Runware API key is not configured. Please set the RUNWARE_API_KEY environment variable.",
+      );
     }
 
     const runware = new Runware({
@@ -133,14 +184,18 @@ The background should be a minimalist and relate with the outfit.`;
     });
 
     try {
+      // console.log("try to request images");
+
       const images = await runware.requestImages({
         positivePrompt: prompt,
         model: "runware:108@1",
         // model: "runware:101@1",
         width: 1024,
         height: 1024,
-        outputType: "base64Data"
+        outputType: "base64Data",
       });
+
+      // console.log("images generated", images);
 
       if (images && images.length > 0) {
         const base64Image = images[0].imageBase64Data;
@@ -150,13 +205,14 @@ The background should be a minimalist and relate with the outfit.`;
         console.error("Runware SDK Error: No images returned");
         throw new Error(`Runware API request failed: No images returned`);
       }
-
     } catch (err: any) {
       console.error(err);
-      throw new Error(err.message || 'An unexpected error occurred while generating the image with Runware.');
-    }
-    finally {
+      throw new Error(
+        err.message ||
+          "An unexpected error occurred while generating the image with Runware.",
+      );
+    } finally {
       runware.disconnect();
     }
-  }
+  },
 );
