@@ -8,7 +8,7 @@ export default function TermsOfServicePage() {
                 <h1>Terms of Service (ToS) for Randomizer.fun</h1>
                 <p><em>Last Updated: October 11, 2025</em></p>
 
-                <p>Please read these Terms of Service ("Terms," "ToS") carefully before using the Randomizer.fun website (the "Service") operated by [Your Name/Company Name] ("Us," "We," or "Our").</p>
+                <p>Please read these Terms of Service ("Terms," "ToS") carefully before using the Randomizer.fun website (the "Service") operated by [Gisariweb] ("Us," "We," or "Our").</p>
 
                 <p>Your access to and use of the Service is conditioned upon your acceptance of and compliance with these Terms. These Terms apply to all visitors, users, and others who wish to access or use the Service.</p>
 
