@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/context/AuthContext';
+import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
   title: 'Randomizer',
@@ -28,7 +29,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased min-h-screen bg-gradient-to-br from-background to-secondary">
+      <body className="font-body antialiased min-h-screen bg-gradient-to-br from-background to-secondary flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -37,6 +38,7 @@ export default function RootLayout({
         >
           <AuthProvider>{children}</AuthProvider>
           <Toaster />
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
