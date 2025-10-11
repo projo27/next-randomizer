@@ -14,9 +14,21 @@ import { Button } from "@/components/ui/button";
 import { Wand2, Trash2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "./ui/label";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import dynamic from "next/dynamic";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getSpinnerWinner } from "@/app/actions/spinner-action";
+
+const Wheel = dynamic(
+  () => import("react-custom-roulette").then((mod) => mod.Wheel),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center">
+        <p>Loading wheel...</p>
+      </div>
+    ),
+  },
+);
 
 const WHEEL_COLORS = [
   "#FFC107",
@@ -47,40 +59,10 @@ const getBestTextColor = (bgColor: string): string => {
   return luma < 128 ? "white" : "black";
 };
 
-// @ts-ignore
-const CustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  index,
-  payload,
-}) => {
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  const textColor = getBestTextColor(WHEEL_COLORS[index % WHEEL_COLORS.length]);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill={textColor}
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-      className="text-sm font-semibold"
-    >
-      {payload.name}
-    </text>
-  );
-};
-
 export default function Spinner() {
   const [itemsText, setItemsText] = useState("Apple\nBanana\nOrange\nGrape");
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [mustSpin, setMustSpin] = useState(false);
+  const [prizeNumber, setPrizeNumber] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
@@ -97,11 +79,9 @@ export default function Spinner() {
   );
 
   const data = useMemo(() => {
-    if (items.length === 0) return [{ name: "Empty", value: 1 }];
-    return items.map((item) => ({ name: item, value: 1 }));
+    if (items.length === 0) return [{ option: "Empty" }];
+    return items.map((item) => ({ option: item }));
   }, [items]);
-
-  const segmentAngle = 360 / (items.length || 1);
 
   const handleSpin = async () => {
     if (items.length < 2) {
@@ -112,42 +92,19 @@ export default function Spinner() {
       });
       return;
     }
-    if (isSpinning) return;
-    triggerRateLimit();
-    setIsSpinning(true);
+    if (mustSpin) return;
+    // triggerRateLimit();
     setWinner(null);
     setIsResultCopied(false);
 
-    // The server determines the winner
     const newWinner = await getSpinnerWinner(items);
-    if (!newWinner) {
-      setIsSpinning(false);
-      return;
+    console.log(newWinner);
+
+    if (!mustSpin) {
+      const winnerIndex = items.indexOf(newWinner!);
+      setPrizeNumber(winnerIndex);
+      setMustSpin(true);
     }
-
-    const winnerIndex = items.indexOf(newWinner);
-
-    // Calculate rotation to land on the winner
-    // The arrow points down (270deg on the chart). The chart starts at 0deg (3 o'clock).
-    const targetAngle = winnerIndex * segmentAngle + segmentAngle / 2;
-    const offsetAngle = 270 - 90; // Adjust for arrow position and chart start
-    const randomAngleInSegment = (Math.random() - 0.5) * segmentAngle * 0.8;
-    const finalTargetAngle = (targetAngle + randomAngleInSegment) % 360;
-
-    const spinCycles = 5 + Math.floor(Math.random() * 5);
-    const newRotation =
-      rotation +
-      360 * spinCycles +
-      (360 - (rotation % 360)) -
-      finalTargetAngle +
-      offsetAngle;
-
-    setRotation(newRotation);
-
-    setTimeout(() => {
-      setWinner(newWinner);
-      setIsSpinning(false);
-    }, 5000); // Must match animation duration
   };
 
   const handleCopyInput = () => {
@@ -169,6 +126,8 @@ export default function Spinner() {
     setTimeout(() => setIsResultCopied(false), 2000);
   };
 
+  const isSpinning = mustSpin || isRateLimited;
+
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
@@ -177,52 +136,40 @@ export default function Spinner() {
           Enter items to spin the wheel and pick a random winner.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid md:grid-cols-2 gap-8 items-center">
+      <CardContent className="grid md:grid-cols-[1fr_1fr] gap-4 items-center h-full">
         <div className="relative">
-          <div className="aspect-square p-4 relative flex items-center justify-center">
-            <div
-              className="spinner-arrow absolute w-10 h-10 text-accent -top-1"
-              style={{
-                transform: "translateX(-50%) rotate(0deg)",
-                clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+          <div className="aspect-square relative flex items-center justify-center w-full h-full">
+            {/* <div className="w-full h-full rounded-full border-4 border-accent shadow-2xl overflow-hidden relative"> */}
+            <Wheel
+              mustStartSpinning={mustSpin}
+              prizeNumber={prizeNumber}
+              data={data.map((item, index) => ({
+                ...item,
+                style: {
+                  backgroundColor: WHEEL_COLORS[index % WHEEL_COLORS.length],
+                  textColor: getBestTextColor(
+                    WHEEL_COLORS[index % WHEEL_COLORS.length],
+                  ),
+                },
+              }))}
+              onStopSpinning={() => {
+                setMustSpin(false);
+                setWinner(items[prizeNumber]);
+              }}
+              outerBorderColor="#d1d5db"
+              radiusLineColor="#d1d5db"
+              fontSize={16}
+              // spinDuration={0.55}
+              pointerProps={{
+                // src: "/spinner-arrow.svg",
+                style: { transform: "rotate(0deg) scale(0.8)" },
               }}
             />
-            <div
-              className="w-full h-full rounded-full border-4 border-accent shadow-2xl overflow-hidden relative transition-transform ease-out"
-              style={{
-                transform: `rotate(${rotation}deg)`,
-              }}
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={data}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    // @ts-ignore
-                    label={<CustomizedLabel />}
-                    outerRadius="100%"
-                    innerRadius="10%"
-                    dataKey="value"
-                    startAngle={90}
-                    endAngle={450}
-                  >
-                    {data.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={WHEEL_COLORS[index % WHEEL_COLORS.length]}
-                        stroke={WHEEL_COLORS[index % WHEEL_COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            {/* </div> */}
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="relative">
+        <div className="space-y-4 flex flex-col h-full py-6">
+          <div className="relative h-2/3 mb-8">
             <Label htmlFor="spinner-items">Items (one per line)</Label>
             <Textarea
               id="spinner-items"
@@ -230,15 +177,15 @@ export default function Spinner() {
               rows={8}
               value={itemsText}
               onChange={(e) => setItemsText(e.target.value)}
-              className="resize-none pr-20 mt-1.5"
-              disabled={isSpinning || isRateLimited}
+              className="resize-none pr-20 mt-1.5 h-full"
+              disabled={isSpinning}
             />
             <div className="absolute top-8 right-2 flex flex-col gap-2">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleCopyInput}
-                disabled={isSpinning || isRateLimited}
+                disabled={isSpinning}
               >
                 {isInputCopied ? (
                   <Check className="h-5 w-5 text-green-500" />
@@ -250,14 +197,14 @@ export default function Spinner() {
                 variant="ghost"
                 size="icon"
                 onClick={handleClearInput}
-                disabled={isSpinning || isRateLimited}
+                disabled={isSpinning}
               >
                 <Trash2 className="h-5 w-5" />
               </Button>
             </div>
           </div>
-          {winner && !isSpinning && (
-            <Card className="bg-card/80">
+          {winner && !mustSpin && (
+            <Card className="bg-card/80 h-1/3">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl">Winner!</CardTitle>
                 <Button variant="ghost" size="icon" onClick={handleCopyResult}>
@@ -278,11 +225,11 @@ export default function Spinner() {
       <CardFooter>
         <Button
           onClick={handleSpin}
-          disabled={isSpinning || isRateLimited}
+          disabled={isSpinning}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isSpinning
+          {mustSpin
             ? "Spinning..."
             : isRateLimited
               ? "Please wait..."

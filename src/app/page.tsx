@@ -202,7 +202,7 @@ function HomePageContent() {
     {
       value: "spinner",
       text: "Spinner",
-      hidden: true,
+      hidden: false,
       badge: "",
       icon: <Disc className="h-5 w-5" />,
       content: <Spinner />,

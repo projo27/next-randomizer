@@ -1,7 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
+import {
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  initializeFirestore,
+} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -18,21 +22,25 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
+// const db = getFirestore(app);
 
 // Enable Firestore persistence
-if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db)
-    .catch((err) => {
-      if (err.code == 'failed-precondition') {
-        // Multiple tabs open, persistence can only be enabled in one tab at a time.
-        console.warn('Firestore persistence failed: Multiple tabs open.');
-      } else if (err.code == 'unimplemented') {
-        // The browser does not support all of the features required to enable persistence
-        console.warn('Firestore persistence failed: Browser does not support persistence.');
-      }
-    });
-}
-
+// if (typeof window !== 'undefined') {
+//   enableIndexedDbPersistence(db)
+//     .catch((err) => {
+//       if (err.code == 'failed-precondition') {
+//         // Multiple tabs open, persistence can only be enabled in one tab at a time.
+//         console.warn('Firestore persistence failed: Multiple tabs open.');
+//       } else if (err.code == 'unimplemented') {
+//         // The browser does not support all of the features required to enable persistence
+//         console.warn('Firestore persistence failed: Browser does not support persistence.');
+//       }
+//     });
+// }
 
 export { app, auth, db };
