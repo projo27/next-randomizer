@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
                 <h1>Privacy Policy for Randomizer.fun</h1>
                 <p><em>Last Updated: October 11, 2025</em></p>
                 <p>This Privacy Policy explains how Randomizer.fun ("We," "Us," or "Our") collects, uses, and discloses your information in connection with your use of our website.</p>
-                
+                <br />
                 <h2>1. Information We Collect</h2>
                 <p>We collect the following data when you use our services:</p>
 
