@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 function getDecimalDigits(value: number): number {
     const valueStr = value.toString();

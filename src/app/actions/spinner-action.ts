@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 export async function getSpinnerWinner(items: string[]): Promise<string | null> {
     if (items.length < 2) {

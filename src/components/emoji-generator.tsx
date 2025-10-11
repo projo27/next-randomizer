@@ -138,7 +138,7 @@ export default function EmojiGenerator() {
         
         {(result || isGenerating) && (
             <div className="relative min-h-[160px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
-                <p className="text-6xl tracking-widest text-accent select-all flex flex-wrap justify-center gap-x-4 gap-y-2">
+                <p className="text-6xl tracking-widest text-accent select-all flex flex-wrap justify-center gap-x-2 gap-y-6">
                     {result?.map((emoji, index) => (
                         <span key={index}>{emoji}</span>
                     ))}

@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 const CARDINAL_DIRECTIONS = ["North", "East", "South", "West"];
 const INTERCARDINAL_DIRECTIONS = ["Northeast", "Southeast", "Southwest", "Northwest"];

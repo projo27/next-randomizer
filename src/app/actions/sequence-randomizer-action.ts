@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];

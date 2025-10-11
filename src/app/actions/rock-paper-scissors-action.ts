@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];

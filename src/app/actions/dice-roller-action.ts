@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 export async function rollDice(numberOfDice: number, diceType: number): Promise<number[]> {
     const results: number[] = [];

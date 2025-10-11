@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 
 const NUMBERS = "0123456789";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
