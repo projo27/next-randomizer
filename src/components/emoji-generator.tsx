@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -40,7 +39,7 @@ const EMOJI_CATEGORIES = {
 export default function EmojiGenerator() {
   const [count, setCount] = useState("5");
   const [category, setCategory] = useState("all");
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<string[] | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +83,7 @@ export default function EmojiGenerator() {
 
   const handleCopy = () => {
     if (!result) return;
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(result.join(""));
     setIsCopied(true);
     toast({
       title: "Copied!",
@@ -138,9 +137,11 @@ export default function EmojiGenerator() {
         </div>
         
         {(result || isGenerating) && (
-            <div className="relative min-h-[160px] flex items-center justify-center bg-muted/50 rounded-lg p-4 gap-8">
-                <p className="text-6xl tracking-widest text-accent select-all">
-                    {result}
+            <div className="relative min-h-[160px] flex items-center justify-center bg-muted/50 rounded-lg p-4">
+                <p className="text-6xl tracking-widest text-accent select-all flex flex-wrap justify-center gap-x-4 gap-y-2">
+                    {result?.map((emoji, index) => (
+                        <span key={index}>{emoji}</span>
+                    ))}
                 </p>
                  {result && !isGenerating && (
                     <div className="absolute top-2 right-2">

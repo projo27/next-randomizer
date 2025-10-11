@@ -13,15 +13,15 @@ const EMOJI_CATEGORIES = {
 
 const ALL_EMOJIS = Object.values(EMOJI_CATEGORIES).flat();
 
-export async function generateEmojis(count: number, category: string): Promise<string> {
+export async function generateEmojis(count: number, category: string): Promise<string[]> {
     const emojiList = category === "all" 
       ? ALL_EMOJIS 
       // @ts-ignore
       : EMOJI_CATEGORIES[category] || ALL_EMOJIS;
 
-    let generated = "";
+    const generated: string[] = [];
     for (let i = 0; i < count; i++) {
-      generated += emojiList[Math.floor(Math.random() * emojiList.length)];
+      generated.push(emojiList[Math.floor(Math.random() * emojiList.length)]);
     }
     return generated;
 }

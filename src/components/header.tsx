@@ -41,11 +41,11 @@ export function Header() {
 
   return (
     <header className="relative mb-8 text-center w-full max-w-6xl mx-auto">
-      <div className="flex flex-wrap md:justify-between items-center gap-2">
+      <div className="flex flex-wrap md:justify-between justify-center items-center gap-2">
         <div className="flex md:flex-1 order-2 md:order-1 justify-end md:justify-start md:ml-8 items-end">
           <FirebaseLoginButton />
         </div>
-        <div className="inline-flex flex-1 md:flex-1 order-1 md:order-2 items-center gap-4">
+        <div className="inline-flex md:flex-1 w-full order-1 md:order-2 items-center gap-4 justify-center">
           <button onClick={handleDiceClick} aria-label="Go to a random feature">
             <Dice5
               className={cn(
