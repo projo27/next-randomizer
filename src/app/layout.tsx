@@ -1,14 +1,16 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/context/AuthContext';
-import { Footer } from '@/components/footer';
+import type { Metadata } from "next";
+import "./globals.css";
+import { GoogleTagManager } from "@next/third-parties/google";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/context/AuthContext";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: 'Randomizer.fun',
-  description: 'A fun app to randomize anything! and Your fun-filled tool for making choices!',
-  manifest: '/manifest.json',
+  title: "Randomizer.fun",
+  description:
+    "A fun app to randomize anything! and Your fun-filled tool for making choices!",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -19,16 +21,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-VDX6B1EEH3"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-VDX6B1EEH3');
-        </script>
-
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -59,6 +51,10 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
       </body>
+      {/* Tempatkan komponen GTM di sini.
+        Secara default, ini akan memuat script GTM setelah hidrasi.
+      */}
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
     </html>
   );
 }
