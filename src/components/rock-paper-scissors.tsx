@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -42,6 +42,24 @@ export default function RockPaperScissors() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isPlaying) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isPlaying]);
 
   const handlePlay = async () => {
     if (isPlaying) return;
@@ -160,8 +178,8 @@ export default function RockPaperScissors() {
           {isPlaying
             ? "Playing..."
             : isRateLimited
-              ? "Please wait..."
-              : "Play!"}
+            ? "Please wait..."
+            : "Play!"}
         </Button>
       </CardFooter>
     </Card>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -50,7 +50,7 @@ function ResultDisplay({
   if (!results || results.length === 0) {
     return null;
   }
-  
+
   const isSingleResult = results.length === 1;
 
   return (
@@ -100,6 +100,24 @@ export default function NumberRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { toast } = useToast();
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isRandomizing) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isRandomizing]);
 
   const handleRandomize = async () => {
     triggerRateLimit();

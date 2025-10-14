@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -74,6 +74,24 @@ export default function TeamShuffler() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isShuffling) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isShuffling]);
 
   useEffect(() => {
     if (inputMode === 'textarea') {

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -37,6 +37,24 @@ export default function CoinFlipper() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isFlipping) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isFlipping]);
 
   const handleFlip = async () => {
     if (isFlipping) return;
@@ -59,12 +77,14 @@ export default function CoinFlipper() {
   const displayArray: (CoinResult | null)[] = isFlipping
     ? Array(numCoins).fill(null)
     : results.length
-      ? results
-      : ["Heads"];
+    ? results
+    : ["Heads"];
 
   const handleCopy = () => {
     if (results.length === 0) return;
-    const resultString = `Heads: ${headsCount}, Tails: ${tailsCount}\nDetails: ${results.join(", ")}`;
+    const resultString = `Heads: ${headsCount}, Tails: ${tailsCount}\nDetails: ${results.join(
+      ", ",
+    )}`;
     navigator.clipboard.writeText(resultString);
     setIsCopied(true);
     toast({
@@ -154,8 +174,8 @@ export default function CoinFlipper() {
           {isFlipping
             ? "Flipping..."
             : isRateLimited
-              ? "Please wait..."
-              : "Flip Coins!"}
+            ? "Please wait..."
+            : "Flip Coins!"}
         </Button>
       </CardFooter>
     </Card>

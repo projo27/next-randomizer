@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -32,11 +33,33 @@ export default function LotteryGenerator() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+    audioRef.current.loop = true;
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isGenerating) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isGenerating]);
+
 
   useEffect(() => {
     return () => {
-      if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
-      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      if (animationIntervalRef.current)
+        clearInterval(animationIntervalRef.current);
+      if (countdownIntervalRef.current)
+        clearInterval(countdownIntervalRef.current);
     };
   }, []);
 

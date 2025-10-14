@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -55,6 +55,24 @@ export default function ColorPaletteGenerator() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isGenerating) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isGenerating]);
 
   const generatePalettes = async () => {
     if (isGenerating) return;
@@ -66,14 +84,18 @@ export default function ColorPaletteGenerator() {
     const countColors = parseInt(numColors, 10);
 
     try {
-        const allNewPalettes = await generatePalettesAction(countPalettes, countColors, scheme);
-        setTimeout(() => {
-          setPalettes(allNewPalettes);
-          setIsGenerating(false);
-        }, animationDuration * 100); // shorter duration for faster feedback
-    } catch(e) {
-        console.error(e);
+      const allNewPalettes = await generatePalettesAction(
+        countPalettes,
+        countColors,
+        scheme,
+      );
+      setTimeout(() => {
+        setPalettes(allNewPalettes);
         setIsGenerating(false);
+      }, animationDuration * 1000); // Use context duration
+    } catch (e) {
+      console.error(e);
+      setIsGenerating(false);
     }
   };
 
@@ -218,8 +240,8 @@ export default function ColorPaletteGenerator() {
           {isGenerating
             ? "Generating..."
             : isRateLimited
-              ? "Please wait..."
-              : "Generate New Palette(s)"}
+            ? "Please wait..."
+            : "Generate New Palette(s)"}
         </Button>
       </CardFooter>
     </Card>

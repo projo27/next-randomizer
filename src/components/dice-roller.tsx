@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -38,25 +38,44 @@ const diceIcons = [
 
 const animations = ["animate-spin-dice"];
 
-const DiceDisplay = ({ type, result, isRolling, animationClass }: { type: number, result: number, isRolling: boolean, animationClass: string }) => {
-    if (type === 6) {
-        const iconToShow = isRolling ? diceIcons[0] : (diceIcons[result - 1] || diceIcons[0]);
-        return (
-            <div className={cn("dark:text-primary light:text-accent", isRolling && animationClass)}>
-                {iconToShow}
-            </div>
-        );
-    }
-    
-    // Fallback for other dice types
+const DiceDisplay = ({
+  type,
+  result,
+  isRolling,
+  animationClass,
+}: {
+  type: number;
+  result: number;
+  isRolling: boolean;
+  animationClass: string;
+}) => {
+  if (type === 6) {
+    const iconToShow = isRolling
+      ? diceIcons[0]
+      : diceIcons[result - 1] || diceIcons[0];
     return (
-      <div className={cn(
-        "flex items-center justify-center w-32 h-32 bg-muted/80 border-2 border-accent rounded-lg text-accent",
-        isRolling && animationClass
-      )}>
-        <span className="text-5xl font-bold">{isRolling ? '?' : result}</span>
+      <div
+        className={cn(
+          "dark:text-primary light:text-accent",
+          isRolling && animationClass,
+        )}
+      >
+        {iconToShow}
       </div>
     );
+  }
+
+  // Fallback for other dice types
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center w-32 h-32 bg-muted/80 border-2 border-accent rounded-lg text-accent",
+        isRolling && animationClass,
+      )}
+    >
+      <span className="text-5xl font-bold">{isRolling ? "?" : result}</span>
+    </div>
+  );
 };
 
 export default function DiceRoller() {
@@ -69,27 +88,46 @@ export default function DiceRoller() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isRolling) {
+        audio.currentTime = 0;
+        audio.play().catch((e) => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isRolling]);
 
   const handleRoll = async () => {
     if (isRolling) return;
     triggerRateLimit();
     setIsRolling(true);
     setIsCopied(false);
-    
-    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+
+    const randomAnimation =
+      animations[Math.floor(Math.random() * animations.length)];
     setAnimationClass(randomAnimation);
 
     const numDice = parseInt(numberOfDice, 10);
     const numSides = parseInt(diceType, 10);
-    
+
     try {
-        const newResults = await rollDice(numDice, numSides);
-        setTimeout(() => {
-          setResults(newResults);
-          setIsRolling(false);
-        }, animationDuration * 1000); // Duration of the animation
-    } catch(e) {
+      const newResults = await rollDice(numDice, numSides);
+      setTimeout(() => {
+        setResults(newResults);
         setIsRolling(false);
+      }, animationDuration * 1000); // Duration of the animation
+    } catch (e) {
+      setIsRolling(false);
     }
   };
 
@@ -100,8 +138,8 @@ export default function DiceRoller() {
   const displayArray: number[] = isRolling
     ? Array.from({ length: numDice }).map(() => 1) // Just a placeholder for animation
     : results.length > 0
-      ? results
-      : [numSides];
+    ? results
+    : [numSides];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -168,7 +206,12 @@ export default function DiceRoller() {
         </div>
         <div className="flex flex-col p-8 bg-muted/50 rounded-lg relative">
           <div className="absolute top-2 right-2">
-            <Button variant="ghost" size="icon" onClick={handleCopy} disabled={isRolling || results.length === 0}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCopy}
+              disabled={isRolling || results.length === 0}
+            >
               {isCopied ? (
                 <Check className="h-5 w-5 text-green-500" />
               ) : (
@@ -178,7 +221,13 @@ export default function DiceRoller() {
           </div>
           <div className="flex justify-center items-center min-h-[120px] gap-4 flex-wrap">
             {displayArray.map((result, i) => (
-               <DiceDisplay key={i} type={numSides} result={result} isRolling={isRolling} animationClass={animationClass}/>
+              <DiceDisplay
+                key={i}
+                type={numSides}
+                result={result}
+                isRolling={isRolling}
+                animationClass={animationClass}
+              />
             ))}
           </div>
           {!isRolling && results.length > 0 && (
@@ -198,8 +247,8 @@ export default function DiceRoller() {
           {isRolling
             ? "Rolling..."
             : isRateLimited
-              ? "Please wait..."
-              : "Roll Dice!"}
+            ? "Please wait..."
+            : "Roll Dice!"}
         </Button>
       </CardFooter>
     </Card>
