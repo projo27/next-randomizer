@@ -25,6 +25,7 @@ import { HeadsIcon } from "./icons/heads-icon";
 import { TailsIcon } from "./icons/tails-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { flipCoins } from "@/app/actions/coin-flipper-action";
+import { useSettings } from "@/context/SettingsContext";
 
 type CoinResult = "Heads" | "Tails";
 
@@ -35,6 +36,7 @@ export default function CoinFlipper() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const handleFlip = async () => {
     if (isFlipping) return;
@@ -48,7 +50,7 @@ export default function CoinFlipper() {
     setTimeout(() => {
       setResults(newResults);
       setIsFlipping(false);
-    }, 1000); // Animation duration
+    }, animationDuration * 1000); // Animation duration
   };
 
   const headsCount = results.filter((r) => r === "Heads").length;

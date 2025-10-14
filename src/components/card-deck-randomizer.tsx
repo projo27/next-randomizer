@@ -20,6 +20,7 @@ import PlayingCard from "./playing-card";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { drawCards, CardType } from "@/app/actions/card-deck-action";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
@@ -30,6 +31,7 @@ export default function CardDeckRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const deckSize = useMemo(() => includeJokers ? 54 : 52, [includeJokers]);
 
@@ -57,7 +59,7 @@ export default function CardDeckRandomizer() {
         setTimeout(() => {
           setDrawnCards(newDrawnCards);
           setIsDrawing(false);
-        }, 1000); // Animation duration
+        }, animationDuration * 1000);
     } catch(e: any) {
         setError(e.message);
         setIsDrawing(false);

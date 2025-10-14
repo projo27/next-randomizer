@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { cn } from "@/lib/utils";
 import { rollDice } from "@/app/actions/dice-roller-action";
+import { useSettings } from "@/context/SettingsContext";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -67,6 +68,7 @@ export default function DiceRoller() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const handleRoll = async () => {
     if (isRolling) return;
@@ -85,7 +87,7 @@ export default function DiceRoller() {
         setTimeout(() => {
           setResults(newResults);
           setIsRolling(false);
-        }, 1000); // Duration of the animation
+        }, animationDuration * 1000); // Duration of the animation
     } catch(e) {
         setIsRolling(false);
     }

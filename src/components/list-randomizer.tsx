@@ -190,6 +190,8 @@ export default function ListRandomizer() {
     try {
       const serverResult = await randomizeList(uniqueOptions, numToPick);
       
+      console.log(animationDuration);
+
       // Delay setting the result and stopping the shuffle based on context duration
       setTimeout(() => {
         setResult(serverResult);

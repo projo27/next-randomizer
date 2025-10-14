@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from './ui/alert';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { randomizeDates } from '@/app/actions/date-randomizer-action';
+import { useSettings } from '@/context/SettingsContext';
 
 function AnimatedResultList({
   isShuffling,
@@ -101,6 +102,7 @@ export default function DateRandomizer() {
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   useEffect(() => {
     const now = new Date();
@@ -158,7 +160,7 @@ export default function DateRandomizer() {
         setTimeout(() => {
           setResults(serverResult.map(d => new Date(d))); // Re-hydrate date objects
           setIsRandomizing(false);
-        }, 500);
+        }, animationDuration * 1000);
     } catch(e: any) {
         setError(e.message);
         setIsRandomizing(false);

@@ -16,6 +16,7 @@ import { Wand2, Copy, Check, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { randomizeSequence } from "@/app/actions/sequence-randomizer-action";
+import { useSettings } from "@/context/SettingsContext";
 
 function AnimatedResultList({
   isShuffling,
@@ -84,6 +85,7 @@ Participant 4`);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const handleShuffle = async () => {
     triggerRateLimit();
@@ -103,7 +105,7 @@ Participant 4`);
         setTimeout(() => {
           setShuffledItems(newShuffledItems);
           setIsShuffling(false);
-        }, 500);
+        }, animationDuration * 1000);
       } catch (e) {
         setIsShuffling(false);
       }

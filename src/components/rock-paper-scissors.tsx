@@ -23,6 +23,7 @@ import { Wand2, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { playRps } from "@/app/actions/rock-paper-scissors-action";
+import { useSettings } from "@/context/SettingsContext";
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];
@@ -40,6 +41,7 @@ export default function RockPaperScissors() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const handlePlay = async () => {
     if (isPlaying) return;
@@ -54,7 +56,7 @@ export default function RockPaperScissors() {
     setTimeout(() => {
       setResults(newResults);
       setIsPlaying(false);
-    }, 1000); // Animation duration
+    }, animationDuration * 1000); // Animation duration
   };
 
   const handleCopy = () => {

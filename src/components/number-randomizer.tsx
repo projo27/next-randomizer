@@ -18,6 +18,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription } from "./ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { randomizeNumber } from "@/app/actions/number-randomizer-action";
+import { useSettings } from "@/context/SettingsContext";
 
 function ResultDisplay({
   isRandomizing,
@@ -98,6 +99,7 @@ export default function NumberRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { toast } = useToast();
+  const { animationDuration } = useSettings();
 
   const handleRandomize = async () => {
     triggerRateLimit();
@@ -132,7 +134,7 @@ export default function NumberRandomizer() {
         setTimeout(() => {
             setResult(serverResult);
             setIsRandomizing(false);
-        }, 500);
+        }, animationDuration * 1000);
     } catch (e: any) {
         setError(e.message);
         setIsRandomizing(false);

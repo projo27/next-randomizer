@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generatePalettes as generatePalettesAction } from "@/app/actions/color-palette-action";
+import { useSettings } from "@/context/SettingsContext";
 
 type ColorScheme =
   | "analogous"
@@ -53,6 +54,7 @@ export default function ColorPaletteGenerator() {
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const generatePalettes = async () => {
     if (isGenerating) return;
@@ -68,7 +70,7 @@ export default function ColorPaletteGenerator() {
         setTimeout(() => {
           setPalettes(allNewPalettes);
           setIsGenerating(false);
-        }, 500);
+        }, animationDuration * 100); // shorter duration for faster feedback
     } catch(e) {
         console.error(e);
         setIsGenerating(false);

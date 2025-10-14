@@ -23,6 +23,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Skeleton } from "./ui/skeleton";
 import { cn } from "@/lib/utils";
 import { shuffleTeams } from "@/app/actions/team-shuffler-action";
+import { useSettings } from "@/context/SettingsContext";
 
 type Participant = {
   id: string;
@@ -72,6 +73,7 @@ export default function TeamShuffler() {
   const [inputMode, setInputMode] = useState<'panel' | 'textarea'>('panel');
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   useEffect(() => {
     if (inputMode === 'textarea') {
@@ -169,7 +171,7 @@ export default function TeamShuffler() {
         setTimeout(() => {
             setTeams(newTeams);
             setIsShuffling(false);
-        }, 1000);
+        }, animationDuration * 1000);
     } catch(e: any) {
         setError(e.message);
         setIsShuffling(false);

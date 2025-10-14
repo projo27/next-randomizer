@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generateRandomNumberInBases } from "@/app/actions/number-base-action";
+import { useSettings } from "@/context/SettingsContext";
 
 interface Result {
   decimal: number;
@@ -35,6 +36,7 @@ export default function NumberBaseRandomizer() {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { animationDuration } = useSettings();
 
   const handleRandomize = async () => {
     triggerRateLimit();
@@ -57,7 +59,7 @@ export default function NumberBaseRandomizer() {
         setTimeout(() => {
           setResult(newResult);
           setIsGenerating(false);
-        }, 500);
+        }, animationDuration * 1000);
     } catch(e: any) {
         setError(e.message);
         setIsGenerating(false);
