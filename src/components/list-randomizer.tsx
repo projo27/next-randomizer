@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -55,15 +56,30 @@ export default function ListRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    setAudio(new Audio("/musics/randomize-synth.mp3"));
+    // Initialize audio on client side
+    audioRef.current = new Audio("/musics/randomize-synth.mp3");
 
     if (inputMode === "textarea") {
       setItemsText(items.map((p) => p.value).join("\n"));
     }
   }, [inputMode, items]);
+  
+  // Effect to control audio playback based on isShuffling state
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isShuffling) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.error("Audio play error:", e));
+      } else {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    }
+  }, [isShuffling]);
 
   const handleInputModeChange = (checked: boolean) => {
     const newMode = checked ? "textarea" : "panel";
@@ -87,15 +103,6 @@ export default function ListRandomizer() {
   };
 
   const handleRandomize = async () => {
-    if (audio) {
-      audio.currentTime = 0;
-      // Play the sound and ignore any AbortError if it gets paused too quickly
-      audio.play().catch((error) => {
-        if (error.name !== "AbortError") {
-          console.error("Audio play error:", error);
-        }
-      });
-    }
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -118,19 +125,11 @@ export default function ListRandomizer() {
 
     if (uniqueOptions.length === 0) {
       setError("Please enter at least one item in the list.");
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
       return;
     }
 
     if (isNaN(numToPick) || numToPick <= 0) {
       setError("Please enter a valid number of items to pick (must be > 0).");
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
       return;
     }
 
@@ -138,40 +137,19 @@ export default function ListRandomizer() {
       setError(
         `Not enough unique options to pick ${numToPick}. Please add more.`,
       );
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
       return;
     }
 
     setIsShuffling(true);
     setOptions(uniqueOptions);
 
-    // Define a minimum delay promise
-    const minDelay = new Promise((resolve) => setTimeout(resolve, 500)); // 500ms minimum duration
-
-    // Define the server request promise
-    const randomizePromise = randomizeList(uniqueOptions, numToPick);
-
     try {
-      // Wait for both the server and the minimum delay to finish
-      const [serverResult] = await Promise.all([randomizePromise, minDelay]);
-
-      // Now that we've waited, it's safe to pause and set the result
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      const serverResult = await randomizeList(uniqueOptions, numToPick);
       setResult(serverResult);
     } catch (e: any) {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
       setError(e.message);
     } finally {
-      setIsShuffling(false); // Always stop shuffling animation
+      setIsShuffling(false); // This will trigger the useEffect to stop the audio
     }
   };
 
