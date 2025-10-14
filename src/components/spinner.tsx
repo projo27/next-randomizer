@@ -59,8 +59,21 @@ const getBestTextColor = (bgColor: string): string => {
   return luma < 128 ? "white" : "black";
 };
 
+const DEFAULT_LIST = [
+  "Apple",
+  "Banana",
+  "Orange",
+  "Grape",
+  "Stawberry",
+  "Mango",
+  "Kiwi",
+  "Cherry",
+  "Watermellon",
+  "Pineapple",
+];
+
 export default function Spinner() {
-  const [itemsText, setItemsText] = useState("Apple\nBanana\nOrange\nGrape");
+  const [itemsText, setItemsText] = useState(DEFAULT_LIST.join("\n"));
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
@@ -139,33 +152,36 @@ export default function Spinner() {
       <CardContent className="grid md:grid-cols-[1fr_1fr] gap-4 items-center h-full">
         <div className="relative">
           <div className="aspect-square relative flex items-center justify-center w-full h-full">
-            {/* <div className="w-full h-full rounded-full border-4 border-accent shadow-2xl overflow-hidden relative"> */}
-            <Wheel
-              mustStartSpinning={mustSpin}
-              prizeNumber={prizeNumber}
-              data={data.map((item, index) => ({
-                ...item,
-                style: {
-                  backgroundColor: WHEEL_COLORS[index % WHEEL_COLORS.length],
-                  textColor: getBestTextColor(
-                    WHEEL_COLORS[index % WHEEL_COLORS.length],
-                  ),
-                },
-              }))}
-              onStopSpinning={() => {
-                setMustSpin(false);
-                setWinner(items[prizeNumber]);
-              }}
-              outerBorderColor="#d1d5db"
-              radiusLineColor="#d1d5db"
-              fontSize={16}
-              // spinDuration={0.55}
-              pointerProps={{
-                // src: "/spinner-arrow.svg",
-                style: { transform: "rotate(0deg) scale(0.8)" },
-              }}
-            />
-            {/* </div> */}
+            <div className="rotate-[-45deg]">
+              <Wheel
+                mustStartSpinning={mustSpin}
+                prizeNumber={prizeNumber}
+                data={data.map((item, index) => ({
+                  ...item,
+                  style: {
+                    backgroundColor: WHEEL_COLORS[index % WHEEL_COLORS.length],
+                    textColor: getBestTextColor(
+                      WHEEL_COLORS[index % WHEEL_COLORS.length],
+                    ),
+                  },
+                }))}
+                onStopSpinning={() => {
+                  setMustSpin(false);
+                  setWinner(items[prizeNumber]);
+                }}
+                outerBorderColor="#d1d5db"
+                radiusLineColor="#d1d5db"
+                fontSize={16}
+                // spinDuration={0.55}
+                pointerProps={{
+                  // src: "/spinner-arrow.svg",
+                  style: {
+                    color: "#fffff",
+                    transform: "rotate(0deg) scale(0.8) translate(-20px, 0)",
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
         <div className="space-y-4 flex flex-col h-full py-6">
@@ -180,7 +196,7 @@ export default function Spinner() {
               className="resize-none pr-20 mt-1.5 h-full"
               disabled={isSpinning}
             />
-            <div className="absolute top-8 right-2 flex flex-col gap-2">
+            <div className="absolute top-10 right-2 flex flex-col gap-2">
               <Button
                 variant="ghost"
                 size="icon"
@@ -204,10 +220,15 @@ export default function Spinner() {
             </div>
           </div>
           {winner && !mustSpin && (
-            <Card className="bg-card/80 h-1/3">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <Card className="bg-card/80 h-1/3 border-accent border-2 ">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 relative">
                 <CardTitle className="text-xl">Winner!</CardTitle>
-                <Button variant="ghost" size="icon" onClick={handleCopyResult}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleCopyResult}
+                  className="top-2 right-2 absolute"
+                >
                   {isResultCopied ? (
                     <Check className="h-5 w-5 text-green-500" />
                   ) : (

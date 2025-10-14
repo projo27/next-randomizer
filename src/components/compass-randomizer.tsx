@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -94,11 +95,19 @@ export default function CompassRandomizer() {
           </Label>
         </div>
 
-        <div className="relative flex justify-center items-center h-52 w-52 mx-auto">
-          <CompassIcon
+        <div className="relative flex justify-center items-center h-80 w-80 mx-auto">
+          <Image
+            src={"/compass.svg"}
+            alt="Compass"
+            width={300}
+            height={300}
             className="w-full h-full text-muted-foreground transition-transform ease-in-out"
             style={{ transform: `rotate(${rotation}deg)` }}
           />
+          {/* <CompassIcon
+            className="w-full h-full text-muted-foreground transition-transform ease-in-out"
+            style={{ transform: `rotate(${rotation}deg)` }}
+          /> */}
         </div>
 
         {result && !isRandomizing && (

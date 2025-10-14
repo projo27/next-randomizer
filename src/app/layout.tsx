@@ -7,7 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Randomizer.fun",
+  title: "Randomizer Fun - Your fun-filled tool for making choices!",
   description:
     "A fun app to randomize anything! and Your fun-filled tool for making choices!",
   manifest: "/manifest.json",
