@@ -21,6 +21,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { Switch } from "./ui/switch";
 import { randomizeList } from "@/app/actions/list-randomizer-action";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/context/SettingsContext";
 
 type Item = {
   id: string;
@@ -123,10 +124,12 @@ export default function ListRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { animationDuration } = useSettings();
 
   useEffect(() => {
     // Initialize audio on client side
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+    audioRef.current.loop = true; // Set audio to loop
   }, []);
   
   // Effect to control audio playback based on isShuffling state
@@ -186,12 +189,16 @@ export default function ListRandomizer() {
 
     try {
       const serverResult = await randomizeList(uniqueOptions, numToPick);
-      setResult(serverResult);
+      
+      // Delay setting the result and stopping the shuffle based on context duration
+      setTimeout(() => {
+        setResult(serverResult);
+        setIsShuffling(false);
+      }, animationDuration * 1000);
+
     } catch (e: any) {
       setError(e.message);
-    } finally {
-      // Short delay to let the sound play a bit
-      setTimeout(() => setIsShuffling(false), 500);
+      setIsShuffling(false); // Stop shuffling immediately on error
     }
   };
 
@@ -294,7 +301,7 @@ export default function ListRandomizer() {
           )}
         </div>
 
-        <div className="grid w-full max-w-xs items-center gap-1.5">
+        <div className="grid w-1/2 max-w-1/2 items-center gap-1.5">
           <Label htmlFor="num-items">Number of Items to Pick</Label>
           <Input
             id="num-items"
