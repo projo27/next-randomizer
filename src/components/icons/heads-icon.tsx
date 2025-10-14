@@ -9,7 +9,7 @@ export function HeadsIcon({
 }) {
   return (
     <Image
-      src="/coin_head.png"
+      src="/images/coin_head.png"
       alt="Heads"
       width={width}
       height={height}

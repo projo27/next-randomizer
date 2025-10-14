@@ -9,7 +9,7 @@ export function TailsIcon({
 }) {
   return (
     <Image
-      src="/coin_tail.png"
+      src="/images/coin_tail.png"
       alt="Tails"
       width={width}
       height={height}

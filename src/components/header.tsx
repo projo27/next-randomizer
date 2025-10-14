@@ -10,9 +10,25 @@ import { cn } from "@/lib/utils";
 
 // List of available feature tabs (excluding protected/hidden ones for this logic)
 const availableTabs = [
-  "list", "number", "sequence", "password", "date", "team", "coin",
-  "dice", "rps", "card", "lottery", "emoji", "palette", "base",
-  "spinner", "compass", "image", "youtube", "ootd-runware", "travel"
+  "list",
+  "number",
+  "sequence",
+  "password",
+  "date",
+  "team",
+  "coin",
+  "dice",
+  "rps",
+  "card",
+  "lottery",
+  "emoji",
+  "palette",
+  "base",
+  "spinner", //"compass",
+  "image",
+  "youtube",
+  "ootd-runware",
+  "travel",
 ];
 
 export function Header() {
@@ -26,8 +42,9 @@ export function Header() {
     setIsSpinning(true);
 
     // 2. Pick a random tab
-    const randomTab = availableTabs[Math.floor(Math.random() * availableTabs.length)];
-    
+    const randomTab =
+      availableTabs[Math.floor(Math.random() * availableTabs.length)];
+
     // 3. Navigate after a short delay for the animation to be visible
     setTimeout(() => {
       router.push(`/?tab=${randomTab}`);
@@ -50,7 +67,7 @@ export function Header() {
             <Dice5
               className={cn(
                 "h-12 w-12 text-accent cursor-pointer transition-transform duration-200 hover:scale-110",
-                isSpinning && "animate-spin-dice"
+                isSpinning && "animate-spin-dice",
               )}
             />
           </button>

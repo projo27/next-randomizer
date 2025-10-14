@@ -97,7 +97,7 @@ export default function CompassRandomizer() {
 
         <div className="relative flex justify-center items-center h-80 w-80 mx-auto">
           <Image
-            src={"/compass.svg"}
+            src={"/images/compass.svg"}
             alt="Compass"
             width={300}
             height={300}
