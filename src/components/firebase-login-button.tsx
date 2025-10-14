@@ -4,14 +4,16 @@
 import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { LogIn } from "lucide-react";
+import { LogIn, Settings } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
+import Link from "next/link";
 
 export default function FirebaseLoginButton() {
   // Mendapatkan tipe data yang aman dari useAuth()
@@ -73,6 +75,14 @@ export default function FirebaseLoginButton() {
           <DropdownMenuItem disabled>
             {user.displayName || user.email || "User"}
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <Link href="/setting">
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>Sign Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

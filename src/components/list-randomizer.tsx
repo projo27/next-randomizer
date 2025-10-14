@@ -72,11 +72,11 @@ export default function ListRandomizer() {
     const audio = audioRef.current;
     if (audio) {
       if (isShuffling) {
-        audio.currentTime = 0;
+        // audio.currentTime = 0;
         audio.play().catch(e => console.error("Audio play error:", e));
       } else {
         audio.pause();
-        audio.currentTime = 0;
+        // audio.currentTime = 0;
       }
     }
   }, [isShuffling]);

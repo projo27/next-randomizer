@@ -18,6 +18,7 @@ Step by step to running on your own host :
 - More advance feature like user image randomizer, youtube, travel city, fashion ✅
 - Add support for user to authenticate, and make some boundary of menu/feature that need budget for subscribe ✅
 - PWA support, for user to install on their desktop / device ✅
+- Make randomize duration into global state
 - Play music when klik randomize
 - Add survey whats new feature to catch user needs
 - Add API to support another developer to generate randomize

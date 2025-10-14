@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -19,11 +18,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generateLottery } from "@/app/actions/lottery-generator-action";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
   const [length, setLength] = useState("6");
-  const [duration, setDuration] = useState("5");
+  const { animationDuration } = useSettings();
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -50,19 +50,14 @@ export default function LotteryGenerator() {
     setError(null);
 
     const len = parseInt(length, 10);
-    const dur = parseInt(duration, 10);
+    const dur = animationDuration;
 
     if (isNaN(len) || len <= 0 || len > 100) {
       setError("Please enter a length between 1 and 100.");
       setIsGenerating(false);
       return;
     }
-    if (isNaN(dur) || dur < 1 || dur > 30) {
-      setError("Please enter a duration between 1 and 30 seconds.");
-      setIsGenerating(false);
-      return;
-    }
-
+    
     const characterSet = includeLetters ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789";
 
     animationIntervalRef.current = setInterval(() => {
@@ -142,19 +137,7 @@ export default function LotteryGenerator() {
               disabled={isGenerating || isRateLimited}
             />
           </div>
-          <div className="grid w-full items-center gap-2">
-            <Label htmlFor="duration">Duration (s)</Label>
-            <Input
-              id="duration"
-              type="number"
-              min="1"
-              max="30"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              disabled={isGenerating || isRateLimited}
-            />
-          </div>
-          <div className="flex w-full items-center gap-2 space-x-2">
+          <div className="flex w-full items-center gap-2 space-x-2 pt-6">
             <Switch
               id="include-letters"
               checked={includeLetters}

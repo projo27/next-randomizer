@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { Footer } from "@/components/footer";
+import { SettingsProvider } from "@/context/SettingsContext";
 
 export const metadata: Metadata = {
   title: "Randomizer Fun - Your fun-filled tool for making choices!",
@@ -46,9 +47,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
-          <Toaster />
-          <Footer />
+          <AuthProvider>
+            <SettingsProvider>
+              {children}
+              <Toaster />
+              <Footer />
+            </SettingsProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
       {/* Tempatkan komponen GTM di sini.

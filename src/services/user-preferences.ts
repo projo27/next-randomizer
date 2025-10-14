@@ -46,3 +46,44 @@ export async function getThemePreference(
     return null;
   }
 }
+
+/**
+ * Saves the user's animation duration preference to Firestore.
+ * @param userId The ID of the user.
+ * @param duration The animation duration in seconds.
+ */
+export async function saveAnimationDuration(
+  userId: string,
+  duration: number,
+): Promise<void> {
+  if (!userId) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { animationDuration: duration }, { merge: true });
+  } catch (error) {
+    console.error("Error saving animation duration:", error);
+  }
+}
+
+/**
+ * Retrieves the user's animation duration preference from Firestore.
+ * @param userId The ID of the user.
+ * @returns The saved duration or null if not found.
+ */
+export async function getAnimationDuration(
+  userId: string,
+): Promise<number | null> {
+  if (!userId) return null;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+
+    if (docSnap.exists() && docSnap.data().animationDuration !== undefined) {
+      return docSnap.data().animationDuration;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting animation duration:", error);
+    return null;
+  }
+}
