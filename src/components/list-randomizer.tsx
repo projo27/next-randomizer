@@ -12,16 +12,15 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import AnimatedResult from "./animated-result";
 import { Wand2, Copy, Check, Trash2, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Alert, AlertDescription } from "./ui/alert";
-import AnimatedResultList from "./animated-result-list";
 import { Switch } from "./ui/switch";
 import { randomizeList } from "@/app/actions/list-randomizer-action";
+import { cn } from "@/lib/utils";
 
 type Item = {
   id: string;
@@ -41,6 +40,74 @@ const initialItems: Item[] = [
   { id: "10", value: "Pineapple" },
 ];
 
+function ResultDisplay({
+  isShuffling,
+  result,
+  onCopy,
+  isCopied,
+}: {
+  isShuffling: boolean;
+  result: string[] | null;
+  onCopy: () => void;
+  isCopied: boolean;
+}) {
+  if (isShuffling) {
+    return (
+      <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
+        <CardHeader>
+          <CardTitle>Picking Items...</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="h-6 bg-muted rounded-md animate-pulse" />
+            <div className="h-6 bg-muted rounded-md animate-pulse w-5/6" />
+            <div className="h-6 bg-muted rounded-md animate-pulse w-3/4" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!result || result.length === 0) {
+    return null;
+  }
+
+  return (
+    <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>
+          {result.length > 1 ? "Randomly Picked Items" : "And the winner is..."}
+        </CardTitle>
+        <Button variant="ghost" size="icon" onClick={onCopy}>
+          {isCopied ? (
+            <Check className="h-5 w-5 text-green-500" />
+          ) : (
+            <Copy className="h-5 w-5" />
+          )}
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {result.length > 1 ? (
+          <ol className="list-decimal list-inside space-y-2">
+            {result.map((item, index) => (
+              <li key={index} className="text-lg">
+                {item}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="text-center">
+            <p className="text-4xl font-bold text-accent animate-fade-in scale-110">
+              {result[0]}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+
 export default function ListRandomizer() {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [itemsText, setItemsText] = useState(
@@ -50,7 +117,6 @@ export default function ListRandomizer() {
 
   const [count, setCount] = useState("1");
   const [result, setResult] = useState<string[] | null>(null);
-  const [options, setOptions] = useState<string[]>([]);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,22 +127,18 @@ export default function ListRandomizer() {
   useEffect(() => {
     // Initialize audio on client side
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    if (inputMode === "textarea") {
-      setItemsText(items.map((p) => p.value).join("\n"));
-    }
-  }, [inputMode, items]);
+  }, []);
   
   // Effect to control audio playback based on isShuffling state
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
       if (isShuffling) {
-        // audio.currentTime = 0;
+        audio.currentTime = 0;
         audio.play().catch(e => console.error("Audio play error:", e));
       } else {
         audio.pause();
-        // audio.currentTime = 0;
+        audio.currentTime = 0;
       }
     }
   }, [isShuffling]);
@@ -85,21 +147,12 @@ export default function ListRandomizer() {
     const newMode = checked ? "textarea" : "panel";
     setInputMode(newMode);
 
-    if (newMode === "panel") {
-      parseItemsFromText(itemsText);
+    if (newMode === "panel" && itemsText) {
+      const lines = itemsText.split("\n").map(l => l.trim()).filter(Boolean);
+      setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
+    } else if (newMode === 'textarea') {
+      setItemsText(items.map((p) => p.value).join("\n"));
     }
-  };
-
-  const parseItemsFromText = (text: string) => {
-    const lines = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line);
-    const newItems: Item[] = lines.map((line, index) => ({
-      id: `${Date.now()}-${index}`,
-      value: line,
-    }));
-    setItems(newItems);
   };
 
   const handleRandomize = async () => {
@@ -108,17 +161,10 @@ export default function ListRandomizer() {
     setResult(null);
     setIsResultCopied(false);
 
-    let currentItems: string[];
-    if (inputMode === "textarea") {
-      currentItems = itemsText
-        .split("\n")
-        .map((c) => c.trim())
-        .filter((c) => c.length > 0);
-    } else {
-      currentItems = items
-        .map((i) => i.value.trim())
-        .filter((i) => i.length > 0);
-    }
+    const currentItems = (inputMode === "textarea"
+      ? itemsText.split("\n")
+      : items.map((i) => i.value)
+    ).map((c) => c.trim()).filter(Boolean);
 
     const numToPick = parseInt(count, 10);
     const uniqueOptions = Array.from(new Set(currentItems));
@@ -127,21 +173,16 @@ export default function ListRandomizer() {
       setError("Please enter at least one item in the list.");
       return;
     }
-
     if (isNaN(numToPick) || numToPick <= 0) {
       setError("Please enter a valid number of items to pick (must be > 0).");
       return;
     }
-
     if (uniqueOptions.length < numToPick) {
-      setError(
-        `Not enough unique options to pick ${numToPick}. Please add more.`,
-      );
+      setError(`Not enough unique options to pick ${numToPick}. Please add more.`);
       return;
     }
 
     setIsShuffling(true);
-    setOptions(uniqueOptions);
 
     try {
       const serverResult = await randomizeList(uniqueOptions, numToPick);
@@ -149,13 +190,14 @@ export default function ListRandomizer() {
     } catch (e: any) {
       setError(e.message);
     } finally {
-      setIsShuffling(false); // This will trigger the useEffect to stop the audio
+      // Short delay to let the sound play a bit
+      setTimeout(() => setIsShuffling(false), 500);
     }
   };
 
   const handleCopyResult = () => {
     if (!result) return;
-    const resultString = Array.isArray(result) ? result.join("\n") : result[0];
+    const resultString = result.join("\n");
     navigator.clipboard.writeText(resultString);
     setIsResultCopied(true);
     toast({
@@ -200,9 +242,10 @@ export default function ListRandomizer() {
           <div className="flex justify-between items-center">
             <Label htmlFor="participants">List of Items</Label>
             <span className="text-xs text-muted-foreground">
-              {inputMode === "panel"
-                ? items.length
-                : itemsText.split("\n").filter(Boolean).length}{" "}
+              {(inputMode === "panel"
+                ? items.filter(i => i.value.trim())
+                : itemsText.split("\n").filter(Boolean)
+              ).length}{" "}
               item(s)
             </span>
           </div>
@@ -261,23 +304,14 @@ export default function ListRandomizer() {
             onChange={(e) => setCount(e.target.value)}
           />
         </div>
-        {result && result.length === 1 && !isShuffling && (
-          <AnimatedResult
-            result={result[0]}
-            options={options}
-            handleCopyResult={handleCopyResult}
-          />
-        )}
-        {(isShuffling || (result && result.length > 1)) && (
-          <AnimatedResultList
+        
+        <ResultDisplay 
             isShuffling={isShuffling}
-            shuffledItems={Array.isArray(result) ? result : []}
-            isResultCopied={isResultCopied}
-            handleCopyResult={handleCopyResult}
-            title="Randomly Picked Items"
-            itemClassName="text-lg"
-          />
-        )}
+            result={result}
+            onCopy={handleCopyResult}
+            isCopied={isResultCopied}
+        />
+
         {error && (
           <Alert variant="destructive" className="mt-4">
             <AlertDescription>{error}</AlertDescription>

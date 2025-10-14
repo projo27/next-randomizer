@@ -23,12 +23,67 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DatePicker } from '@/components/date-picker';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription } from './ui/alert';
-import AnimatedResultList from './animated-result-list';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { randomizeDates } from '@/app/actions/date-randomizer-action';
+
+function AnimatedResultList({
+  isShuffling,
+  shuffledItems,
+  isResultCopied,
+  handleCopyResult,
+  title,
+  itemClassName,
+}: {
+  isShuffling: boolean;
+  shuffledItems: string[];
+  isResultCopied: boolean;
+  handleCopyResult: () => void;
+  title: string;
+  itemClassName?: string;
+}) {
+  if (isShuffling) {
+    return (
+      <div className="w-full space-y-2 mt-6">
+        <div className="h-8 bg-muted rounded-md animate-pulse w-1/3" />
+        <div className="h-6 bg-muted rounded-md animate-pulse" />
+        <div className="h-6 bg-muted rounded-md animate-pulse w-5/6" />
+        <div className="h-6 bg-muted rounded-md animate-pulse w-3/4" />
+      </div>
+    );
+  }
+
+  if (shuffledItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>{title}</CardTitle>
+        <Button variant="ghost" size="icon" onClick={handleCopyResult}>
+          {isResultCopied ? (
+            <Check className="h-5 w-5 text-green-500" />
+          ) : (
+            <Copy className="h-5 w-5" />
+          )}
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <ol className="list-decimal list-inside space-y-2">
+          {shuffledItems.map((item, index) => (
+            <li key={index} className={itemClassName}>
+              {item}
+            </li>
+          ))}
+        </ol>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function DateRandomizer() {
   const [startDate, setStartDate] = useState<Date | undefined>();

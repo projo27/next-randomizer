@@ -12,14 +12,81 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import AnimatedResult from "./animated-result";
 import { Label } from "@/components/ui/label";
-import { Wand2 } from "lucide-react";
+import { Wand2, Copy, Check } from "lucide-react";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription } from "./ui/alert";
-import AnimatedResultList from "./animated-result-list";
 import { useToast } from "@/hooks/use-toast";
 import { randomizeNumber } from "@/app/actions/number-randomizer-action";
+
+function ResultDisplay({
+  isRandomizing,
+  results,
+  onCopy,
+  isCopied,
+}: {
+  isRandomizing: boolean;
+  results: number[] | null;
+  onCopy: () => void;
+  isCopied: boolean;
+}) {
+  if (isRandomizing) {
+    return (
+      <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
+        <CardHeader>
+          <CardTitle>Generating Number(s)...</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="h-6 bg-muted rounded-md animate-pulse" />
+            <div className="h-6 bg-muted rounded-md animate-pulse w-5/6" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!results || results.length === 0) {
+    return null;
+  }
+  
+  const isSingleResult = results.length === 1;
+
+  return (
+    <Card className="mt-6 border-accent border-2 shadow-lg bg-card/80 w-full">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>
+          {isSingleResult ? "Random Number" : "Random Numbers"}
+        </CardTitle>
+        <Button variant="ghost" size="icon" onClick={onCopy}>
+          {isCopied ? (
+            <Check className="h-5 w-5 text-green-500" />
+          ) : (
+            <Copy className="h-5 w-5" />
+          )}
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isSingleResult ? (
+          <div className="text-center">
+            <p className="text-5xl font-bold text-accent animate-fade-in">
+              {results[0]}
+            </p>
+          </div>
+        ) : (
+          <ol className="list-decimal list-inside space-y-2 columns-2 md:columns-3 lg:columns-4">
+            {results.map((item, index) => (
+              <li key={index} className="text-xl font-bold font-mono">
+                {item}
+              </li>
+            ))}
+          </ol>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function NumberRandomizer() {
   const [min, setMin] = useState("1");
@@ -133,19 +200,12 @@ export default function NumberRandomizer() {
           </Alert>
         )}
         
-        {result && result.length === 1 && !isRandomizing && (
-          <AnimatedResult result={result[0]} handleCopyResult={handleCopyResult} />
-        )}
-        {(isRandomizing || (result && result.length > 1)) && (
-           <AnimatedResultList
-            isShuffling={isRandomizing}
-            shuffledItems={result ? result.map(r => r.toString()) : []}
-            isResultCopied={isCopied}
-            handleCopyResult={handleCopyResult}
-            title="Random Numbers"
-            itemClassName="text-xl font-bold font-mono"
-           />
-        )}
+       <ResultDisplay 
+          isRandomizing={isRandomizing}
+          results={result}
+          onCopy={handleCopyResult}
+          isCopied={isCopied}
+       />
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
