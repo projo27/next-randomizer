@@ -41,7 +41,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Debounce the duration value to avoid too many writes to Firestore
-  const debouncedDuration = useDebounce(animationDuration, 1000);
+  const debouncedDuration = useDebounce(animationDuration, 5000);
 
   // Effect to fetch initial settings when user logs in
   useEffect(() => {

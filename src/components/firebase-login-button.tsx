@@ -4,7 +4,7 @@
 import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import { LogIn, Settings } from "lucide-react";
+import { LogIn, Settings, User, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -73,17 +73,22 @@ export default function FirebaseLoginButton() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem disabled>
+            <User className="mr-1 h-4 w-4" />
             {user.displayName || user.email || "User"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <Link href="/setting">
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="p-2">
+            <Link href="/setting" className="flex items-center">
+              <Settings className="mr-3 h-4 w-4" />
               Settings
-            </DropdownMenuItem>
-          </Link>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Sign Out</DropdownMenuItem>
+          <DropdownMenuItem className="p-2">
+            <Link href="#" onClick={handleLogout} className="flex items-center">
+              <LogOut className="mr-3 h-4 w-4" /> Sign Out
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );

@@ -40,15 +40,19 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="flex flex-col gap-1">
-        {
-          ["light", "dark", "system"].map((val) =>
-            <DropdownMenuItem key={val} onClick={() => theme != val && handleThemeChange(val)}
-              className={cn(
-                { "bg-accent": theme === val },
-                { "hover:cursor-pointer": theme !== val },
-              )}>{val}</DropdownMenuItem>
-          )
-        }
+        {["light", "dark", "system"].map((val) => (
+          <DropdownMenuItem
+            key={val}
+            onClick={() => theme != val && handleThemeChange(val)}
+            className={cn(
+              "p-2",
+              { "bg-accent": theme === val },
+              { "hover:cursor-pointer": theme !== val },
+            )}
+          >
+            {val}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

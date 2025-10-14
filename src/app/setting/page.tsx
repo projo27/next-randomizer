@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,7 +14,10 @@ import { Slider } from "@/components/ui/slider";
 import { useSettings } from "@/context/SettingsContext";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LockKeyhole } from "lucide-react";
+import { LockKeyhole, Save } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function SettingsPageContent() {
   const { animationDuration, setAnimationDuration } = useSettings();
@@ -37,9 +41,7 @@ function SettingsPageContent() {
     return (
       <div className="flex flex-col items-center mt-2 justify-center p-8 bg-primary dark:bg-secondary border border-red-200 rounded-lg text-center max-w-2xl mx-auto">
         <LockKeyhole className="h-12 w-12 text-red-70 mb-4" />
-        <h2 className="text-2xl font-bold text-red-700 mb-2">
-          Access Denied
-        </h2>
+        <h2 className="text-2xl font-bold text-red-700 mb-2">Access Denied</h2>
         <p className="text-lg text-current">
           You must be logged in to view and change settings.
         </p>
@@ -55,13 +57,14 @@ function SettingsPageContent() {
           Customize your experience across the application.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-8">
-        <div className="space-y-4">
+      <Separator />
+      <CardContent className="space-y-8 py-4">
+        <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="animation-duration" className="text-base">
               Animation Duration
             </Label>
-            <span className="font-mono text-lg text-primary">
+            <span className="font-mono text-xl text-primary">
               {animationDuration}s
             </span>
           </div>
@@ -76,9 +79,22 @@ function SettingsPageContent() {
             step={1}
             value={[animationDuration]}
             onValueChange={(value) => setAnimationDuration(value[0])}
+            className="[&&&]:pt-4"
           />
         </div>
       </CardContent>
+      <Separator />
+      <CardFooter>
+        <div className="flex justify-between items-end mt-4 w-full">
+          <Button variant={"secondary"}>
+            <Link href="/">&#8592; Home</Link>
+          </Button>
+          <Button variant={"default"} className="bg-accent">
+            <Save />
+            Save
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
