@@ -11,6 +11,47 @@ Step by step to running on your own host :
 
 - v1.0.0 : MVP of randomizer.fun with simple randomizer feature, firebase authentication and change the theme
 - v1.0.1 : Add PWA feature
+- v1.0.2 : Add duration animation and randomizer audio
+
+## Randomizer Feature :
+
+- List Randomizer ✅
+- Number Randomizer ✅
+- Sequence Shuffler ✅
+- Password Generator ✅
+- Date Randomizer ✅
+- Team Shuffler ✅
+- Coin Flipper ✅
+- Dice Roller ✅
+- Rock Paper Scissor ✅
+- Card Deck Randomizer ✅
+- Lottery Generator ✅
+- Emoji Randomizer ✅
+- Color Palette Generator ✅
+- Number Base Randomizer ✅
+- Spinner Wheel ✅
+- Image Randomizer Play ✅
+- Youtube Randomizer (powered by youtube API) ✅
+- OOTD - Fashion Out of The Day Randomizer (powered by runway.ai) ✅
+- Travel City Randomizer (powered by gemini.ai and pixabay) ✅
+- Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
+- Random Poetry
+- Random Quote
+- Random name generator
+- Plant
+- Animalia
+- Object / Things Randomizer
+- Random word by language
+- Random Country
+- Movie Randomizer
+- Music Randomizer
+- Radio Channel Randomizer
+- Identity Generator (Name, Address, Phone)
+- Android APK Randomizer
+- IOS APK Randomizer
+- Meme Randomizer
+- Anime Randomizer
+- Webtoon Randomizer
 
 ## Randomizer Feature :
 
