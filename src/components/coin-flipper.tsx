@@ -36,7 +36,7 @@ export default function CoinFlipper() {
   const [results, setResults] = useState<CoinResult[]>([]);
   const [isFlipping, setIsFlipping] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [animationClass, setAnimationClass] = useState("animate-flip-coin-medium");
+  const [animationClasses, setAnimationClasses] = useState<string[]>([]);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
@@ -57,10 +57,12 @@ export default function CoinFlipper() {
       audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
     
-    const randomAnimation = ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)];
-    setAnimationClass(randomAnimation);
-
     const numCoins = parseInt(numberOfCoins, 10);
+    const newAnimationClasses = Array.from({ length: numCoins }, () => 
+      ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)]
+    );
+    setAnimationClasses(newAnimationClasses);
+
     const newResults = await flipCoins(numCoins);
 
     setTimeout(() => {
@@ -144,7 +146,7 @@ export default function CoinFlipper() {
                 <div 
                   className={cn(
                     "coin-inner",
-                    isFlipping && animationClass
+                    isFlipping && animationClasses[i]
                   )}
                   style={{
                     animationDuration: isFlipping ? `${animationDuration}s` : undefined,
