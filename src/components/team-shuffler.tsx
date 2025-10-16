@@ -78,6 +78,14 @@ export default function TeamShuffler() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -148,6 +156,11 @@ export default function TeamShuffler() {
     setTeams([]);
     setIsResultCopied(false);
     
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+    
     let currentParticipants = [...participants];
     if (inputMode === 'textarea') {
       const success = parseParticipantsFromText(participantsText);
@@ -179,10 +192,6 @@ export default function TeamShuffler() {
     }
     
     setIsShuffling(true);
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
 
     try {
         const newTeams = await shuffleTeams(currentParticipants, size, useLevels);

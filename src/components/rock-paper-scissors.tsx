@@ -46,6 +46,14 @@ export default function RockPaperScissors() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -59,14 +67,15 @@ export default function RockPaperScissors() {
   const handlePlay = async () => {
     if (isPlaying || isRateLimited) return;
     triggerRateLimit();
-    setIsPlaying(true);
-    setIsCopied(false);
-    setPreviousResults(results);
-
+    
     if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+
+    setIsPlaying(true);
+    setIsCopied(false);
+    setPreviousResults(results);
 
     const numPlays = parseInt(numberOfPlays, 10);
     const newResults = await playRps(numPlays);

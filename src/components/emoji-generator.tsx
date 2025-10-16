@@ -53,6 +53,14 @@ export default function EmojiGenerator() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {

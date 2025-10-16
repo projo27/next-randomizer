@@ -36,6 +36,15 @@ export default function CardDeckRandomizer() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+    
+    // Cleanup function to stop audio when the component unmounts
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -64,13 +73,13 @@ export default function CardDeckRandomizer() {
       return;
     }
 
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+
     setIsDrawing(true);
     setDrawnCards([]);
-
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
 
     try {
       const newDrawnCards = await drawCards(includeJokers, count);

@@ -96,18 +96,35 @@ export default function DiceRoller() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && !isRolling) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [isRolling]);
 
   const handleRoll = async () => {
     if (isRolling || isRateLimited) return;
     triggerRateLimit();
-    setIsRolling(true);
-    setIsCopied(false);
-
+    
     if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+    
+    setIsRolling(true);
+    setIsCopied(false);
 
     const numDice = parseInt(numberOfDice, 10);
     const numSides = parseInt(diceType, 10);
@@ -123,14 +140,6 @@ export default function DiceRoller() {
     }
   };
   
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isRolling) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }, [isRolling]);
-
   const total = results.reduce((sum, val) => sum + val, 0);
   const numDice = parseInt(numberOfDice, 10);
   const numSides = parseInt(diceType, 10);

@@ -107,6 +107,14 @@ export default function DateRandomizer() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -163,12 +171,13 @@ export default function DateRandomizer() {
         setError('Start time must be before end time.');
         return;
     }
-
-    setIsRandomizing(true);
+    
     if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+    
+    setIsRandomizing(true);
     
     try {
         const serverResult = await randomizeDates(startDate, endDate, count, includeTime, startTime, endTime);

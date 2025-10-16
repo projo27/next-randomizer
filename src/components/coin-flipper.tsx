@@ -44,18 +44,35 @@ export default function CoinFlipper() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && !isFlipping) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [isFlipping]);
 
   const handleFlip = async () => {
     if (isFlipping || isRateLimited) return;
     triggerRateLimit();
-    setIsFlipping(true);
-    setIsCopied(false);
     
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+    
+    setIsFlipping(true);
+    setIsCopied(false);
     
     const numCoins = parseInt(numberOfCoins, 10);
     const newAnimationClasses = Array.from({ length: numCoins }, () => 
@@ -70,14 +87,6 @@ export default function CoinFlipper() {
       setIsFlipping(false);
     }, animationDuration * 1000);
   };
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isFlipping) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }, [isFlipping]);
 
   const headsCount = results.filter((r) => r === "Heads").length;
   const tailsCount = results.filter((r) => r === "Tails").length;

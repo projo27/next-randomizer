@@ -59,6 +59,14 @@ export default function ColorPaletteGenerator() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -72,13 +80,14 @@ export default function ColorPaletteGenerator() {
   const generatePalettes = async () => {
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
+    
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+    
     setIsGenerating(true);
     setCopiedColor(null);
-
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
 
     const countPalettes = parseInt(numPalettes, 10);
     const countColors = parseInt(numColors, 10);

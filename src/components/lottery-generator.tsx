@@ -38,6 +38,14 @@ export default function LotteryGenerator() {
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
     audioRef.current.loop = true;
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -62,10 +70,10 @@ export default function LotteryGenerator() {
   const handleGenerate = async () => {
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
+    setError(null);
     setIsGenerating(true);
     setIsCopied(false);
     setResult(null);
-    setError(null);
 
     const len = parseInt(length, 10);
     const dur = animationDuration;

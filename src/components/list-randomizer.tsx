@@ -128,6 +128,15 @@ export default function ListRandomizer() {
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    // This is the cleanup function that runs when the component unmounts
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
   
   useEffect(() => {
@@ -157,6 +166,14 @@ export default function ListRandomizer() {
     setResult(null);
     setIsResultCopied(false);
 
+    // Play audio directly on user interaction
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+    
+    setIsShuffling(true);
+
     const currentItems = (inputMode === "textarea"
       ? itemsText.split("\n")
       : items.map((i) => i.value)
@@ -167,22 +184,18 @@ export default function ListRandomizer() {
 
     if (uniqueOptions.length === 0) {
       setError("Please enter at least one item in the list.");
+      setIsShuffling(false);
       return;
     }
     if (isNaN(numToPick) || numToPick <= 0) {
       setError("Please enter a valid number of items to pick (must be > 0).");
+      setIsShuffling(false);
       return;
     }
     if (uniqueOptions.length < numToPick) {
       setError(`Not enough unique options to pick ${numToPick}. Please add more.`);
+      setIsShuffling(false);
       return;
-    }
-
-    setIsShuffling(true);
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
 
     try {

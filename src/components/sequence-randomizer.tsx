@@ -90,6 +90,14 @@ Participant 4`);
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
+
+    return () => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -103,14 +111,15 @@ Participant 4`);
   const handleShuffle = async () => {
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
-    setIsShuffling(true);
-    setShuffledItems([]);
-    setIsResultCopied(false);
     
     if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+    
+    setIsShuffling(true);
+    setShuffledItems([]);
+    setIsResultCopied(false);
 
     const currentItems = itemsText
       .split("\n")
