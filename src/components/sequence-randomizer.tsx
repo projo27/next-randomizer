@@ -35,12 +35,17 @@ function AnimatedResultList({
 }) {
   if (isShuffling) {
     return (
-      <div className="w-full space-y-2 mt-6">
-        <div className="h-8 bg-muted rounded-md animate-pulse w-1/3" />
-        <div className="h-6 bg-muted rounded-md animate-pulse" />
-        <div className="h-6 bg-muted rounded-md animate-pulse w-5/6" />
-        <div className="h-6 bg-muted rounded-md animate-pulse w-3/4" />
-      </div>
+      <Card className="w-full space-y-2 mt-6 border-accent border-2 shadow-lg bg-card/80">
+        <CardHeader>
+          <CardTitle>Shuffling...</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          <div className="h-8 bg-muted rounded-md animate-pulse w-full" />
+          <div className="h-8 bg-muted rounded-md animate-pulse w-full" />
+          <div className="h-8 bg-muted rounded-md animate-pulse w-full" />
+          <div className="h-8 bg-muted rounded-md animate-pulse w-full" />
+        </CardContent>
+      </Card>
     );
   }
 
@@ -201,8 +206,8 @@ Participant 4`);
           {isShuffling
             ? "Shuffling..."
             : isRateLimited
-            ? "Please wait..."
-            : "Shuffle Sequence!"}
+              ? "Please wait..."
+              : "Shuffle Sequence!"}
         </Button>
       </CardFooter>
     </Card>

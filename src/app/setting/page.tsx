@@ -115,10 +115,8 @@ function SettingsPageContent() {
       <Separator />
       <CardFooter>
         <div className="flex justify-between items-end mt-4 w-full">
-          <Button variant={"secondary"} asChild>
             <Link href="/">&#8592; Home</Link>
-          </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground italic">
             Settings are saved automatically.
           </p>
         </div>

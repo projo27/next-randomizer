@@ -75,7 +75,7 @@ function ResultDisplay({
             </p>
           </div>
         ) : (
-          <ol className="list-decimal list-inside space-y-2 columns-2 md:columns-3 lg:columns-4">
+          <ol className="list-decimal list-inside space-y-2">
             {results.map((item, index) => (
               <li key={index} className="text-xl font-bold font-mono">
                 {item}
@@ -228,8 +228,8 @@ export default function NumberRandomizer() {
           {isRandomizing
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Randomize!"}
+              ? "Please wait..."
+              : "Randomize!"}
         </Button>
       </CardFooter>
     </Card>

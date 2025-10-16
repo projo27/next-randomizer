@@ -183,7 +183,7 @@ function HomePageContent() {
     },
     {
       value: "palette",
-      text: "Palette",
+      text: "Color Palette",
       hidden: false,
       badge: "",
       icon: <Palette className="h-5 w-5" />,
