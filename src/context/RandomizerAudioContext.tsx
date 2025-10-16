@@ -57,7 +57,7 @@ export function RandomizerAudioProvider({ children }: { children: ReactNode }) {
       audio.play().catch((error) => {
         // This error can happen if the user hasn't interacted with the page yet.
         // It's generally safe to ignore in this context as the play is triggered by a user click.
-        console.warn("Audio play was prevented:", error.name);
+        if(process.env.NODE_ENV !== "production") console.warn("Audio play was prevented:", error.name);
       });
     }
   }, [playSounds]); // Add playSounds as a dependency
