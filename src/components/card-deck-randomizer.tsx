@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -21,6 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { drawCards, CardType } from "@/app/actions/card-deck-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
@@ -32,34 +32,20 @@ export default function CardDeckRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-    
-    // Cleanup function to stop audio when the component unmounts
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isDrawing) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isDrawing) {
+      stopAudio();
     }
-  }, [isDrawing]);
+  }, [isDrawing, stopAudio]);
 
   const deckSize = useMemo(() => (includeJokers ? 54 : 52), [includeJokers]);
 
   const handleDraw = async () => {
     if (isDrawing || isRateLimited) return;
     triggerRateLimit();
+    playAudio();
     setError(null);
     setIsCopied(false);
 
@@ -71,11 +57,6 @@ export default function CardDeckRandomizer() {
     if (count > deckSize) {
       setError(`You can't draw more cards than are in the deck (${deckSize}).`);
       return;
-    }
-
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
 
     setIsDrawing(true);
@@ -191,7 +172,11 @@ export default function CardDeckRandomizer() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isDrawing ? "Drawing..." : isRateLimited ? "Please wait..." : "Draw Cards"}
+          {isDrawing
+            ? "Drawing..."
+            : isRateLimited
+            ? "Please wait..."
+            : "Draw Cards"}
         </Button>
       </CardFooter>
     </Card>

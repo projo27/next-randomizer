@@ -1,8 +1,7 @@
+"use client";
 
-'use client';
-
-import { useState, useEffect, useRef } from 'react';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
@@ -10,25 +9,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { DatePicker } from '@/components/date-picker';
-import { Wand2, Copy, Check } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from './ui/alert';
-import { useRateLimiter } from '@/hooks/use-rate-limiter';
-import { randomizeDates } from '@/app/actions/date-randomizer-action';
-import { useSettings } from '@/context/SettingsContext';
+} from "@/components/ui/select";
+import { DatePicker } from "@/components/date-picker";
+import { Wand2, Copy, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "./ui/alert";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { randomizeDates } from "@/app/actions/date-randomizer-action";
+import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 function AnimatedResultList({
   isShuffling,
@@ -85,16 +85,15 @@ function AnimatedResultList({
   );
 }
 
-
 export default function DateRandomizer() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [numberOfDates, setNumberOfDates] = useState('3');
+  const [numberOfDates, setNumberOfDates] = useState("3");
   const [includeTime, setIncludeTime] = useState(false);
   const [is24Hour, setIs24Hour] = useState(false);
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('17:00');
-  const [dateFormat, setDateFormat] = useState('PPP');
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("17:00");
+  const [dateFormat, setDateFormat] = useState("PPP");
 
   const [results, setResults] = useState<Date[]>([]);
   const [isRandomizing, setIsRandomizing] = useState(false);
@@ -103,27 +102,13 @@ export default function DateRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isRandomizing) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isRandomizing) {
+      stopAudio();
     }
-  }, [isRandomizing]);
+  }, [isRandomizing, stopAudio]);
 
   useEffect(() => {
     const now = new Date();
@@ -136,64 +121,70 @@ export default function DateRandomizer() {
   const handleRandomize = async () => {
     if (isRandomizing || isRateLimited) return;
     triggerRateLimit();
+    playAudio();
     setError(null);
     setResults([]);
     setIsResultCopied(false);
-    
+
     if (!startDate || !endDate) {
-      setError('Please select both a start and an end date.');
+      setError("Please select both a start and an end date.");
       return;
     }
 
     const count = parseInt(numberOfDates, 10);
     if (isNaN(count) || count <= 0) {
       setError(
-        'Please enter a valid number of dates to generate (must be > 0).',
+        "Please enter a valid number of dates to generate (must be > 0).",
       );
       return;
     }
 
     if (startDate > endDate) {
-        setStartDate(endDate);
-        setEndDate(startDate);
+      setStartDate(endDate);
+      setEndDate(startDate);
     }
-    
+
     const dayDifference =
       (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1;
     if (count > 1000 || (count > dayDifference && !includeTime)) {
       setError(
-        `Cannot generate more than ${Math.min(1000, Math.floor(dayDifference))} unique dates in this range without time.`,
+        `Cannot generate more than ${Math.min(
+          1000,
+          Math.floor(dayDifference),
+        )} unique dates in this range without time.`,
       );
       return;
     }
 
     if (includeTime && startTime >= endTime) {
-        setError('Start time must be before end time.');
-        return;
+      setError("Start time must be before end time.");
+      return;
     }
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
+
     setIsRandomizing(true);
-    
+
     try {
-        const serverResult = await randomizeDates(startDate, endDate, count, includeTime, startTime, endTime);
-        setTimeout(() => {
-          setResults(serverResult.map(d => new Date(d))); // Re-hydrate date objects
-          setIsRandomizing(false);
-        }, animationDuration * 1000);
-    } catch(e: any) {
-        setError(e.message);
+      const serverResult = await randomizeDates(
+        startDate,
+        endDate,
+        count,
+        includeTime,
+        startTime,
+        endTime,
+      );
+      setTimeout(() => {
+        setResults(serverResult.map((d) => new Date(d))); // Re-hydrate date objects
         setIsRandomizing(false);
+      }, animationDuration * 1000);
+    } catch (e: any) {
+      setError(e.message);
+      setIsRandomizing(false);
     }
   };
 
   const getFormatString = () => {
     if (includeTime) {
-      const timeFormat = is24Hour ? 'HH:mm' : 'p';
+      const timeFormat = is24Hour ? "HH:mm" : "p";
       return `${dateFormat} · ${timeFormat}`;
     }
     return dateFormat;
@@ -204,12 +195,12 @@ export default function DateRandomizer() {
     const formatString = getFormatString();
     const resultString = results
       .map((date) => format(date, formatString))
-      .join('\n');
+      .join("\n");
     navigator.clipboard.writeText(resultString);
     setIsResultCopied(true);
     toast({
-      title: 'Copied!',
-      description: 'Random dates copied to clipboard.',
+      title: "Copied!",
+      description: "Random dates copied to clipboard.",
     });
     setTimeout(() => setIsResultCopied(false), 2000);
   };
@@ -330,10 +321,10 @@ export default function DateRandomizer() {
         >
           <Wand2 className="mr-2 h-4 w-4" />
           {isRandomizing
-            ? 'Randomizing...'
+            ? "Randomizing..."
             : isRateLimited
-              ? 'Please wait...'
-              : 'Randomize Dates!'}
+            ? "Please wait..."
+            : "Randomize Dates!"}
         </Button>
       </CardFooter>
     </Card>

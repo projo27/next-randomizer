@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -20,6 +19,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generateLottery } from "@/app/actions/lottery-generator-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
@@ -33,29 +33,16 @@ export default function LotteryGenerator() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-    audioRef.current.loop = true;
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
+    if (!isGenerating) {
+      stopAudio();
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isGenerating) {
-      audio.pause();
-      audio.currentTime = 0;
     }
-  }, [isGenerating]);
-
+  }, [isGenerating, stopAudio]);
 
   useEffect(() => {
     return () => {
@@ -66,10 +53,10 @@ export default function LotteryGenerator() {
     };
   }, []);
 
-
   const handleGenerate = async () => {
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
+    playAudio();
     setError(null);
     setIsGenerating(true);
     setIsCopied(false);
@@ -83,19 +70,16 @@ export default function LotteryGenerator() {
       setIsGenerating(false);
       return;
     }
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
 
-    const characterSet = includeLetters ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789";
+    const characterSet = includeLetters
+      ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      : "0123456789";
 
     animationIntervalRef.current = setInterval(() => {
       let tempResult = "";
       for (let i = 0; i < len; i++) {
         tempResult += characterSet.charAt(
-          Math.floor(Math.random() * characterSet.length)
+          Math.floor(Math.random() * characterSet.length),
         );
       }
       setResult(tempResult);
@@ -111,27 +95,39 @@ export default function LotteryGenerator() {
     countdownIntervalRef.current = setInterval(() => {
       countdown--;
       if (countdown > 0) {
-        update({ id: toastId, description: <span className="text-3xl">{countdown}s</span>});
+        update({
+          id: toastId,
+          description: <span className="text-3xl">{countdown}s</span>,
+        });
       }
     }, 1000);
 
     try {
-        const finalResult = await generateLottery(len, includeLetters);
-        setTimeout(() => {
-          if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
-          if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-          
-          setResult(finalResult);
-          setIsGenerating(false);
+      const finalResult = await generateLottery(len, includeLetters);
+      setTimeout(() => {
+        if (animationIntervalRef.current)
+          clearInterval(animationIntervalRef.current);
+        if (countdownIntervalRef.current)
+          clearInterval(countdownIntervalRef.current);
 
-          update({ id: toastId, title: 'Lottery Number WIN!', description: finalResult, hidden: true });
-        }, dur * 1000);
-    } catch(e: any) {
-        setError(e.message);
+        setResult(finalResult);
         setIsGenerating(false);
-        if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
-        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-        dismiss(toastId);
+
+        update({
+          id: toastId,
+          title: "Lottery Number WIN!",
+          description: finalResult,
+          hidden: true,
+        });
+      }, dur * 1000);
+    } catch (e: any) {
+      setError(e.message);
+      setIsGenerating(false);
+      if (animationIntervalRef.current)
+        clearInterval(animationIntervalRef.current);
+      if (countdownIntervalRef.current)
+        clearInterval(countdownIntervalRef.current);
+      dismiss(toastId);
     }
   };
 
@@ -204,7 +200,6 @@ export default function LotteryGenerator() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-
       </CardContent>
       <CardFooter>
         <Button
@@ -213,7 +208,11 @@ export default function LotteryGenerator() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Combination"}
+          {isGenerating
+            ? "Generating..."
+            : isRateLimited
+            ? "Please wait..."
+            : "Generate Combination"}
         </Button>
       </CardFooter>
     </Card>

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import dynamic from "next/dynamic";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getSpinnerWinner } from "@/app/actions/spinner-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -84,6 +84,13 @@ export default function Spinner() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5500);
   const { animationDuration } = useSettings();
+  const { playAudio, stopAudio } = useRandomizerAudio();
+
+  useEffect(() => {
+    if (!mustSpin) {
+      stopAudio();
+    }
+  }, [mustSpin, stopAudio]);
 
   const items = useMemo(
     () =>
@@ -110,11 +117,11 @@ export default function Spinner() {
     }
     if (mustSpin) return;
     triggerRateLimit();
+    playAudio();
     setWinner(null);
     setIsResultCopied(false);
 
     const newWinner = await getSpinnerWinner(items);
-    console.log(newWinner);
 
     if (!mustSpin) {
       const winnerIndex = items.indexOf(newWinner!);
@@ -177,7 +184,6 @@ export default function Spinner() {
                 fontSize={16}
                 spinDuration={animationDuration * 0.1}
                 pointerProps={{
-                  // src: "/spinner-arrow.svg",
                   style: {
                     color: "#fffff",
                     transform: "rotate(0deg) scale(0.8) translate(-20px, 0)",
@@ -256,8 +262,8 @@ export default function Spinner() {
           {mustSpin
             ? "Spinning..."
             : isRateLimited
-              ? "Please wait..."
-              : "Spin the Wheel!"}
+            ? "Please wait..."
+            : "Spin the Wheel!"}
         </Button>
       </CardFooter>
     </Card>

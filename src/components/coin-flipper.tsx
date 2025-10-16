@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -27,9 +26,14 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { flipCoins } from "@/app/actions/coin-flipper-action";
 import { useSettings } from "@/context/SettingsContext";
 import { cn } from "@/lib/utils";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 type CoinResult = "Heads" | "Tails";
-const ANIMATION_CLASSES = ["animate-flip-coin-fast", "animate-flip-coin-medium", "animate-flip-coin-slow"];
+const ANIMATION_CLASSES = [
+  "animate-flip-coin-fast",
+  "animate-flip-coin-medium",
+  "animate-flip-coin-slow",
+];
 
 export default function CoinFlipper() {
   const [numberOfCoins, setNumberOfCoins] = useState("1");
@@ -40,43 +44,26 @@ export default function CoinFlipper() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isFlipping) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isFlipping) {
+      stopAudio();
     }
-  }, [isFlipping]);
+  }, [isFlipping, stopAudio]);
 
   const handleFlip = async () => {
     if (isFlipping || isRateLimited) return;
     triggerRateLimit();
-    
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
+    playAudio();
+
     setIsFlipping(true);
     setIsCopied(false);
-    
+
     const numCoins = parseInt(numberOfCoins, 10);
-    const newAnimationClasses = Array.from({ length: numCoins }, () => 
-      ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)]
+    const newAnimationClasses = Array.from(
+      { length: numCoins },
+      () => ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)],
     );
     setAnimationClasses(newAnimationClasses);
 
@@ -152,15 +139,17 @@ export default function CoinFlipper() {
           <div className="flex justify-center items-center min-h-[240px] gap-8 flex-wrap">
             {displayArray.map((result, i) => (
               <div key={i} className="coin">
-                <div 
+                <div
                   className={cn(
                     "coin-inner",
-                    isFlipping && animationClasses[i]
+                    isFlipping && animationClasses[i],
                   )}
                   style={{
-                    animationDuration: isFlipping ? `${animationDuration}s` : undefined,
-                    animationTimingFunction: 'ease-out',
-                    animationFillMode: 'forwards'
+                    animationDuration: isFlipping
+                      ? `${animationDuration}s`
+                      : undefined,
+                    animationTimingFunction: "ease-out",
+                    animationFillMode: "forwards",
                   }}
                 >
                   <div className="coin-front">

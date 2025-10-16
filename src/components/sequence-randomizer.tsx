@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -17,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { randomizeSequence } from "@/app/actions/sequence-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 function AnimatedResultList({
   isShuffling,
@@ -73,7 +73,6 @@ function AnimatedResultList({
   );
 }
 
-
 export default function SequenceRandomizer() {
   const [itemsText, setItemsText] = useState(`Participant 1
 Participant 2
@@ -86,37 +85,19 @@ Participant 4`);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isShuffling) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isShuffling) {
+      stopAudio();
     }
-  }, [isShuffling]);
+  }, [isShuffling, stopAudio]);
 
   const handleShuffle = async () => {
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
+    playAudio();
+
     setIsShuffling(true);
     setShuffledItems([]);
     setIsResultCopied(false);
@@ -217,7 +198,11 @@ Participant 4`);
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isShuffling ? "Shuffling..." : isRateLimited ? "Please wait..." : "Shuffle Sequence!"}
+          {isShuffling
+            ? "Shuffling..."
+            : isRateLimited
+            ? "Please wait..."
+            : "Shuffle Sequence!"}
         </Button>
       </CardFooter>
     </Card>

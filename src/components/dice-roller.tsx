@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -26,6 +25,7 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { cn } from "@/lib/utils";
 import { rollDice } from "@/app/actions/dice-roller-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -59,7 +59,7 @@ const DiceDisplay = ({
         )}
         style={{
           animationDuration: isRolling ? `${animationDuration}s` : undefined,
-          animationTimingFunction: 'ease-out',
+          animationTimingFunction: "ease-out",
         }}
       >
         {iconToShow}
@@ -75,7 +75,7 @@ const DiceDisplay = ({
       )}
       style={{
         animationDuration: isRolling ? `${animationDuration}s` : undefined,
-        animationTimingFunction: 'ease-out',
+        animationTimingFunction: "ease-out",
       }}
     >
       <span className="text-5xl font-bold">{isRolling ? "?" : result}</span>
@@ -92,37 +92,19 @@ export default function DiceRoller() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isRolling) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isRolling) {
+      stopAudio();
     }
-  }, [isRolling]);
+  }, [isRolling, stopAudio]);
 
   const handleRoll = async () => {
     if (isRolling || isRateLimited) return;
     triggerRateLimit();
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
+    playAudio();
+
     setIsRolling(true);
     setIsCopied(false);
 
@@ -139,7 +121,7 @@ export default function DiceRoller() {
       setIsRolling(false);
     }
   };
-  
+
   const total = results.reduce((sum, val) => sum + val, 0);
   const numDice = parseInt(numberOfDice, 10);
   const numSides = parseInt(diceType, 10);

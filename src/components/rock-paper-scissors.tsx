@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -24,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { playRps } from "@/app/actions/rock-paper-scissors-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];
@@ -42,36 +42,18 @@ export default function RockPaperScissors() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isPlaying) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isPlaying) {
+      stopAudio();
     }
-  }, [isPlaying]);
+  }, [isPlaying, stopAudio]);
 
   const handlePlay = async () => {
     if (isPlaying || isRateLimited) return;
     triggerRateLimit();
-    
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
+    playAudio();
 
     setIsPlaying(true);
     setIsCopied(false);
@@ -143,10 +125,7 @@ export default function RockPaperScissors() {
                 const finalResult =
                   result || MOVES[Math.floor(Math.random() * 3)];
                 return (
-                  <div
-                    key={i}
-                    className={`coin ${isPlaying ? "flipping" : ""}`}
-                  >
+                  <div key={i} className={`coin ${isPlaying ? "flipping" : ""}`}>
                     <div className="coin-inner text-7xl">
                       <div className="coin-front">
                         {EMOJIS[finalResult as RpsResult]}

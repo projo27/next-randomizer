@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generateRandomNumberInBases } from "@/app/actions/number-base-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 interface Result {
   decimal: number;
@@ -37,31 +37,18 @@ export default function NumberBaseRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isGenerating) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isGenerating) {
+      stopAudio();
     }
-  }, [isGenerating]);
+  }, [isGenerating, stopAudio]);
 
   const handleRandomize = async () => {
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
+    playAudio();
     setError(null);
     setResult(null);
     setCopiedKey(null);
@@ -74,22 +61,17 @@ export default function NumberBaseRandomizer() {
       return;
     }
 
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-
     setIsGenerating(true);
 
     try {
-        const newResult = await generateRandomNumberInBases(minNum, maxNum);
-        setTimeout(() => {
-          setResult(newResult);
-          setIsGenerating(false);
-        }, animationDuration * 1000);
-    } catch(e: any) {
-        setError(e.message);
+      const newResult = await generateRandomNumberInBases(minNum, maxNum);
+      setTimeout(() => {
+        setResult(newResult);
         setIsGenerating(false);
+      }, animationDuration * 1000);
+    } catch (e: any) {
+      setError(e.message);
+      setIsGenerating(false);
     }
   };
 
@@ -98,7 +80,9 @@ export default function NumberBaseRandomizer() {
     setCopiedKey(key);
     toast({
       title: "Copied!",
-      description: `${key.charAt(0).toUpperCase() + key.slice(1)} value copied to clipboard.`,
+      description: `${
+        key.charAt(0).toUpperCase() + key.slice(1)
+      } value copied to clipboard.`,
     });
     setTimeout(() => setCopiedKey(null), 2000);
   };
@@ -107,7 +91,9 @@ export default function NumberBaseRandomizer() {
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Number Base Randomizer</CardTitle>
-        <CardDescription>Generate a random number and see it in different number systems.</CardDescription>
+        <CardDescription>
+          Generate a random number and see it in different number systems.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
@@ -151,8 +137,18 @@ export default function NumberBaseRandomizer() {
           <div className="p-4 w-full space-y-2 mt-8 rounded-md border-accent border-2">
             {Object.entries(result).map(([key, value]) => (
               <div key={key} className="relative flex items-center">
-                <Label htmlFor={key} className="w-28 text-sm text-muted-foreground">{key.charAt(0).toUpperCase() + key.slice(1)}</Label>
-                <Input id={key} readOnly value={value} className="font-mono [&&&]:text-xl pr-10" />
+                <Label
+                  htmlFor={key}
+                  className="w-28 text-sm text-muted-foreground"
+                >
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </Label>
+                <Input
+                  id={key}
+                  readOnly
+                  value={value}
+                  className="font-mono [&&&]:text-xl pr-10"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -177,9 +173,12 @@ export default function NumberBaseRandomizer() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isGenerating ? "Generating..." : isRateLimited ? "Please wait..." : "Generate Number"}
+          {isGenerating
+            ? "Generating..."
+            : isRateLimited
+            ? "Please wait..."
+            : "Generate Number"}
         </Button>
-
       </CardFooter>
     </Card>
   );

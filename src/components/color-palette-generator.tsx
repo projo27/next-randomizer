@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -25,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generatePalettes as generatePalettesAction } from "@/app/actions/color-palette-action";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 type ColorScheme =
   | "analogous"
@@ -55,37 +55,19 @@ export default function ColorPaletteGenerator() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isGenerating) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isGenerating) {
+      stopAudio();
     }
-  }, [isGenerating]);
+  }, [isGenerating, stopAudio]);
 
   const generatePalettes = async () => {
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
-    
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
+    playAudio();
+
     setIsGenerating(true);
     setCopiedColor(null);
 

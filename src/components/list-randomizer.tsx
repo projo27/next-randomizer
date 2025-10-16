@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -20,8 +19,8 @@ import { Input } from "./ui/input";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Switch } from "./ui/switch";
 import { randomizeList } from "@/app/actions/list-randomizer-action";
-import { cn } from "@/lib/utils";
 import { useSettings } from "@/context/SettingsContext";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 
 type Item = {
   id: string;
@@ -108,7 +107,6 @@ function ResultDisplay({
   );
 }
 
-
 export default function ListRandomizer() {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [itemsText, setItemsText] = useState(
@@ -123,38 +121,31 @@ export default function ListRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { animationDuration } = useSettings();
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   useEffect(() => {
-    audioRef.current = new Audio("/musics/randomize-synth.mp3");
-
-    // This is the cleanup function that runs when the component unmounts
-    return () => {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
-  
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isShuffling) {
-      audio.pause();
-      audio.currentTime = 0;
+    if (!isShuffling) {
+      stopAudio();
     }
-  }, [isShuffling]);
+  }, [isShuffling, stopAudio]);
 
   const handleInputModeChange = (checked: boolean) => {
     const newMode = checked ? "textarea" : "panel";
     setInputMode(newMode);
 
     if (newMode === "panel" && itemsText) {
-      const lines = itemsText.split("\n").map(l => l.trim()).filter(Boolean);
-      setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
-    } else if (newMode === 'textarea') {
+      const lines = itemsText
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
+      setItems(
+        lines.map((line, index) => ({
+          id: `${Date.now()}-${index}`,
+          value: line,
+        })),
+      );
+    } else if (newMode === "textarea") {
       setItemsText(items.map((p) => p.value).join("\n"));
     }
   };
@@ -162,22 +153,20 @@ export default function ListRandomizer() {
   const handleRandomize = async () => {
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
+    playAudio();
     setError(null);
     setResult(null);
     setIsResultCopied(false);
 
-    // Play audio directly on user interaction
-    if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
-    }
-    
     setIsShuffling(true);
 
-    const currentItems = (inputMode === "textarea"
-      ? itemsText.split("\n")
-      : items.map((i) => i.value)
-    ).map((c) => c.trim()).filter(Boolean);
+    const currentItems = (
+      inputMode === "textarea"
+        ? itemsText.split("\n")
+        : items.map((i) => i.value)
+    )
+      .map((c) => c.trim())
+      .filter(Boolean);
 
     const numToPick = parseInt(count, 10);
     const uniqueOptions = Array.from(new Set(currentItems));
@@ -193,19 +182,20 @@ export default function ListRandomizer() {
       return;
     }
     if (uniqueOptions.length < numToPick) {
-      setError(`Not enough unique options to pick ${numToPick}. Please add more.`);
+      setError(
+        `Not enough unique options to pick ${numToPick}. Please add more.`,
+      );
       setIsShuffling(false);
       return;
     }
 
     try {
       const serverResult = await randomizeList(uniqueOptions, numToPick);
-      
+
       setTimeout(() => {
         setResult(serverResult);
         setIsShuffling(false);
       }, animationDuration * 1000);
-
     } catch (e: any) {
       setError(e.message);
       setIsShuffling(false);
@@ -260,7 +250,7 @@ export default function ListRandomizer() {
             <Label htmlFor="participants">List of Items</Label>
             <span className="text-xs text-muted-foreground">
               {(inputMode === "panel"
-                ? items.filter(i => i.value.trim())
+                ? items.filter((i) => i.value.trim())
                 : itemsText.split("\n").filter(Boolean)
               ).length}{" "}
               item(s)
@@ -321,12 +311,12 @@ export default function ListRandomizer() {
             onChange={(e) => setCount(e.target.value)}
           />
         </div>
-        
-        <ResultDisplay 
-            isShuffling={isShuffling}
-            result={result}
-            onCopy={handleCopyResult}
-            isCopied={isResultCopied}
+
+        <ResultDisplay
+          isShuffling={isShuffling}
+          result={result}
+          onCopy={handleCopyResult}
+          isCopied={isResultCopied}
         />
 
         {error && (
@@ -345,8 +335,8 @@ export default function ListRandomizer() {
           {isShuffling
             ? "Picking..."
             : isRateLimited
-              ? "Please wait..."
-              : "Randomize!"}
+            ? "Please wait..."
+            : "Randomize!"}
         </Button>
       </CardFooter>
     </Card>

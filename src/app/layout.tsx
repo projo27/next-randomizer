@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { Footer } from "@/components/footer";
 import { SettingsProvider } from "@/context/SettingsContext";
+import { RandomizerAudioProvider } from "@/context/RandomizerAudioContext";
 
 export const metadata: Metadata = {
   title: "Randomizer Fun - Your fun-filled tool for making choices!",
@@ -49,9 +50,11 @@ export default function RootLayout({
         >
           <AuthProvider>
             <SettingsProvider>
-              {children}
-              <Toaster />
-              <Footer />
+              <RandomizerAudioProvider>
+                {children}
+                <Toaster />
+                <Footer />
+              </RandomizerAudioProvider>
             </SettingsProvider>
           </AuthProvider>
         </ThemeProvider>
