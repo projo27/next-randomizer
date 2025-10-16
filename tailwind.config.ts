@@ -90,10 +90,25 @@ export default {
             height: "0",
           },
         },
+        "flip-coin-slow": {
+          "0%": { transform: "rotateY(0)" },
+          "100%": { transform: "rotateY(720deg)" }, /* 2 spins */
+        },
+        "flip-coin-medium": {
+          "0%": { transform: "rotateY(0)" },
+          "100%": { transform: "rotateY(1080deg)" }, /* 3 spins */
+        },
+        "flip-coin-fast": {
+          "0%": { transform: "rotateY(0)" },
+          "100%": { transform: "rotateY(1800deg)" }, /* 5 spins */
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "flip-coin-slow": "flip-coin-slow ease-out forwards",
+        "flip-coin-medium": "flip-coin-medium ease-out forwards",
+        "flip-coin-fast": "flip-coin-fast ease-out forwards",
       },
     },
   },

@@ -26,14 +26,17 @@ import { TailsIcon } from "./icons/tails-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { flipCoins } from "@/app/actions/coin-flipper-action";
 import { useSettings } from "@/context/SettingsContext";
+import { cn } from "@/lib/utils";
 
 type CoinResult = "Heads" | "Tails";
+const ANIMATION_CLASSES = ["animate-flip-coin-fast", "animate-flip-coin-medium", "animate-flip-coin-slow"];
 
 export default function CoinFlipper() {
   const [numberOfCoins, setNumberOfCoins] = useState("1");
   const [results, setResults] = useState<CoinResult[]>([]);
   const [isFlipping, setIsFlipping] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [animationClass, setAnimationClass] = useState("animate-flip-coin-medium");
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
@@ -43,24 +46,19 @@ export default function CoinFlipper() {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
   }, []);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isFlipping) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }, [isFlipping]);
-
   const handleFlip = async () => {
     if (isFlipping || isRateLimited) return;
     triggerRateLimit();
     setIsFlipping(true);
     setIsCopied(false);
-
+    
     if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
+    
+    const randomAnimation = ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)];
+    setAnimationClass(randomAnimation);
 
     const numCoins = parseInt(numberOfCoins, 10);
     const newResults = await flipCoins(numCoins);
@@ -70,6 +68,14 @@ export default function CoinFlipper() {
       setIsFlipping(false);
     }, animationDuration * 1000);
   };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && !isFlipping) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [isFlipping]);
 
   const headsCount = results.filter((r) => r === "Heads").length;
   const tailsCount = results.filter((r) => r === "Tails").length;
@@ -136,14 +142,15 @@ export default function CoinFlipper() {
             {displayArray.map((result, i) => (
               <div key={i} className="coin">
                 <div 
-                  className="coin-inner"
-                  style={
-                    isFlipping
-                      ? {
-                          animation: `flip-coin ${animationDuration}s ease-out forwards`,
-                        }
-                      : {}
-                  }
+                  className={cn(
+                    "coin-inner",
+                    isFlipping && animationClass
+                  )}
+                  style={{
+                    animationDuration: isFlipping ? `${animationDuration}s` : undefined,
+                    animationTimingFunction: 'ease-out',
+                    animationFillMode: 'forwards'
+                  }}
                 >
                   <div className="coin-front">
                     {result === "Heads" ? (
