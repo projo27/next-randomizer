@@ -45,18 +45,14 @@ export default function NumberBaseRandomizer() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isGenerating) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isGenerating) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isGenerating]);
 
   const handleRandomize = async () => {
+    if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -71,6 +67,10 @@ export default function NumberBaseRandomizer() {
     }
 
     setIsGenerating(true);
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     try {
         const newResult = await generateRandomNumberInBases(minNum, maxNum);

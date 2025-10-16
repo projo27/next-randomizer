@@ -94,23 +94,24 @@ Participant 4`);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isShuffling) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isShuffling) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isShuffling]);
 
   const handleShuffle = async () => {
+    if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     setIsShuffling(true);
     setShuffledItems([]);
     setIsResultCopied(false);
     
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+
     const currentItems = itemsText
       .split("\n")
       .map((c) => c.trim())
@@ -119,7 +120,6 @@ Participant 4`);
     if (currentItems.length > 0) {
       try {
         const newShuffledItems = await randomizeSequence(currentItems);
-        // Fake delay for animation effect
         setTimeout(() => {
           setShuffledItems(newShuffledItems);
           setIsShuffling(false);

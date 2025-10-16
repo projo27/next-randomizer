@@ -63,22 +63,22 @@ export default function ColorPaletteGenerator() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isGenerating) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isGenerating) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isGenerating]);
 
   const generatePalettes = async () => {
-    if (isGenerating) return;
+    if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     setIsGenerating(true);
     setCopiedColor(null);
+
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     const countPalettes = parseInt(numPalettes, 10);
     const countColors = parseInt(numColors, 10);
@@ -92,7 +92,7 @@ export default function ColorPaletteGenerator() {
       setTimeout(() => {
         setPalettes(allNewPalettes);
         setIsGenerating(false);
-      }, animationDuration * 1000); // Use context duration
+      }, animationDuration * 1000);
     } catch (e) {
       console.error(e);
       setIsGenerating(false);
@@ -206,8 +206,6 @@ export default function ColorPaletteGenerator() {
                     color: getBestTextColor(color),
                   }}
                 >
-                  {/* <div className=""> */}
-
                   <Button
                     variant="ghost"
                     size="icon"
@@ -223,7 +221,6 @@ export default function ColorPaletteGenerator() {
                       <Copy className="h-5 w-5" />
                     )}
                   </Button>
-                  {/* </div> */}
                 </div>
               ))}
             </div>

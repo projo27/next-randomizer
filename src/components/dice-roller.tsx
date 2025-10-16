@@ -65,7 +65,6 @@ const DiceDisplay = ({
     );
   }
 
-  // Fallback for other dice types
   return (
     <div
       className={cn(
@@ -96,22 +95,22 @@ export default function DiceRoller() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isRolling) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isRolling) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isRolling]);
 
   const handleRoll = async () => {
-    if (isRolling) return;
+    if (isRolling || isRateLimited) return;
     triggerRateLimit();
     setIsRolling(true);
     setIsCopied(false);
+
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     const randomAnimation =
       animations[Math.floor(Math.random() * animations.length)];
@@ -125,7 +124,7 @@ export default function DiceRoller() {
       setTimeout(() => {
         setResults(newResults);
         setIsRolling(false);
-      }, animationDuration * 1000); // Duration of the animation
+      }, animationDuration * 1000);
     } catch (e) {
       setIsRolling(false);
     }
@@ -136,7 +135,7 @@ export default function DiceRoller() {
   const numSides = parseInt(diceType, 10);
 
   const displayArray: number[] = isRolling
-    ? Array.from({ length: numDice }).map(() => 1) // Just a placeholder for animation
+    ? Array.from({ length: numDice }).map(() => 1)
     : results.length > 0
     ? results
     : [numSides];

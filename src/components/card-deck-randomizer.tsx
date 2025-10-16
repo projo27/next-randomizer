@@ -40,21 +40,16 @@ export default function CardDeckRandomizer() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isDrawing) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isDrawing) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isDrawing]);
 
   const deckSize = useMemo(() => (includeJokers ? 54 : 52), [includeJokers]);
 
   const handleDraw = async () => {
-    if (isDrawing) return;
+    if (isDrawing || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setIsCopied(false);
@@ -71,6 +66,11 @@ export default function CardDeckRandomizer() {
 
     setIsDrawing(true);
     setDrawnCards([]);
+
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     try {
       const newDrawnCards = await drawCards(includeJokers, count);

@@ -82,14 +82,9 @@ export default function TeamShuffler() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isShuffling) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isShuffling) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isShuffling]);
 
@@ -147,12 +142,12 @@ export default function TeamShuffler() {
   };
 
   const handleShuffle = async () => {
+    if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setTeams([]);
     setIsResultCopied(false);
-    setIsShuffling(true);
-
+    
     let currentParticipants = [...participants];
     if (inputMode === 'textarea') {
       const success = parseParticipantsFromText(participantsText);
@@ -180,8 +175,13 @@ export default function TeamShuffler() {
     const size = parseInt(teamSize, 10);
     if (isNaN(size) || size < 2) {
       setError("Team size must be at least 2.");
-      setIsShuffling(false);
       return;
+    }
+    
+    setIsShuffling(true);
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
 
     try {

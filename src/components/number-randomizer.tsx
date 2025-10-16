@@ -108,18 +108,14 @@ export default function NumberRandomizer() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isRandomizing) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isRandomizing) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isRandomizing]);
 
   const handleRandomize = async () => {
+    if (isRandomizing || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -145,10 +141,13 @@ export default function NumberRandomizer() {
     }
 
     setIsRandomizing(true);
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
     
     try {
         const serverResult = await randomizeNumber(minNum, maxNum, countNum);
-        // Fake delay for animation
         setTimeout(() => {
             setResult(serverResult);
             setIsRandomizing(false);

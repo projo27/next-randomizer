@@ -50,23 +50,23 @@ export default function RockPaperScissors() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isPlaying) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isPlaying]);
 
   const handlePlay = async () => {
-    if (isPlaying) return;
+    if (isPlaying || isRateLimited) return;
     triggerRateLimit();
     setIsPlaying(true);
     setIsCopied(false);
-    setPreviousResults(results); // Save current results for the flip animation
+    setPreviousResults(results);
+
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     const numPlays = parseInt(numberOfPlays, 10);
     const newResults = await playRps(numPlays);
@@ -74,7 +74,7 @@ export default function RockPaperScissors() {
     setTimeout(() => {
       setResults(newResults);
       setIsPlaying(false);
-    }, animationDuration * 1000); // Animation duration
+    }, animationDuration * 1000);
   };
 
   const handleCopy = () => {
@@ -108,7 +108,7 @@ export default function RockPaperScissors() {
             value={numberOfPlays}
             onValueChange={(val) => {
               setNumberOfPlays(val);
-              setResults([]); // Reset results when number of plays changes
+              setResults([]);
               setPreviousResults([]);
             }}
             disabled={isPlaying || isRateLimited}

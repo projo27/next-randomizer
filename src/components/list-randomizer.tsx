@@ -127,22 +127,14 @@ export default function ListRandomizer() {
   const { animationDuration } = useSettings();
 
   useEffect(() => {
-    // Initialize audio on client side
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
-    audioRef.current.loop = true; // Set audio to loop
   }, []);
   
-  // Effect to control audio playback based on isShuffling state
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isShuffling) {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isShuffling) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isShuffling]);
 
@@ -159,6 +151,7 @@ export default function ListRandomizer() {
   };
 
   const handleRandomize = async () => {
+    if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setResult(null);
@@ -186,13 +179,15 @@ export default function ListRandomizer() {
     }
 
     setIsShuffling(true);
+    
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     try {
       const serverResult = await randomizeList(uniqueOptions, numToPick);
       
-      console.log(animationDuration);
-
-      // Delay setting the result and stopping the shuffle based on context duration
       setTimeout(() => {
         setResult(serverResult);
         setIsShuffling(false);
@@ -200,7 +195,7 @@ export default function ListRandomizer() {
 
     } catch (e: any) {
       setError(e.message);
-      setIsShuffling(false); // Stop shuffling immediately on error
+      setIsShuffling(false);
     }
   };
 

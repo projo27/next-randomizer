@@ -111,14 +111,9 @@ export default function DateRandomizer() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isRandomizing) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isRandomizing) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isRandomizing]);
 
@@ -131,15 +126,14 @@ export default function DateRandomizer() {
   }, []);
 
   const handleRandomize = async () => {
+    if (isRandomizing || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setResults([]);
     setIsResultCopied(false);
-    setIsRandomizing(true);
-
+    
     if (!startDate || !endDate) {
       setError('Please select both a start and an end date.');
-      setIsRandomizing(false);
       return;
     }
 
@@ -148,7 +142,6 @@ export default function DateRandomizer() {
       setError(
         'Please enter a valid number of dates to generate (must be > 0).',
       );
-      setIsRandomizing(false);
       return;
     }
 
@@ -163,14 +156,18 @@ export default function DateRandomizer() {
       setError(
         `Cannot generate more than ${Math.min(1000, Math.floor(dayDifference))} unique dates in this range without time.`,
       );
-      setIsRandomizing(false);
       return;
     }
 
     if (includeTime && startTime >= endTime) {
         setError('Start time must be before end time.');
-        setIsRandomizing(false);
         return;
+    }
+
+    setIsRandomizing(true);
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
     
     try {

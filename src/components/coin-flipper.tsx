@@ -45,22 +45,22 @@ export default function CoinFlipper() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isFlipping) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isFlipping) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isFlipping]);
 
   const handleFlip = async () => {
-    if (isFlipping) return;
+    if (isFlipping || isRateLimited) return;
     triggerRateLimit();
     setIsFlipping(true);
     setIsCopied(false);
+
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
 
     const numCoins = parseInt(numberOfCoins, 10);
     const newResults = await flipCoins(numCoins);
@@ -68,7 +68,7 @@ export default function CoinFlipper() {
     setTimeout(() => {
       setResults(newResults);
       setIsFlipping(false);
-    }, animationDuration * 1000); // Animation duration
+    }, animationDuration * 1000);
   };
 
   const headsCount = results.filter((r) => r === "Heads").length;
@@ -144,7 +144,6 @@ export default function CoinFlipper() {
                     )}
                   </div>
                   <div className="coin-back">
-                    {/* Show the opposite for the back during flip */}
                     {result === "Heads" ? (
                       <TailsIcon width={200} height={200} />
                     ) : (

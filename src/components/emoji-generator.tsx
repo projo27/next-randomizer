@@ -49,28 +49,26 @@ export default function EmojiGenerator() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
-    audioRef.current.loop = true;
   }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isGenerating) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
+    if (audio && !isGenerating) {
+      audio.pause();
+      audio.currentTime = 0;
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
       }
     }
   }, [isGenerating]);
 
 
   const handleGenerate = async () => {
-    if (isGenerating) return;
+    if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     setError(null);
     setIsGenerating(true);
@@ -84,8 +82,12 @@ export default function EmojiGenerator() {
       return;
     }
     
-    // Animation effect
-    const interval = setInterval(async () => {
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+    
+    animationIntervalRef.current = setInterval(async () => {
         const tempResult = await generateEmojis(numCount, category);
         setResult(tempResult);
     }, 100);
@@ -93,13 +95,13 @@ export default function EmojiGenerator() {
     try {
         const finalResult = await generateEmojis(numCount, category);
         setTimeout(() => {
-            clearInterval(interval);
+            if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
             setResult(finalResult);
             setIsGenerating(false);
         }, animationDuration * 1000);
     } catch(e: any) {
         setError(e.message);
-        clearInterval(interval);
+        if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
         setIsGenerating(false);
     }
   };

@@ -42,14 +42,9 @@ export default function LotteryGenerator() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      if (isGenerating) {
-        audio.currentTime = 0;
-        audio.play().catch((e) => console.error("Audio play error:", e));
-      } else {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+    if (audio && !isGenerating) {
+      audio.pause();
+      audio.currentTime = 0;
     }
   }, [isGenerating]);
 
@@ -65,7 +60,7 @@ export default function LotteryGenerator() {
 
 
   const handleGenerate = async () => {
-    if (isGenerating) return;
+    if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     setIsGenerating(true);
     setIsCopied(false);
@@ -81,6 +76,11 @@ export default function LotteryGenerator() {
       return;
     }
     
+    if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(e => console.error("Audio play error:", e));
+    }
+
     const characterSet = includeLetters ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" : "0123456789";
 
     animationIntervalRef.current = setInterval(() => {
