@@ -92,22 +92,22 @@ export default {
         },
         "flip-coin-slow": {
           "0%": { transform: "rotateY(0)" },
-          "100%": { transform: "rotateY(720deg)" }, /* 2 spins */
+          "100%": { transform: "rotateY(1080deg)" }, /* 3 spins */
         },
         "flip-coin-medium": {
           "0%": { transform: "rotateY(0)" },
-          "100%": { transform: "rotateY(1080deg)" }, /* 3 spins */
+          "100%": { transform: "rotateY(1800deg)" }, /* 5 spins */
         },
         "flip-coin-fast": {
           "0%": { transform: "rotateY(0)" },
-          "100%": { transform: "rotateY(1800deg)" }, /* 5 spins */
+          "100%": { transform: "rotateY(3600deg)" }, /* 10 spins */
         },
         "spin-dice": {
           "0%": {
             transform: "rotate(0deg) scale(0.8)",
           },
           "100%": {
-            transform: "rotate(1080deg) scale(1)",
+            transform: "rotate(3600deg) scale(1)",
           },
         },
       },
