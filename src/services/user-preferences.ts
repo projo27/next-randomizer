@@ -87,3 +87,42 @@ export async function getAnimationDuration(
     return null;
   }
 }
+
+/**
+ * Saves the user's sound preference to Firestore.
+ * @param userId The ID of the user.
+ * @param playSounds Boolean indicating if sounds should be played.
+ */
+export async function savePlaySounds(
+  userId: string,
+  playSounds: boolean,
+): Promise<void> {
+  if (!userId) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { playSounds }, { merge: true });
+  } catch (error) {
+    console.error("Error saving sound preference:", error);
+  }
+}
+
+/**
+ * Retrieves the user's sound preference from Firestore.
+ * @param userId The ID of the user.
+ * @returns The saved preference (boolean) or null if not set.
+ */
+export async function getPlaySounds(userId: string): Promise<boolean | null> {
+  if (!userId) return null;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+
+    if (docSnap.exists() && docSnap.data().playSounds !== undefined) {
+      return docSnap.data().playSounds;
+    }
+    return null; // Return null if not set, so we can use default
+  } catch (error) {
+    console.error("Error getting sound preference:", error);
+    return null;
+  }
+}

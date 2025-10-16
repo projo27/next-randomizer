@@ -6,24 +6,29 @@ import React, {
   useState,
   useEffect,
   ReactNode,
-  useCallback,
 } from "react";
 import { useAuth } from "./AuthContext";
 import {
   getAnimationDuration,
   saveAnimationDuration,
+  getPlaySounds,
+  savePlaySounds,
 } from "@/services/user-preferences";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface SettingsContextType {
   animationDuration: number;
   setAnimationDuration: (duration: number) => void;
+  playSounds: boolean;
+  setPlaySounds: (play: boolean) => void;
   loading: boolean;
 }
 
 const defaultContextValue: SettingsContextType = {
   animationDuration: 5,
   setAnimationDuration: () => {},
+  playSounds: true,
+  setPlaySounds: () => {},
   loading: true,
 };
 
@@ -38,40 +43,55 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [animationDuration, setAnimationDuration] = useState(
     defaultContextValue.animationDuration,
   );
+  const [playSounds, setPlaySounds] = useState(defaultContextValue.playSounds);
   const [loading, setLoading] = useState(true);
 
-  // Debounce the duration value to avoid too many writes to Firestore
-  const debouncedDuration = useDebounce(animationDuration, 5000);
+  const debouncedDuration = useDebounce(animationDuration, 500);
+  const debouncedPlaySounds = useDebounce(playSounds, 500);
 
-  // Effect to fetch initial settings when user logs in
   useEffect(() => {
     async function fetchSettings() {
       if (user) {
         setLoading(true);
-        const savedDuration = await getAnimationDuration(user.uid);
+        const [savedDuration, savedPlaySounds] = await Promise.all([
+          getAnimationDuration(user.uid),
+          getPlaySounds(user.uid),
+        ]);
+
         if (savedDuration !== null) {
           setAnimationDuration(savedDuration);
+        }
+        if (savedPlaySounds !== null) {
+          setPlaySounds(savedPlaySounds);
         }
         setLoading(false);
       } else {
         // Reset to default when user logs out
         setAnimationDuration(defaultContextValue.animationDuration);
+        setPlaySounds(defaultContextValue.playSounds);
         setLoading(false);
       }
     }
     fetchSettings();
   }, [user]);
 
-  // Effect to save debounced settings to Firestore
   useEffect(() => {
-    if (user && !loading && debouncedDuration !== null) {
+    if (user && !loading) {
       saveAnimationDuration(user.uid, debouncedDuration);
     }
   }, [debouncedDuration, user, loading]);
 
+  useEffect(() => {
+    if (user && !loading) {
+      savePlaySounds(user.uid, debouncedPlaySounds);
+    }
+  }, [debouncedPlaySounds, user, loading]);
+
   const value = {
     animationDuration,
     setAnimationDuration,
+    playSounds,
+    setPlaySounds,
     loading,
   };
 

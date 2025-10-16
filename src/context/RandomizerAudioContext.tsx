@@ -8,6 +8,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
+import { useSettings } from "./SettingsContext";
 
 interface RandomizerAudioContextType {
   playAudio: () => void;
@@ -30,13 +31,13 @@ export function useRandomizerAudio() {
 
 export function RandomizerAudioProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playSounds } = useSettings(); // Get the sound setting
 
   useEffect(() => {
     // Initialize audio only on the client side
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
 
     // Cleanup function to pause and reset audio when the provider unmounts
-    // (e.g., on full page navigation, though less likely in a single-page app)
     return () => {
       const audio = audioRef.current;
       if (audio) {
@@ -47,6 +48,9 @@ export function RandomizerAudioProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const playAudio = useCallback(() => {
+    // Only play audio if the setting is enabled
+    if (!playSounds) return;
+
     const audio = audioRef.current;
     if (audio) {
       audio.currentTime = 0; // Rewind to the start
@@ -56,7 +60,7 @@ export function RandomizerAudioProvider({ children }: { children: ReactNode }) {
         console.warn("Audio play was prevented:", error.name);
       });
     }
-  }, []);
+  }, [playSounds]); // Add playSounds as a dependency
 
   const stopAudio = useCallback(() => {
     const audio = audioRef.current;

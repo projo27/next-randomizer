@@ -18,19 +18,29 @@ import { LockKeyhole, Save } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Switch } from "@/components/ui/switch";
 
 function SettingsPageContent() {
-  const { animationDuration, setAnimationDuration } = useSettings();
-  const { user, loading } = useAuth();
+  const {
+    animationDuration,
+    setAnimationDuration,
+    playSounds,
+    setPlaySounds,
+    loading: settingsLoading,
+  } = useSettings();
+  const { user, loading: authLoading } = useAuth();
 
-  if (loading) {
+  const isLoading = authLoading || settingsLoading;
+
+  if (isLoading) {
     return (
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <Skeleton className="h-8 w-1/2" />
           <Skeleton className="h-4 w-3/4" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-8 py-6">
+          <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
         </CardContent>
       </Card>
@@ -54,11 +64,12 @@ function SettingsPageContent() {
       <CardHeader>
         <CardTitle>Settings</CardTitle>
         <CardDescription>
-          Customize your experience across the application.
+          Customize your experience across the application. Changes are saved
+          automatically.
         </CardDescription>
       </CardHeader>
       <Separator />
-      <CardContent className="space-y-8 py-4">
+      <CardContent className="space-y-8 py-6">
         <div className="flex flex-col space-y-2">
           <div className="flex justify-between items-center">
             <Label htmlFor="animation-duration" className="text-base">
@@ -69,8 +80,8 @@ function SettingsPageContent() {
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Controls the duration of various animations, like the lottery
-            spinner.
+            Controls the duration of various animations, like dice rolls and
+            spinners.
           </p>
           <Slider
             id="animation-duration"
@@ -82,17 +93,34 @@ function SettingsPageContent() {
             className="[&&&]:pt-4"
           />
         </div>
+
+        <Separator />
+
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <Label htmlFor="play-sounds" className="text-base">
+              Play Sounds
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Enable or disable sounds during randomization actions.
+            </p>
+          </div>
+          <Switch
+            id="play-sounds"
+            checked={playSounds}
+            onCheckedChange={setPlaySounds}
+          />
+        </div>
       </CardContent>
       <Separator />
       <CardFooter>
         <div className="flex justify-between items-end mt-4 w-full">
-          <Button variant={"secondary"}>
+          <Button variant={"secondary"} asChild>
             <Link href="/">&#8592; Home</Link>
           </Button>
-          <Button variant={"default"} className="bg-accent">
-            <Save />
-            Save
-          </Button>
+          <p className="text-sm text-muted-foreground">
+            Settings are saved automatically.
+          </p>
         </div>
       </CardFooter>
     </Card>
