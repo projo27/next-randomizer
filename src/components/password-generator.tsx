@@ -65,7 +65,7 @@ export default function PasswordGenerator() {
           <Input
             readOnly
             value={password}
-            className="pr-20 pl-6 [&&&]:text-2xl font-mono tracking-wider h-20"
+            className="pr-20 pl-6 @sm:text-sm @md:text-base @lg:text-2xl font-mono tracking-wider h-20"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2">
             <Button variant="ghost" size="icon" onClick={handleCopy}>

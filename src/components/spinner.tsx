@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -17,6 +18,7 @@ import { Label } from "./ui/label";
 import dynamic from "next/dynamic";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getSpinnerWinner } from "@/app/actions/spinner-action";
+import { useSettings } from "@/context/SettingsContext";
 
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -81,6 +83,7 @@ export default function Spinner() {
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5500);
+  const { animationDuration } = useSettings();
 
   const items = useMemo(
     () =>
@@ -106,7 +109,7 @@ export default function Spinner() {
       return;
     }
     if (mustSpin) return;
-    // triggerRateLimit();
+    triggerRateLimit();
     setWinner(null);
     setIsResultCopied(false);
 
@@ -172,7 +175,7 @@ export default function Spinner() {
                 outerBorderColor="#d1d5db"
                 radiusLineColor="#d1d5db"
                 fontSize={16}
-                // spinDuration={0.55}
+                spinDuration={animationDuration * 0.1}
                 pointerProps={{
                   // src: "/spinner-arrow.svg",
                   style: {
