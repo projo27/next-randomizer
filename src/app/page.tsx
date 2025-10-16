@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, Suspense } from "react";
+import { useCallback, Suspense, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ListTodo,
@@ -48,7 +48,6 @@ import OotdGenerator from "@/components/ootd-generator";
 import TravelRandomizer from "@/components/travel-randomizer";
 import YouTubeRandomizer from "@/components/youtube-randomizer";
 import RockPaperScissors from "@/components/rock-paper-scissors";
-import { RockPaperScissorsIcon } from "@/components/icons/rock-paper-scissors-icon";
 import { Skeleton } from "@/components/ui/skeleton";
 import OotdGeneratorRunware from "@/components/ootd-generator-runware";
 import TabContentGuard from "@/components/ui/tab-content-guard";
@@ -272,6 +271,16 @@ function HomePageContent() {
       contentGuard: true,
     },
   ];
+
+  useEffect(() => {
+    const currentTool = triggerList.find((item) => item.value === activeTab);
+    if (currentTool) {
+      document.title = `Randomizer Fun - ${currentTool.text} Randomizer`;
+    } else {
+      document.title =
+        "Randomizer Fun - Your fun-filled tool for making choices!";
+    }
+  }, [activeTab]);
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
