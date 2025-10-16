@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
@@ -59,10 +59,9 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
       </body>
-      {/* Tempatkan komponen GTM di sini.
-        Secara default, ini akan memuat script GTM setelah hidrasi.
-      */}
-      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+      {/* Tempatkan komponen GTM di sini. Secara default, ini akan memuat script GTM setelah hidrasi. */}
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
     </html>
   );
 }
