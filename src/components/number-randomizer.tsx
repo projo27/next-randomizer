@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import { randomizeNumber } from "@/app/actions/number-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { sendGTMEvent } from "@next/third-parties/google";
+import { useAuth } from "@/context/AuthContext";
 
 function ResultDisplay({
   isRandomizing,
@@ -100,6 +102,8 @@ export default function NumberRandomizer() {
   const { toast } = useToast();
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+    const { user } = useAuth();
+  
 
   useEffect(() => {
     if (!isRandomizing) {
@@ -108,6 +112,11 @@ export default function NumberRandomizer() {
   }, [isRandomizing, stopAudio]);
 
   const handleRandomize = async () => {
+    sendGTMEvent({
+      event: "action_number_randomizer",
+      user_email: user ? user.email : "guest"
+    });
+
     if (isRandomizing || isRateLimited) return;
     triggerRateLimit();
     playAudio();

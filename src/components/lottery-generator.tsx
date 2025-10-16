@@ -20,6 +20,8 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generateLottery } from "@/app/actions/lottery-generator-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
@@ -34,6 +36,7 @@ export default function LotteryGenerator() {
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isGenerating) {
@@ -54,6 +57,10 @@ export default function LotteryGenerator() {
   }, []);
 
   const handleGenerate = async () => {
+    sendGTMEvent({
+      event: "action_lottery_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -211,8 +218,8 @@ export default function LotteryGenerator() {
           {isGenerating
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Generate Combination"}
+              ? "Please wait..."
+              : "Generate Combination"}
         </Button>
       </CardFooter>
     </Card>

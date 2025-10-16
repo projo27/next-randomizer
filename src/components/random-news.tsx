@@ -18,6 +18,8 @@ import { summarizeAndRandomizeNews } from "@/ai/flows/summarize-and-randomize-ne
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 export default function RandomNews() {
   const [urls, setUrls] = useState("");
@@ -28,8 +30,13 @@ export default function RandomNews() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
+    sendGTMEvent({
+      event: "action_news_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     e.preventDefault();
     if (isLoading) return;
     triggerRateLimit();
@@ -52,7 +59,9 @@ export default function RandomNews() {
       });
       setResult(response.randomizedSummary);
     } catch (err) {
-      setError("Failed to summarize news. Please check the URLs and try again.");
+      setError(
+        "Failed to summarize news. Please check the URLs and try again.",
+      );
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -69,7 +78,6 @@ export default function RandomNews() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -111,7 +119,11 @@ https://another.com/news-story-2`}
             className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
           >
             <BrainCircuit className="mr-2 h-4 w-4" />
-            {isLoading ? "Thinking..." : isRateLimited ? "Please wait..." : "Summarize & Randomize"}
+            {isLoading
+              ? "Thinking..."
+              : isRateLimited
+                ? "Please wait..."
+                : "Summarize & Randomize"}
           </Button>
           {error && <p className="text-destructive text-sm mt-4">{error}</p>}
           {isLoading && (

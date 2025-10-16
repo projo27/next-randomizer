@@ -14,12 +14,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
 
   const handleThemeChange = (newTheme: string) => {
+    sendGTMEvent({
+      event: "action_theme_change",
+      user_email: user ? user.email : "guest",
+    });
     setTheme(newTheme);
     if (user) {
       saveThemePreference(user.uid, newTheme);

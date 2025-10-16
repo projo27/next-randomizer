@@ -21,6 +21,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { drawCards, CardType } from "@/app/actions/card-deck-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
@@ -33,6 +35,7 @@ export default function CardDeckRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isDrawing) {
@@ -43,6 +46,10 @@ export default function CardDeckRandomizer() {
   const deckSize = useMemo(() => (includeJokers ? 54 : 52), [includeJokers]);
 
   const handleDraw = async () => {
+    sendGTMEvent({
+      event: "action_card_deck_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isDrawing || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -175,8 +182,8 @@ export default function CardDeckRandomizer() {
           {isDrawing
             ? "Drawing..."
             : isRateLimited
-            ? "Please wait..."
-            : "Draw Cards"}
+              ? "Please wait..."
+              : "Draw Cards"}
         </Button>
       </CardFooter>
     </Card>

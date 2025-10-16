@@ -25,6 +25,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generatePalettes as generatePalettesAction } from "@/app/actions/color-palette-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 type ColorScheme =
   | "analogous"
@@ -56,6 +58,7 @@ export default function ColorPaletteGenerator() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isGenerating) {
@@ -64,6 +67,10 @@ export default function ColorPaletteGenerator() {
   }, [isGenerating, stopAudio]);
 
   const generatePalettes = async () => {
+    sendGTMEvent({
+      event: "action_color_palette_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -228,8 +235,8 @@ export default function ColorPaletteGenerator() {
           {isGenerating
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Generate New Palette(s)"}
+              ? "Please wait..."
+              : "Generate New Palette(s)"}
         </Button>
       </CardFooter>
     </Card>

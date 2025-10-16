@@ -27,6 +27,8 @@ import { flipCoins } from "@/app/actions/coin-flipper-action";
 import { useSettings } from "@/context/SettingsContext";
 import { cn } from "@/lib/utils";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 type CoinResult = "Heads" | "Tails";
 const ANIMATION_CLASSES = [
@@ -45,6 +47,7 @@ export default function CoinFlipper() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isFlipping) {
@@ -53,6 +56,10 @@ export default function CoinFlipper() {
   }, [isFlipping, stopAudio]);
 
   const handleFlip = async () => {
+    sendGTMEvent({
+      event: "action_coin_flipper",
+      user_email: user ? user.email : "guest",
+    });
     if (isFlipping || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -63,7 +70,8 @@ export default function CoinFlipper() {
     const numCoins = parseInt(numberOfCoins, 10);
     const newAnimationClasses = Array.from(
       { length: numCoins },
-      () => ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)],
+      () =>
+        ANIMATION_CLASSES[Math.floor(Math.random() * ANIMATION_CLASSES.length)],
     );
     setAnimationClasses(newAnimationClasses);
 
@@ -81,8 +89,8 @@ export default function CoinFlipper() {
   const displayArray: (CoinResult | null)[] = isFlipping
     ? Array(numCoins).fill(null)
     : results.length
-    ? results
-    : ["Heads"];
+      ? results
+      : ["Heads"];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -189,8 +197,8 @@ export default function CoinFlipper() {
           {isFlipping
             ? "Flipping..."
             : isRateLimited
-            ? "Please wait..."
-            : "Flip Coins!"}
+              ? "Please wait..."
+              : "Flip Coins!"}
         </Button>
       </CardFooter>
     </Card>

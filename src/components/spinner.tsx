@@ -19,6 +19,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getSpinnerWinner } from "@/app/actions/spinner-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -85,6 +87,7 @@ export default function Spinner() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5500);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!mustSpin) {
@@ -107,6 +110,10 @@ export default function Spinner() {
   }, [items]);
 
   const handleSpin = async () => {
+    sendGTMEvent({
+      event: "action_spinner_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (items.length < 2) {
       toast({
         title: "Not enough items",
@@ -262,8 +269,8 @@ export default function Spinner() {
           {mustSpin
             ? "Spinning..."
             : isRateLimited
-            ? "Please wait..."
-            : "Spin the Wheel!"}
+              ? "Please wait..."
+              : "Spin the Wheel!"}
         </Button>
       </CardFooter>
     </Card>

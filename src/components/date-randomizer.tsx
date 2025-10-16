@@ -29,6 +29,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { randomizeDates } from "@/app/actions/date-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 function AnimatedResultList({
   isShuffling,
@@ -108,6 +110,7 @@ export default function DateRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isRandomizing) {
@@ -124,6 +127,10 @@ export default function DateRandomizer() {
   }, []);
 
   const handleRandomize = async () => {
+    sendGTMEvent({
+      event: "action_date_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isRandomizing || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -328,8 +335,8 @@ export default function DateRandomizer() {
           {isRandomizing
             ? "Randomizing..."
             : isRateLimited
-            ? "Please wait..."
-            : "Randomize Dates!"}
+              ? "Please wait..."
+              : "Randomize Dates!"}
         </Button>
       </CardFooter>
     </Card>

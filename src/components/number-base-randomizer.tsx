@@ -19,6 +19,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generateRandomNumberInBases } from "@/app/actions/number-base-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface Result {
   decimal: number;
@@ -38,6 +40,7 @@ export default function NumberBaseRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isGenerating) {
@@ -46,6 +49,10 @@ export default function NumberBaseRandomizer() {
   }, [isGenerating, stopAudio]);
 
   const handleRandomize = async () => {
+    sendGTMEvent({
+      event: "action_number_base_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -176,8 +183,8 @@ export default function NumberBaseRandomizer() {
           {isGenerating
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Generate Number"}
+              ? "Please wait..."
+              : "Generate Number"}
         </Button>
       </CardFooter>
     </Card>
