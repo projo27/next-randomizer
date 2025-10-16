@@ -102,6 +102,14 @@ export default {
           "0%": { transform: "rotateY(0)" },
           "100%": { transform: "rotateY(1800deg)" }, /* 5 spins */
         },
+        "spin-dice": {
+          "0%": {
+            transform: "rotate(0deg) scale(0.8)",
+          },
+          "100%": {
+            transform: "rotate(1080deg) scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -109,6 +117,7 @@ export default {
         "flip-coin-slow": "flip-coin-slow ease-out forwards",
         "flip-coin-medium": "flip-coin-medium ease-out forwards",
         "flip-coin-fast": "flip-coin-fast ease-out forwards",
+        "spin-dice": "spin-dice ease-out",
       },
     },
   },

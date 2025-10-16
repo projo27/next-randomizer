@@ -36,18 +36,16 @@ const diceIcons = [
   <Dice6 key={6} className="h-32 w-32" />,
 ];
 
-const animations = ["animate-spin-dice"];
-
 const DiceDisplay = ({
   type,
   result,
   isRolling,
-  animationClass,
+  animationDuration,
 }: {
   type: number;
   result: number;
   isRolling: boolean;
-  animationClass: string;
+  animationDuration: number;
 }) => {
   if (type === 6) {
     const iconToShow = isRolling
@@ -57,8 +55,12 @@ const DiceDisplay = ({
       <div
         className={cn(
           "dark:text-primary light:text-accent",
-          isRolling && animationClass,
+          isRolling && "animate-spin-dice",
         )}
+        style={{
+          animationDuration: isRolling ? `${animationDuration}s` : undefined,
+          animationTimingFunction: 'ease-out',
+        }}
       >
         {iconToShow}
       </div>
@@ -69,8 +71,12 @@ const DiceDisplay = ({
     <div
       className={cn(
         "flex items-center justify-center w-32 h-32 bg-muted/80 border-2 border-accent rounded-lg text-accent",
-        isRolling && animationClass,
+        isRolling && "animate-spin-dice",
       )}
+      style={{
+        animationDuration: isRolling ? `${animationDuration}s` : undefined,
+        animationTimingFunction: 'ease-out',
+      }}
     >
       <span className="text-5xl font-bold">{isRolling ? "?" : result}</span>
     </div>
@@ -82,7 +88,6 @@ export default function DiceRoller() {
   const [diceType, setDiceType] = useState("6");
   const [results, setResults] = useState<number[]>([]);
   const [isRolling, setIsRolling] = useState(false);
-  const [animationClass, setAnimationClass] = useState("animate-spin-dice");
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
@@ -92,14 +97,6 @@ export default function DiceRoller() {
   useEffect(() => {
     audioRef.current = new Audio("/musics/randomize-synth.mp3");
   }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio && !isRolling) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }, [isRolling]);
 
   const handleRoll = async () => {
     if (isRolling || isRateLimited) return;
@@ -111,10 +108,6 @@ export default function DiceRoller() {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(e => console.error("Audio play error:", e));
     }
-
-    const randomAnimation =
-      animations[Math.floor(Math.random() * animations.length)];
-    setAnimationClass(randomAnimation);
 
     const numDice = parseInt(numberOfDice, 10);
     const numSides = parseInt(diceType, 10);
@@ -129,6 +122,14 @@ export default function DiceRoller() {
       setIsRolling(false);
     }
   };
+  
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio && !isRolling) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [isRolling]);
 
   const total = results.reduce((sum, val) => sum + val, 0);
   const numDice = parseInt(numberOfDice, 10);
@@ -225,7 +226,7 @@ export default function DiceRoller() {
                 type={numSides}
                 result={result}
                 isRolling={isRolling}
-                animationClass={animationClass}
+                animationDuration={animationDuration}
               />
             ))}
           </div>
