@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { CompassIcon } from "./icons/compass-icon";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { getRandomDirection } from "@/app/actions/compass-action";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const DIRECTIONS: Record<string, number> = {
   North: 0,
@@ -38,8 +40,13 @@ export default function CompassRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(4500); // Longer timeout to match animation
+  const { user } = useAuth();
 
   const handleRandomize = async () => {
+    sendGTMEvent({
+      event: "action_compass_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isRandomizing) return;
     triggerRateLimit();
     setIsRandomizing(true);

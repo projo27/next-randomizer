@@ -17,6 +17,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { randomizeSequence } from "@/app/actions/sequence-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 function AnimatedResultList({
   isShuffling,
@@ -91,6 +93,7 @@ Participant 4`);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isShuffling) {
@@ -99,6 +102,11 @@ Participant 4`);
   }, [isShuffling, stopAudio]);
 
   const handleShuffle = async () => {
+    sendGTMEvent({
+      event: "action_sequence_randomizer",
+      user_email: user ? user.email : "guest",
+    });
+
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     playAudio();

@@ -26,6 +26,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generateEmojis } from "@/app/actions/emoji-generator-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const EMOJI_CATEGORIES = {
   "Smileys & Emotion": [
@@ -1168,6 +1170,7 @@ export default function EmojiGenerator() {
   const { animationDuration } = useSettings();
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isGenerating) {
@@ -1179,6 +1182,10 @@ export default function EmojiGenerator() {
   }, [isGenerating, stopAudio]);
 
   const handleGenerate = async () => {
+    sendGTMEvent({
+      event: "action_emoji_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isGenerating || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -1310,8 +1317,8 @@ export default function EmojiGenerator() {
           {isGenerating
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Generate Emojis"}
+              ? "Please wait..."
+              : "Generate Emojis"}
         </Button>
       </CardFooter>
     </Card>
