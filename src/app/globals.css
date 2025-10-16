@@ -149,10 +149,6 @@
     transform-style: preserve-3d;
   }
 
-  .coin.flipping .coin-inner {
-    animation: flip-coin 1s ease-out forwards;
-  }
-
   .coin-front,
   .coin-back {
     position: absolute;

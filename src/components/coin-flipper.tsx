@@ -134,8 +134,17 @@ export default function CoinFlipper() {
           </div>
           <div className="flex justify-center items-center min-h-[240px] gap-8 flex-wrap">
             {displayArray.map((result, i) => (
-              <div key={i} className={`coin ${isFlipping ? "flipping" : ""}`}>
-                <div className="coin-inner">
+              <div key={i} className="coin">
+                <div 
+                  className="coin-inner"
+                  style={
+                    isFlipping
+                      ? {
+                          animation: `flip-coin ${animationDuration}s ease-out forwards`,
+                        }
+                      : {}
+                  }
+                >
                   <div className="coin-front">
                     {result === "Heads" ? (
                       <HeadsIcon width={200} height={200} />
