@@ -231,7 +231,7 @@ function HomePageContent() {
       hidden: false,
       badge: "",
       icon: <Youtube className="h-5 w-5" />,
-      content: <YouTubeRandomizer user={user} />,
+      content: <YouTubeRandomizer />,
       contentGuard: true,
     },
     {

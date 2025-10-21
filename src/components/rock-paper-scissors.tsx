@@ -24,6 +24,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { playRps } from "@/app/actions/rock-paper-scissors-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];
@@ -43,6 +45,7 @@ export default function RockPaperScissors() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isPlaying) {
@@ -51,6 +54,10 @@ export default function RockPaperScissors() {
   }, [isPlaying, stopAudio]);
 
   const handlePlay = async () => {
+    sendGTMEvent({
+      event: "action_rock_paper_scissor_randomizer",
+      user_email: user ? user.email : "guest",
+    });
     if (isPlaying || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -125,7 +132,10 @@ export default function RockPaperScissors() {
                 const finalResult =
                   result || MOVES[Math.floor(Math.random() * 3)];
                 return (
-                  <div key={i} className={`coin ${isPlaying ? "flipping" : ""}`}>
+                  <div
+                    key={i}
+                    className={`coin ${isPlaying ? "flipping" : ""}`}
+                  >
                     <div className="coin-inner text-7xl">
                       <div className="coin-front">
                         {EMOJIS[finalResult as RpsResult]}
@@ -166,8 +176,8 @@ export default function RockPaperScissors() {
           {isPlaying
             ? "Playing..."
             : isRateLimited
-            ? "Please wait..."
-            : "Play!"}
+              ? "Please wait..."
+              : "Play!"}
         </Button>
       </CardFooter>
     </Card>

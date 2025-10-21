@@ -26,6 +26,8 @@ import { cn } from "@/lib/utils";
 import { rollDice } from "@/app/actions/dice-roller-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const diceIcons = [
   <Dice1 key={1} className="h-32 w-32" />,
@@ -93,6 +95,7 @@ export default function DiceRoller() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isRolling) {
@@ -101,6 +104,10 @@ export default function DiceRoller() {
   }, [isRolling, stopAudio]);
 
   const handleRoll = async () => {
+    sendGTMEvent({
+      event: "action_dice_roller",
+      user_email: user ? user.email : "guest",
+    });
     if (isRolling || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -129,8 +136,8 @@ export default function DiceRoller() {
   const displayArray: number[] = isRolling
     ? Array.from({ length: numDice }).map(() => 1)
     : results.length > 0
-    ? results
-    : [numSides];
+      ? results
+      : [numSides];
 
   const handleCopy = () => {
     if (results.length === 0) return;
@@ -238,8 +245,8 @@ export default function DiceRoller() {
           {isRolling
             ? "Rolling..."
             : isRateLimited
-            ? "Please wait..."
-            : "Roll Dice!"}
+              ? "Please wait..."
+              : "Roll Dice!"}
         </Button>
       </CardFooter>
     </Card>

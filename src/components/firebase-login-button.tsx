@@ -14,12 +14,17 @@ import {
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 export default function FirebaseLoginButton() {
   // Mendapatkan tipe data yang aman dari useAuth()
   const { user, signInWithGoogle, signOut, loading } = useAuth();
 
   const handleLogin = async () => {
+    sendGTMEvent({
+      event: "action_login",
+      user_email: user ? user.email : "guest",
+    });
     try {
       await signInWithGoogle();
       // alert('Login berhasil!');
@@ -30,6 +35,10 @@ export default function FirebaseLoginButton() {
   };
 
   const handleLogout = async () => {
+    sendGTMEvent({
+      event: "action_logout",
+      user_email: user ? user.email : "guest",
+    });
     try {
       await signOut();
     } catch (error) {

@@ -21,6 +21,8 @@ import { Switch } from "./ui/switch";
 import { randomizeList } from "@/app/actions/list-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 type Item = {
   id: string;
@@ -123,6 +125,7 @@ export default function ListRandomizer() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isShuffling) {
@@ -151,6 +154,11 @@ export default function ListRandomizer() {
   };
 
   const handleRandomize = async () => {
+    sendGTMEvent({
+      event: "action_list_randomizer",
+      user_email: user ? user.email : "guest"
+    });
+
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -249,10 +257,12 @@ export default function ListRandomizer() {
           <div className="flex justify-between items-center">
             <Label htmlFor="participants">List of Items</Label>
             <span className="text-xs text-muted-foreground">
-              {(inputMode === "panel"
-                ? items.filter((i) => i.value.trim())
-                : itemsText.split("\n").filter(Boolean)
-              ).length}{" "}
+              {
+                (inputMode === "panel"
+                  ? items.filter((i) => i.value.trim())
+                  : itemsText.split("\n").filter(Boolean)
+                ).length
+              }{" "}
               item(s)
             </span>
           </div>
@@ -335,8 +345,8 @@ export default function ListRandomizer() {
           {isShuffling
             ? "Picking..."
             : isRateLimited
-            ? "Please wait..."
-            : "Randomize!"}
+              ? "Please wait..."
+              : "Randomize!"}
         </Button>
       </CardFooter>
     </Card>

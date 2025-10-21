@@ -24,6 +24,8 @@ import { cn } from "@/lib/utils";
 import { shuffleTeams } from "@/app/actions/team-shuffler-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useAuth } from "@/context/AuthContext";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 type Participant = {
   id: string;
@@ -85,6 +87,7 @@ export default function TeamShuffler() {
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isShuffling) {
@@ -148,6 +151,10 @@ export default function TeamShuffler() {
   };
 
   const handleShuffle = async () => {
+    sendGTMEvent({
+      event: "action_team_shuffler",
+      user_email: user ? user.email : "guest",
+    });
     if (isShuffling || isRateLimited) return;
     triggerRateLimit();
     playAudio();
@@ -210,10 +217,7 @@ export default function TeamShuffler() {
           ? `Team ${index + 1} (Total Level: ${team.totalLevel})`
           : `Team ${index + 1}`;
         const members = team.members
-          .map(
-            (m) =>
-              `- ${m.name}` + (useLevels ? ` (Level ${m.level})` : ""),
-          )
+          .map((m) => `- ${m.name}` + (useLevels ? ` (Level ${m.level})` : ""))
           .join("\n");
         return `${header}\n${members}`;
       })
@@ -229,7 +233,10 @@ export default function TeamShuffler() {
   };
 
   const handleAddParticipant = () => {
-    setParticipants([...participants, { id: `${Date.now()}`, name: "", level: 1 }]);
+    setParticipants([
+      ...participants,
+      { id: `${Date.now()}`, name: "", level: 1 },
+    ]);
   };
 
   const handleRemoveParticipant = (id: string) => {
@@ -365,8 +372,7 @@ export default function TeamShuffler() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 ...Array(
-                  Math.floor(participants.length / parseInt(teamSize, 10)) ||
-                    1,
+                  Math.floor(participants.length / parseInt(teamSize, 10)) || 1,
                 ),
               ].map((_, i) => (
                 <div key={i} className="space-y-2 rounded-lg border p-4">
@@ -401,7 +407,9 @@ export default function TeamShuffler() {
                     <CardTitle className="flex justify-between items-center">
                       <span>Team {index + 1}</span>
                       {useLevels && (
-                        <Badge variant="secondary">Lvl: {team.totalLevel}</Badge>
+                        <Badge variant="secondary">
+                          Lvl: {team.totalLevel}
+                        </Badge>
                       )}
                     </CardTitle>
                   </CardHeader>
@@ -436,8 +444,8 @@ export default function TeamShuffler() {
           {isShuffling
             ? "Shuffling..."
             : isRateLimited
-            ? "Please wait..."
-            : "Shuffle into Teams!"}
+              ? "Please wait..."
+              : "Shuffle into Teams!"}
         </Button>
       </CardFooter>
     </Card>
