@@ -39,7 +39,7 @@ export function useSettings() {
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [animationDuration, setAnimationDuration] = useState(
     defaultContextValue.animationDuration,
   );
@@ -72,8 +72,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     }
-    fetchSettings();
-  }, [user]);
+    
+    if (!authLoading) {
+      fetchSettings();
+    }
+  }, [user, authLoading]);
 
   useEffect(() => {
     if (user && !loading) {
@@ -92,7 +95,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setAnimationDuration,
     playSounds,
     setPlaySounds,
-    loading,
+    loading: authLoading || loading,
   };
 
   return (

@@ -33,8 +33,6 @@ export async function getThemePreference(
   if (!userId) return null;
   try {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
-    // console.log(db);
-    // console.log(userPrefRef.path, userId);
     const docSnap = await getDoc(userPrefRef);
 
     if (docSnap.exists() && docSnap.data().theme) {
@@ -123,6 +121,44 @@ export async function getPlaySounds(userId: string): Promise<boolean | null> {
     return null; // Return null if not set, so we can use default
   } catch (error) {
     console.error("Error getting sound preference:", error);
+    return null;
+  }
+}
+
+/**
+ * Saves the user's custom menu order to Firestore.
+ * @param userId The ID of the user.
+ * @param order An array of strings representing the ordered menu item keys.
+ */
+export async function saveMenuOrder(
+  userId: string,
+  order: string[],
+): Promise<void> {
+  if (!userId) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { menuOrder: order }, { merge: true });
+  } catch (error) {
+    console.error("Error saving menu order:", error);
+  }
+}
+
+/**
+ * Retrieves the user's custom menu order from Firestore.
+ * @param userId The ID of the user.
+ * @returns An array of strings representing the saved order, or null.
+ */
+export async function getMenuOrder(userId: string): Promise<string[] | null> {
+  if (!userId) return null;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+    if (docSnap.exists() && docSnap.data().menuOrder) {
+      return docSnap.data().menuOrder;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting menu order:", error);
     return null;
   }
 }
