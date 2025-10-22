@@ -1,4 +1,5 @@
-"use client"; // Harus di client side
+// src/context/AuthContext.tsx
+"use client";
 
 import React, {
   createContext,
@@ -11,30 +12,47 @@ import React, {
 import { useTheme } from "next-themes";
 import {
   onAuthStateChanged,
-  signInWithGoogle,
-  signOut,
+  signInWithGoogle as firebaseSignInWithGoogle,
+  signOut as firebaseSignOut,
 } from "@/lib/firebase-auth";
 import { auth } from "@/lib/firebase-config";
 import { getThemePreference } from "@/services/user-preferences";
-import { AuthContextType, AuthUser } from "@/types/auth";
+import type { AuthContextType, AuthUser, FirebaseUser } from "@/types/auth";
+
+// --- Dummy User for Development ---
+const dummyUser: FirebaseUser = {
+  uid: "dummy-user-uid-12345",
+  email: "dev@randomizer.fun",
+  displayName: "Dummy User",
+  photoURL: "https://picsum.photos/seed/dummy-user/40/40",
+  // Add other necessary fields with default values
+  emailVerified: true,
+  isAnonymous: false,
+  metadata: {},
+  providerData: [],
+  providerId: "dummy",
+  tenantId: null,
+  delete: () => Promise.resolve(),
+  getIdToken: () => Promise.resolve("dummy-token"),
+  getIdTokenResult: () => Promise.resolve({} as any),
+  reload: () => Promise.resolve(),
+  toJSON: () => ({}),
+};
 
 // Nilai default untuk context
 const defaultContextValue: AuthContextType = {
   user: null,
   loading: true,
-  // Placeholder fungsi, akan diganti dengan implementasi asli
   signInWithGoogle: () => Promise.reject("Not initialized"),
   signOut: () => Promise.reject("Not initialized"),
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
 
-// Custom Hook untuk mempermudah penggunaan
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// Interface untuk props AuthProvider
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -47,14 +65,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const handleUserAuth = useCallback(
     async (authUser: AuthUser) => {
       if (authUser) {
-        // console.log(authUser)
-        // User logged in, try to fetch their theme
         const savedTheme = await getThemePreference(authUser.uid);
         if (savedTheme) {
           setTheme(savedTheme);
         }
       } else {
-        // User logged out, revert to system theme
         setTheme("system");
       }
       setUser(authUser);
@@ -64,18 +79,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   useEffect(() => {
-    // Mengamati perubahan status autentikasi
-    const unsubscribe = onAuthStateChanged(auth, handleUserAuth);
+    // --- DEVELOPMENT MODE: Use Dummy User ---
+    if (process.env.NODE_ENV === "development") {
+      console.log("DEV MODE: Using dummy user.");
+      // Use a timeout to simulate async loading
+      const timer = setTimeout(() => {
+         handleUserAuth(dummyUser);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
 
-    // Cleanup: Membersihkan observer
+    // --- PRODUCTION MODE: Use Firebase Auth ---
+    const unsubscribe = onAuthStateChanged(auth, handleUserAuth);
     return () => unsubscribe();
   }, [handleUserAuth]);
 
+  // In development, the real auth functions are replaced with no-ops
+  const isDevelopment = process.env.NODE_ENV === "development";
+  
   const value: AuthContextType = {
     user,
     loading,
-    signInWithGoogle, // Implementasi fungsi dari auth.ts
-    signOut, // Implementasi fungsi dari auth.ts
+    signInWithGoogle: isDevelopment
+      ? async () => {
+          console.log("DEV MODE: signInWithGoogle is disabled.");
+          return dummyUser;
+        }
+      : firebaseSignInWithGoogle,
+    signOut: isDevelopment
+      ? async () => {
+          console.log("DEV MODE: signOut is disabled.");
+        }
+      : firebaseSignOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
