@@ -82,7 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // --- DEVELOPMENT MODE: Use Dummy User ---
-    if (process.env.NEXT_ENVIRONMENT === "development") {
+    if ((process.env.NEXT_ENVIRONMENT || process.env.NODE_ENV) === "development") {
       console.log("DEV MODE: Using dummy user.");
       // Use a timeout to simulate async loading
       const timer = setTimeout(() => {
