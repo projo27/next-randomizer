@@ -50,27 +50,27 @@ export function ToolNavigation() {
               onClick={() => handleTabChange(item.value)}
             />
           ))}
+           <CollapsibleContent asChild className="w-full">
+             <div className="flex flex-wrap items-center justify-center w-full h-auto gap-2">
+                {menuOrder.hidden.map((item) => (
+                    <MenuTriggerItem
+                    key={item.value}
+                    item={item}
+                    isActive={activeTab === item.value}
+                    onClick={() => handleTabChange(item.value)}
+                    />
+                ))}
+             </div>
+           </CollapsibleContent>
         </TabsList>
-
-        <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
-            <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2 mt-2">
-            {menuOrder.hidden.map((item) => (
-                <MenuTriggerItem
-                key={item.value}
-                item={item}
-                isActive={activeTab === item.value}
-                onClick={() => handleTabChange(item.value)}
-                />
-            ))}
-            </TabsList>
-        </CollapsibleContent>
 
         {menuOrder.hidden.length > 0 && (
             <div className="relative flex items-center justify-center mt-2">
                 <Separator className="w-full" />
                 <CollapsibleTrigger asChild>
                     <Button variant="secondary" className="absolute px-4 h-8 group">
-                        Show More
+                        <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">Show More</span>
+                        <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">Show Less</span>
                         <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
                     </Button>
                 </CollapsibleTrigger>
