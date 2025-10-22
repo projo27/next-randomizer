@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -6,6 +7,10 @@ import { TabsList } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMenuOrder } from "@/context/MenuOrderContext";
 import { MenuTriggerItem } from "./menu-trigger-item";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { Button } from "./ui/button";
+import { ChevronDown } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 export function ToolNavigation() {
   const router = useRouter();
@@ -35,15 +40,42 @@ export function ToolNavigation() {
   }
 
   return (
-    <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
-      {menuOrder.map((item) => (
-        <MenuTriggerItem
-          key={item.value}
-          item={item}
-          isActive={activeTab === item.value}
-          onClick={() => handleTabChange(item.value)}
-        />
-      ))}
-    </TabsList>
+    <Collapsible className="w-full">
+        <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
+          {menuOrder.visible.map((item) => (
+            <MenuTriggerItem
+              key={item.value}
+              item={item}
+              isActive={activeTab === item.value}
+              onClick={() => handleTabChange(item.value)}
+            />
+          ))}
+        </TabsList>
+
+        <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
+            <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2 mt-2">
+            {menuOrder.hidden.map((item) => (
+                <MenuTriggerItem
+                key={item.value}
+                item={item}
+                isActive={activeTab === item.value}
+                onClick={() => handleTabChange(item.value)}
+                />
+            ))}
+            </TabsList>
+        </CollapsibleContent>
+
+        {menuOrder.hidden.length > 0 && (
+            <div className="relative flex items-center justify-center mt-2">
+                <Separator className="w-full" />
+                <CollapsibleTrigger asChild>
+                    <Button variant="secondary" className="absolute px-4 h-8 group">
+                        Show More
+                        <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
+                    </Button>
+                </CollapsibleTrigger>
+            </div>
+        )}
+    </Collapsible>
   );
 }

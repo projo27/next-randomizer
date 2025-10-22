@@ -1,7 +1,13 @@
+
 import { db } from "@/lib/firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const USER_PREFERENCE_COLLECTION = "userPreferences";
+
+export type MenuOrder = {
+  visible: string[];
+  hidden: string[];
+};
 
 /**
  * Saves the user's theme preference to Firestore.
@@ -128,11 +134,11 @@ export async function getPlaySounds(userId: string): Promise<boolean | null> {
 /**
  * Saves the user's custom menu order to Firestore.
  * @param userId The ID of the user.
- * @param order An array of strings representing the ordered menu item keys.
+ * @param order An object with 'visible' and 'hidden' arrays of strings.
  */
 export async function saveMenuOrder(
   userId: string,
-  order: string[],
+  order: MenuOrder,
 ): Promise<void> {
   if (!userId) return;
   try {
@@ -146,15 +152,16 @@ export async function saveMenuOrder(
 /**
  * Retrieves the user's custom menu order from Firestore.
  * @param userId The ID of the user.
- * @returns An array of strings representing the saved order, or null.
+ * @returns An object with 'visible' and 'hidden' arrays, or null.
  */
-export async function getMenuOrder(userId: string): Promise<string[] | null> {
+export async function getMenuOrder(userId: string): Promise<MenuOrder | null> {
   if (!userId) return null;
   try {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     const docSnap = await getDoc(userPrefRef);
-    if (docSnap.exists() && docSnap.data().menuOrder) {
-      return docSnap.data().menuOrder;
+    const data = docSnap.data();
+    if (docSnap.exists() && data?.menuOrder && Array.isArray(data.menuOrder.visible) && Array.isArray(data.menuOrder.hidden)) {
+      return data.menuOrder as MenuOrder;
     }
     return null;
   } catch (error) {
