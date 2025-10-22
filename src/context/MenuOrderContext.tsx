@@ -16,15 +16,18 @@ import {
   saveMenuOrder,
   MenuOrder,
 } from "@/services/user-preferences";
-import { triggerList as allMenuItems } from "@/lib/menu-data";
-
-// Type for a single menu item definition
-export type MenuItemData = typeof allMenuItems[0];
+import { triggerList as allMenuItems, MenuItemData } from "@/lib/menu-data";
 
 // Type for the context
 interface MenuOrderContextType {
-  menuOrder: MenuOrder;
-  setMenuOrder: (newOrder: MenuOrder) => void;
+  menuOrder: {
+    visible: MenuItemData[];
+    hidden: MenuItemData[];
+  };
+  setMenuOrder: (newOrder: {
+    visible: MenuItemData[];
+    hidden: MenuItemData[];
+  }) => void;
   loading: boolean;
 }
 
@@ -57,7 +60,7 @@ export function useMenuOrder() {
 
 export function MenuOrderProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const [menuOrder, setMenuOrderState] = useState<MenuOrder>(defaultOrder);
+  const [menuOrderKeys, setMenuOrderKeys] = useState<MenuOrder>(defaultOrder);
   const [loading, setLoading] = useState(true);
 
   // Function to sort the full menu data based on an array of keys
@@ -80,12 +83,12 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
             if (newItems.length > 0) {
               savedOrder.hidden.push(...newItems.map(item => item.value));
             }
-            setMenuOrderState(savedOrder);
+            setMenuOrderKeys(savedOrder);
         } else {
-          setMenuOrderState(defaultOrder);
+          setMenuOrderKeys(defaultOrder);
         }
       } else {
-        setMenuOrderState(defaultOrder);
+        setMenuOrderKeys(defaultOrder);
       }
       setLoading(false);
     }
@@ -95,45 +98,30 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
     }
   }, [user, authLoading]);
 
-  const setMenuOrder = useCallback(
-    (newOrder: MenuOrder) => {
+  const handleSetMenuOrder = useCallback(
+    (newOrder: { visible: MenuItemData[]; hidden: MenuItemData[] }) => {
+      const newOrderKeys: MenuOrder = {
+        visible: newOrder.visible.map(item => item.value),
+        hidden: newOrder.hidden.map(item => item.value),
+      };
+      
       // Update local state immediately for responsive UI
-      setMenuOrderState(newOrder);
+      setMenuOrderKeys(newOrderKeys);
       // If user is logged in, save the new order to Firestore
       if (user) {
-        saveMenuOrder(user.uid, newOrder);
+        saveMenuOrder(user.uid, newOrderKeys);
       }
     },
     [user],
   );
 
-  const value = {
-    menuOrder: {
-        visible: getItemsFromKeys(menuOrder.visible),
-        hidden: getItemsFromKeys(menuOrder.hidden),
-    },
-    setMenuOrder: (newOrder: { visible: MenuItemData[], hidden: MenuItemData[] }) => {
-        setMenuOrder({
-            visible: newOrder.visible.map(item => item.value),
-            hidden: newOrder.hidden.map(item => item.value),
-        })
-    },
-    loading: authLoading || loading,
-  };
-
   // The context now provides MenuItemData arrays, but internally manages string keys
   const contextValue: MenuOrderContextType = {
       menuOrder: {
-          visible: getItemsFromKeys(menuOrder.visible),
-          hidden: getItemsFromKeys(menuOrder.hidden),
+          visible: getItemsFromKeys(menuOrderKeys.visible),
+          hidden: getItemsFromKeys(menuOrderKeys.hidden),
       },
-      setMenuOrder: (newOrder: { visible: MenuItemData[], hidden: MenuItemData[] }) => {
-        const newOrderKeys: MenuOrder = {
-          visible: newOrder.visible.map(item => item.value),
-          hidden: newOrder.hidden.map(item => item.value),
-        };
-        setMenuOrder(newOrderKeys);
-      },
+      setMenuOrder: handleSetMenuOrder,
       loading: authLoading || loading,
   };
 

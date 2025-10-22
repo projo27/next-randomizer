@@ -45,6 +45,8 @@ import {
   Hand,
 } from "lucide-react";
 
+export type MenuItemData = typeof triggerList[0];
+
 export const triggerList = [
     {
       value: "list",
