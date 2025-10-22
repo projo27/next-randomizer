@@ -1,8 +1,8 @@
 "use client"
 
 import { TabsTrigger } from "@/components/ui/tabs";
+import { MenuItemData } from "@/lib/menu-data";
 import { cn } from "@/lib/utils";
-import type { MenuItemData } from "@/context/MenuOrderContext";
 
 interface MenuTriggerItemProps {
   item: MenuItemData;
