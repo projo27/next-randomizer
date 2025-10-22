@@ -54,17 +54,15 @@ export function ToolNavigation() {
             onClick={() => handleTabChange(item.value)}
           />
         ))}
-        <CollapsibleContent asChild>
-          <>
-            {menuOrder.hidden.map((item: any) => (
-              <MenuTriggerItem
-                key={item.value}
-                item={item}
-                isActive={activeTab === item.value}
-                onClick={() => handleTabChange(item.value)}
-              />
-            ))}
-          </>
+        <CollapsibleContent>
+          {menuOrder.hidden.map((item: any) => (
+            <MenuTriggerItem
+              key={item.value}
+              item={item}
+              isActive={activeTab === item.value}
+              onClick={() => handleTabChange(item.value)}
+            />
+          ))}
         </CollapsibleContent>
       </TabsList>
 
