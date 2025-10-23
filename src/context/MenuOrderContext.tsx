@@ -1,4 +1,3 @@
-
 // src/context/MenuOrderContext.tsx
 "use client";
 
@@ -17,6 +16,7 @@ import {
   MenuOrder,
 } from "@/services/user-preferences";
 import { triggerList as allMenuItems, MenuItemData } from "@/lib/menu-data";
+import { useSettings } from "./SettingsContext";
 
 // Type for the context
 interface MenuOrderContextType {
@@ -30,21 +30,6 @@ interface MenuOrderContextType {
   }) => void;
   loading: boolean;
 }
-
-// Get the default order from the menu data file
-const defaultVisibleOrderKeys = allMenuItems
-  .filter((item, index) => index < 10 && !item.hidden) // Default to first 10 visible items
-  .map((item) => item.value);
-
-const defaultHiddenOrderKeys = allMenuItems
-  .filter((item) => !defaultVisibleOrderKeys.includes(item.value) && !item.hidden)
-  .map((item) => item.value);
-
-const defaultOrder: MenuOrder = {
-  visible: defaultVisibleOrderKeys,
-  hidden: defaultHiddenOrderKeys,
-};
-
 
 const MenuOrderContext = createContext<MenuOrderContextType | undefined>(
   undefined,
@@ -60,7 +45,8 @@ export function useMenuOrder() {
 
 export function MenuOrderProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const [menuOrderKeys, setMenuOrderKeys] = useState<MenuOrder>(defaultOrder);
+  const { visibleToolCount, loading: settingsLoading } = useSettings();
+  const [menuOrderKeys, setMenuOrderKeys] = useState<MenuOrder>({ visible: [], hidden: [] });
   const [loading, setLoading] = useState(true);
 
   // Function to sort the full menu data based on an array of keys
@@ -69,34 +55,49 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
       .map(key => allMenuItems.find(item => item.value === key))
       .filter((item): item is MenuItemData => !!item);
   };
+  
+  const generateDefaultOrder = useCallback(() => {
+    const allVisibleMenuItems = allMenuItems.filter(item => !item.hidden);
+    const visibleKeys = allVisibleMenuItems.slice(0, visibleToolCount).map(item => item.value);
+    const hiddenKeys = allVisibleMenuItems.slice(visibleToolCount).map(item => item.value);
+    return { visible: visibleKeys, hidden: hiddenKeys };
+  }, [visibleToolCount]);
+
 
   useEffect(() => {
     async function fetchMenuOrder() {
       setLoading(true);
       if (user) {
-        const savedOrder = await getMenuOrder(user.uid);
+        let savedOrder = await getMenuOrder(user.uid);
+        
+        // Ensure all menu items exist in the order, add new ones to hidden
+        const allCurrentKeys = new Set(allMenuItems.map(i => i.value));
+        const allSavedKeys = new Set(savedOrder ? [...savedOrder.visible, ...savedOrder.hidden] : []);
+        
+        const newItems = allMenuItems.filter(item => !allSavedKeys.has(item.value) && !item.hidden);
+        
         if (savedOrder) {
-            // Ensure all items exist in one of the lists
-            const allSavedKeys = new Set([...savedOrder.visible, ...savedOrder.hidden]);
-            const newItems = allMenuItems.filter(item => !allSavedKeys.has(item.value) && !item.hidden);
-            // Add new items to the hidden list by default
-            if (newItems.length > 0) {
-              savedOrder.hidden.push(...newItems.map(item => item.value));
-            }
-            setMenuOrderKeys(savedOrder);
+          if (newItems.length > 0) {
+            savedOrder.hidden.push(...newItems.map(item => item.value));
+          }
+          // Remove keys that no longer exist
+          savedOrder.visible = savedOrder.visible.filter(key => allCurrentKeys.has(key));
+          savedOrder.hidden = savedOrder.hidden.filter(key => allCurrentKeys.has(key));
+          
+          setMenuOrderKeys(savedOrder);
         } else {
-          setMenuOrderKeys(defaultOrder);
+          setMenuOrderKeys(generateDefaultOrder());
         }
       } else {
-        setMenuOrderKeys(defaultOrder);
+        setMenuOrderKeys(generateDefaultOrder());
       }
       setLoading(false);
     }
 
-    if (!authLoading) {
+    if (!authLoading && !settingsLoading) {
       fetchMenuOrder();
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, settingsLoading, generateDefaultOrder]);
 
   const handleSetMenuOrder = useCallback(
     (newOrder: { visible: MenuItemData[]; hidden: MenuItemData[] }) => {
@@ -122,7 +123,7 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
           hidden: getItemsFromKeys(menuOrderKeys.hidden),
       },
       setMenuOrder: handleSetMenuOrder,
-      loading: authLoading || loading,
+      loading: authLoading || loading || settingsLoading,
   };
 
 

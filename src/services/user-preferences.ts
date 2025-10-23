@@ -1,4 +1,3 @@
-
 import { db } from "@/lib/firebase-config";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -81,9 +80,9 @@ export async function getAnimationDuration(
   try {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     const docSnap = await getDoc(userPrefRef);
-
-    if (docSnap.exists() && docSnap.data().animationDuration !== undefined) {
-      return docSnap.data().animationDuration;
+    const data = docSnap.data();
+    if (docSnap.exists() && data?.animationDuration !== undefined) {
+      return data.animationDuration;
     }
     return null;
   } catch (error) {
@@ -120,9 +119,9 @@ export async function getPlaySounds(userId: string): Promise<boolean | null> {
   try {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     const docSnap = await getDoc(userPrefRef);
-
-    if (docSnap.exists() && docSnap.data().playSounds !== undefined) {
-      return docSnap.data().playSounds;
+    const data = docSnap.data();
+    if (docSnap.exists() && data?.playSounds !== undefined) {
+      return data.playSounds;
     }
     return null; // Return null if not set, so we can use default
   } catch (error) {
@@ -160,12 +159,58 @@ export async function getMenuOrder(userId: string): Promise<MenuOrder | null> {
     const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
     const docSnap = await getDoc(userPrefRef);
     const data = docSnap.data();
-    if (docSnap.exists() && data?.menuOrder && Array.isArray(data.menuOrder.visible) && Array.isArray(data.menuOrder.hidden)) {
+    if (
+      docSnap.exists() &&
+      data?.menuOrder &&
+      Array.isArray(data.menuOrder.visible) &&
+      Array.isArray(data.menuOrder.hidden)
+    ) {
       return data.menuOrder as MenuOrder;
     }
     return null;
   } catch (error) {
     console.error("Error getting menu order:", error);
+    return null;
+  }
+}
+
+/**
+ * Saves the user's visible tool count preference to Firestore.
+ * @param userId The ID of the user.
+ * @param count The number of visible tools.
+ */
+export async function saveVisibleToolCount(
+  userId: string,
+  count: number,
+): Promise<void> {
+  if (!userId) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { visibleToolCount: count }, { merge: true });
+  } catch (error) {
+    console.error("Error saving visible tool count:", error);
+  }
+}
+
+/**
+ * Retrieves the user's visible tool count preference from Firestore.
+ * @param userId The ID of the user.
+ * @returns The saved count or null if not found.
+ */
+export async function getVisibleToolCount(
+  userId: string,
+): Promise<number | null> {
+  if (!userId) return null;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+    const data = docSnap.data();
+    if (docSnap.exists() && data?.visibleToolCount !== undefined) {
+      return data.visibleToolCount;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting visible tool count:", error);
     return null;
   }
 }

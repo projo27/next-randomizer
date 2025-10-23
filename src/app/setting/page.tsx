@@ -21,6 +21,7 @@ import { LockKeyhole } from "lucide-react";
 import { useSettings } from "@/context/SettingsContext";
 import { useAuth } from "@/context/AuthContext";
 import { MenuOrderSettings } from "@/components/settings/menu-order-settings";
+import { useMenuOrder } from "@/context/MenuOrderContext";
 
 // --- Main Settings Page Content ---
 function SettingsPageContent() {
@@ -29,9 +30,12 @@ function SettingsPageContent() {
     setAnimationDuration,
     playSounds,
     setPlaySounds,
+    visibleToolCount,
+    setVisibleToolCount,
     loading: settingsLoading,
   } = useSettings();
   const { user, loading: authLoading } = useAuth();
+  const { menuOrder } = useMenuOrder();
 
   const isLoading = authLoading || settingsLoading;
 
@@ -118,11 +122,37 @@ function SettingsPageContent() {
 
         <Separator />
 
+        <div className="flex flex-col space-y-2">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="visible-tool-count" className="text-base">
+              Visible Tool Count
+            </Label>
+            <span className="font-mono text-xl text-primary">
+              {visibleToolCount}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            The number of tools to show before the "Show More" button.
+          </p>
+          <Slider
+            id="visible-tool-count"
+            min={1}
+            max={menuOrder.visible.length + menuOrder.hidden.length}
+            step={1}
+            value={[visibleToolCount]}
+            onValueChange={(value) => setVisibleToolCount(value[0])}
+            className="[&&&]:pt-4"
+          />
+        </div>
+
+        <Separator />
+
         <div className="space-y-4">
           <div className="space-y-1">
             <Label className="text-base">Menu Order</Label>
             <p className="text-sm text-muted-foreground">
-              Drag and drop to reorder the tools. Items below the divider will be hidden under the "Show More" button.
+              Drag and drop to reorder the tools. The divider shows where the
+              "Show More" button will appear.
             </p>
           </div>
           <MenuOrderSettings />

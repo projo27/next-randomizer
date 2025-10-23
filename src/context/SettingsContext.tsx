@@ -1,3 +1,4 @@
+// src/context/SettingsContext.tsx
 "use client";
 
 import React, {
@@ -13,6 +14,8 @@ import {
   saveAnimationDuration,
   getPlaySounds,
   savePlaySounds,
+  getVisibleToolCount,
+  saveVisibleToolCount,
 } from "@/services/user-preferences";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -21,6 +24,8 @@ interface SettingsContextType {
   setAnimationDuration: (duration: number) => void;
   playSounds: boolean;
   setPlaySounds: (play: boolean) => void;
+  visibleToolCount: number;
+  setVisibleToolCount: (count: number) => void;
   loading: boolean;
 }
 
@@ -29,6 +34,8 @@ const defaultContextValue: SettingsContextType = {
   setAnimationDuration: () => {},
   playSounds: true,
   setPlaySounds: () => {},
+  visibleToolCount: 7,
+  setVisibleToolCount: () => {},
   loading: true,
 };
 
@@ -44,35 +51,46 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     defaultContextValue.animationDuration,
   );
   const [playSounds, setPlaySounds] = useState(defaultContextValue.playSounds);
+  const [visibleToolCount, setVisibleToolCount] = useState(
+    defaultContextValue.visibleToolCount,
+  );
   const [loading, setLoading] = useState(true);
 
   const debouncedDuration = useDebounce(animationDuration, 500);
   const debouncedPlaySounds = useDebounce(playSounds, 500);
+  const debouncedVisibleToolCount = useDebounce(visibleToolCount, 500);
 
   useEffect(() => {
     async function fetchSettings() {
       if (user) {
         setLoading(true);
-        const [savedDuration, savedPlaySounds] = await Promise.all([
+        const [
+          savedDuration,
+          savedPlaySounds,
+          savedVisibleToolCount,
+        ] = await Promise.all([
           getAnimationDuration(user.uid),
           getPlaySounds(user.uid),
+          getVisibleToolCount(user.uid),
         ]);
 
-        if (savedDuration !== null) {
-          setAnimationDuration(savedDuration);
-        }
-        if (savedPlaySounds !== null) {
-          setPlaySounds(savedPlaySounds);
-        }
+        setAnimationDuration(
+          savedDuration ?? defaultContextValue.animationDuration,
+        );
+        setPlaySounds(savedPlaySounds ?? defaultContextValue.playSounds);
+        setVisibleToolCount(
+          savedVisibleToolCount ?? defaultContextValue.visibleToolCount,
+        );
         setLoading(false);
       } else {
         // Reset to default when user logs out
         setAnimationDuration(defaultContextValue.animationDuration);
         setPlaySounds(defaultContextValue.playSounds);
+        setVisibleToolCount(defaultContextValue.visibleToolCount);
         setLoading(false);
       }
     }
-    
+
     if (!authLoading) {
       fetchSettings();
     }
@@ -90,11 +108,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   }, [debouncedPlaySounds, user, loading]);
 
+  useEffect(() => {
+    if (user && !loading) {
+      saveVisibleToolCount(user.uid, debouncedVisibleToolCount);
+    }
+  }, [debouncedVisibleToolCount, user, loading]);
+
   const value = {
     animationDuration,
     setAnimationDuration,
     playSounds,
     setPlaySounds,
+    visibleToolCount,
+    setVisibleToolCount,
     loading: authLoading || loading,
   };
 
