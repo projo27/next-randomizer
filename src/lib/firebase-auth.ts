@@ -12,6 +12,9 @@ import { auth } from "./firebase-config";
 
 // Inisialisasi provider Google
 const googleProvider = new GoogleAuthProvider();
+// Menambahkan scope untuk Google Drive file picker
+googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
+
 
 /**
  * Fungsi untuk Login dengan Pop-up Google

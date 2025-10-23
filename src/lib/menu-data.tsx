@@ -20,6 +20,7 @@ import OotdGenerator from "@/components/ootd-generator";
 import OotdGeneratorRunware from "@/components/ootd-generator-runware";
 import TravelRandomizer from "@/components/travel-randomizer";
 import RandomNews from "@/components/random-news";
+import GoogleSheetRandomizer from "@/components/google-sheet-randomizer";
 
 import {
   ListTodo,
@@ -43,6 +44,7 @@ import {
   Plane,
   Youtube,
   Hand,
+  Sheet,
 } from "lucide-react";
 
 export type MenuItemData = typeof triggerList[0];
@@ -184,6 +186,14 @@ export const triggerList = [
       icon: <ImageIcon className="h-5 w-5" />,
       content: <ImageRandomizer />,
       contentGuard: false,
+    },
+    {
+      value: "google-sheet",
+      text: "Google Sheet",
+      hidden: false,
+      icon: <Sheet className="h-5 w-5" />,
+      content: <GoogleSheetRandomizer />,
+      contentGuard: true,
     },
     {
       value: "youtube",
