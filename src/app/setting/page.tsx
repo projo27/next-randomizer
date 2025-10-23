@@ -145,11 +145,11 @@ function SettingsPageContent() {
           />
         </div>
 
-        <Separator />
+        {/* <Separator /> */}
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <Label className="text-base">Menu Order</Label>
+            <Label className="text-base">Tools Order</Label>
             <p className="text-sm text-muted-foreground">
               Drag and drop to reorder the tools. The divider shows where the
               "Show More" button will appear.

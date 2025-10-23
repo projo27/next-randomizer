@@ -168,14 +168,15 @@ export const triggerList = [
       content: <Spinner />,
       contentGuard: false,
     },
-    {
-      value: "compass",
-      text: "Compass",
-      hidden: true,
-      icon: <Compass className="h-5 w-5" />,
-      content: <CompassRandomizer />,
-      contentGuard: false,
-    },
+    // Not Showed, feature not ready
+    // {
+    //   value: "compass",
+    //   text: "Compass",
+    //   hidden: true,
+    //   icon: <Compass className="h-5 w-5" />,
+    //   content: <CompassRandomizer />,
+    //   contentGuard: false,
+    // },
     {
       value: "image",
       text: "Image",
@@ -192,14 +193,15 @@ export const triggerList = [
       content: <YouTubeRandomizer />,
       contentGuard: true,
     },
-    {
-      value: "ootd",
-      text: "OOTD",
-      hidden: true,
-      icon: <Shirt className="h-5 w-5" />,
-      content: <OotdGenerator />,
-      contentGuard: true,
-    },
+    //Not Showed, feature not ready
+    // {
+    //   value: "ootd",
+    //   text: "OOTD",
+    //   hidden: true,
+    //   icon: <Shirt className="h-5 w-5" />,
+    //   content: <OotdGenerator />,
+    //   contentGuard: true,
+    // },
     {
       value: "ootd-runware",
       text: "OOTD",
@@ -216,12 +218,13 @@ export const triggerList = [
       content: <TravelRandomizer />,
       contentGuard: true,
     },
-    {
-      value: "news",
-      text: "News",
-      hidden: true,
-      icon: <Newspaper className="h-5 w-5" />,
-      content: <RandomNews />,
-      contentGuard: true,
-    },
+    // Not Showed, fiture not ready
+    // {
+    //   value: "news",
+    //   text: "News",
+    //   hidden: true,
+    //   icon: <Newspaper className="h-5 w-5" />,
+    //   content: <RandomNews />,
+    //   contentGuard: true,
+    // },
   ];
