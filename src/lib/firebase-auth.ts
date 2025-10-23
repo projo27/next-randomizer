@@ -12,8 +12,6 @@ import { auth } from "./firebase-config";
 
 // Inisialisasi provider Google
 const googleProvider = new GoogleAuthProvider();
-// Menambahkan scope untuk Google Drive file picker
-googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
 
 
 /**
@@ -50,3 +48,5 @@ export async function signOut(): Promise<void> {
 
 // Re-export onAuthStateChanged untuk digunakan di context
 export { onAuthStateChanged };
+
+    

@@ -24,7 +24,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
-import { useAuth } from "@/context/AuthContext";
 import { randomizeSheet } from "@/app/actions/google-sheet-actions";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Skeleton } from "./ui/skeleton";
@@ -55,7 +54,6 @@ export default function GoogleSheetRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
-  const { user } = useAuth();
   
   // States for Google Picker
   const [pickerApiLoaded, setPickerApiLoaded] = useState(false);
@@ -76,28 +74,6 @@ export default function GoogleSheetRandomizer() {
     };
     document.body.appendChild(pickerScript);
   }, []);
-
-  // Get Access Token when user is available
-  useEffect(() => {
-    if (user && gapiLoaded) {
-      window.gapi.load('auth2', () => {
-        const auth2 = window.gapi.auth2.init({
-          // This client ID should be for a Web Application from your Google Cloud Console
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          scope: 'https://www.googleapis.com/auth/drive.file',
-        });
-
-        auth2.then(() => {
-            const googleUser = auth2.currentUser.get();
-            if (googleUser.hasGrantedScopes('https://www.googleapis.com/auth/drive.file')) {
-                const token = googleUser.getAuthResponse().access_token;
-                setAccessToken(token);
-            }
-        });
-      });
-    }
-  }, [user, gapiLoaded]);
-
 
   const handleRandomize = async () => {
     if (isRandomizing || isRateLimited) return;
@@ -128,30 +104,33 @@ export default function GoogleSheetRandomizer() {
   };
   
   const createPicker = () => {
-    if (!pickerApiLoaded || !accessToken) {
+    if (!gapiLoaded || !pickerApiLoaded) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Google Picker is not ready or you are not logged in.",
+        description: "Google Picker is not ready. Please try again in a moment.",
       });
       return;
     }
+
+    const pickerCallback = (data: any) => {
+        if (data.action === window.google.picker.Action.PICKED) {
+          const doc = data.docs[0];
+          setSheetUrl(doc.url);
+          setSheetName(doc.name);
+          setAccessToken(data.access_token); // Save the temporary access token
+          toast({ title: "File Selected", description: doc.name });
+        }
+    };
 
     const view = new window.google.picker.View(window.google.picker.ViewId.SPREADSHEETS);
     const picker = new window.google.picker.PickerBuilder()
       .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
       .setAppId(process.env.NEXT_PUBLIC_FIREBASE_APP_ID!)
-      .setOAuthToken(accessToken)
+      .setOAuthToken(accessToken!) // Use the state token, or it will prompt for login
       .addView(view)
       .setDeveloperKey(process.env.NEXT_PUBLIC_GOOGLE_API_KEY!)
-      .setCallback((data: any) => {
-        if (data[window.google.picker.Action.PICKED]) {
-          const doc = data[window.google.picker.Action.PICKED][0];
-          setSheetUrl(doc.url);
-          setSheetName(doc.name);
-          toast({ title: "File Selected", description: doc.name });
-        }
-      })
+      .setCallback(pickerCallback)
       .build();
     picker.setVisible(true);
   };
@@ -170,11 +149,12 @@ export default function GoogleSheetRandomizer() {
   };
 
   const embedUrl = useMemo(() => {
+    if (inputMode === 'picker' && !accessToken) return null; // Don't show embed for private files without token
     const sheetIdMatch = sheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
     if (!sheetIdMatch) return null;
     const sheetId = sheetIdMatch[1];
     return `https://docs.google.com/spreadsheets/d/${sheetId}/edit?usp=sharing&widget=true&headers=false&rm=minimal`;
-  }, [sheetUrl]);
+  }, [sheetUrl, inputMode, accessToken]);
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -191,20 +171,8 @@ export default function GoogleSheetRandomizer() {
                 <Label htmlFor="url-mode">Public URL</Label>
             </div>
              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="picker" id="picker-mode" disabled={!user}/>
+                <RadioGroupItem value="picker" id="picker-mode" />
                 <Label htmlFor="picker-mode">Google Drive</Label>
-                 {!user && (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <HelpCircle className="h-4 w-4 text-muted-foreground ml-1" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>You must be logged in to use the Google Drive picker.</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                )}
             </div>
         </RadioGroup>
 
@@ -217,9 +185,9 @@ export default function GoogleSheetRandomizer() {
             ) : (
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="sheet-picker">Select from Google Drive</Label>
-                    <Button id="sheet-picker" variant="outline" onClick={createPicker} disabled={!user || !gapiLoaded || !pickerApiLoaded || !accessToken}>
+                    <Button id="sheet-picker" variant="outline" onClick={createPicker} disabled={!gapiLoaded || !pickerApiLoaded}>
                         <FileUp className="mr-2 h-4 w-4"/>
-                        {sheetName ? `Selected: ${sheetName}` : "Choose a Spreadsheet"}
+                        {sheetUrl ? `Selected: ${sheetName}` : "Choose a Spreadsheet"}
                     </Button>
                 </div>
             )}
@@ -284,3 +252,5 @@ export default function GoogleSheetRandomizer() {
     </Card>
   );
 }
+
+    
