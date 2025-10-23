@@ -34,7 +34,7 @@ const defaultContextValue: SettingsContextType = {
   setAnimationDuration: () => {},
   playSounds: true,
   setPlaySounds: () => {},
-  visibleToolCount: 7,
+  visibleToolCount: 10,
   setVisibleToolCount: () => {},
   loading: true,
 };

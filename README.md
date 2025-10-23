@@ -12,6 +12,7 @@ Step by step to running on your own host :
 - v1.0.0 : MVP of randomizer.fun with simple randomizer feature, firebase authentication and change the theme
 - v1.0.1 : Add PWA feature
 - v1.0.2 : Add duration animation and randomizer audio
+- v1.1.0 : Add tool ordering feature
 
 ## Randomizer Feature :
 
@@ -44,6 +45,7 @@ Step by step to running on your own host :
 - Object / Things Randomizer
 - Random word by language
 - Random Country
+- Random Places on Google Maps
 - Movie Randomizer
 - Music Randomizer
 - Radio Channel Randomizer
@@ -62,9 +64,9 @@ Step by step to running on your own host :
 - PWA support, for user to install on their desktop / device ✅
 - Make randomize duration into global state ✅
 - Play music when click randomize (play randomization animation) ✅
-- User can rearrange the menu to satisfy their needs
-- Add survey whats new feature to catch user needs
-- Add API to support another developer to generate randomize (PRO)
+- User can rearrange the menu / tools to satisfy their needs ✅
+- Add survey whats new feature to catch user needs 
+- Add API to support another developer to generate randomize (PRO) 
 - Add Running news after title and subtitle, to aware user for new feature or news
 - User can save and share the result (PRO)
 - Mobile support
