@@ -13,6 +13,7 @@ Step by step to running on your own host :
 - v1.0.1 : Add PWA feature
 - v1.0.2 : Add duration animation and randomizer audio
 - v1.1.0 : Add tool ordering feature
+- v1.1.1 : Quote randomizer release
 
 ## Randomizer Feature :
 
@@ -38,7 +39,7 @@ Step by step to running on your own host :
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
-- Random Quote
+- Random Quote ✅
 - Random name generator
 - Plant
 - Animalia

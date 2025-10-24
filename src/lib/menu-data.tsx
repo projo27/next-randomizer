@@ -20,7 +20,7 @@ import OotdGenerator from "@/components/ootd-generator";
 import OotdGeneratorRunware from "@/components/ootd-generator-runware";
 import TravelRandomizer from "@/components/travel-randomizer";
 import RandomNews from "@/components/random-news";
-import GoogleSheetRandomizer from "@/components/google-sheet-randomizer";
+// import GoogleSheetRandomizer from "@/components/google-sheet-randomizer";
 import QuoteRandomizer from "@/components/quote-randomizer";
 
 import {
@@ -230,14 +230,14 @@ export const triggerList = [
       content: <TravelRandomizer />,
       contentGuard: true,
     },
-    {
-      value: "google-sheet",
-      text: "Google Sheet",
-      hidden: false,
-      icon: <Sheet className="h-5 w-5" />,
-      content: <GoogleSheetRandomizer />,
-      contentGuard: false,
-    },
+    // {
+    //   value: "google-sheet",
+    //   text: "Google Sheet",
+    //   hidden: false,
+    //   icon: <Sheet className="h-5 w-5" />,
+    //   content: <GoogleSheetRandomizer />,
+    //   contentGuard: false,
+    // },
     // Not Showed, fiture not ready
     // {
     //   value: "news",
