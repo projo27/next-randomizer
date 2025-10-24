@@ -24,29 +24,25 @@ export async function getRandomQuote(): Promise<QuoteResult> {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch quote. Status: ${response.status}`);
+      throw new Error(`We have a problem to connect with Server, try again later`);
     }
 
     const html = await response.text();
     const $ = cheerio.load(html);
 
     const wrapBlock = $('.wrap-block').first();
-
     if (wrapBlock.length === 0) {
       // If the main container isn't found, try to get another quote
       console.warn(`Quote with ID ${randomId} might not exist. Retrying...`);
-      return getRandomQuote();
     }
 
-    const quote = wrapBlock.find('p.title').text().trim();
+    const quote = wrapBlock.find('p.single-quote').text().trim();
     const authorElement = wrapBlock.find('div.author a');
     const author = authorElement.text().trim();
     const authorLink = authorElement.attr('href') || '#';
 
     if (!quote || !author) {
       console.warn(`Could not parse quote or author for ID ${randomId}. Retrying...`);
-      // Retry if parsing fails
-      return getRandomQuote();
     }
 
     return {
@@ -58,6 +54,7 @@ export async function getRandomQuote(): Promise<QuoteResult> {
     console.error('Error fetching or parsing quote:', error);
     // In case of a network error, we can either throw or retry. Let's retry.
     // To prevent infinite loops, you might add a retry limit in a real app.
-    return getRandomQuote();
+    // return getRandomQuote();
+    throw error;
   }
 }

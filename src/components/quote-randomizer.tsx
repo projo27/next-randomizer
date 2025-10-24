@@ -72,7 +72,7 @@ export default function QuoteRandomizer() {
       <CardHeader>
         <CardTitle>Quote Randomizer</CardTitle>
         <CardDescription>
-          Discover a random quote from a vast collection of over 1.6 million.
+          Discover a random quote from a vast collection of over 1.6 million. <i>(credit : <a href="https://www.azquotes.com/" target="_blank">azquote.com</a>)</i>
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[250px] flex items-center justify-center">
@@ -81,8 +81,8 @@ export default function QuoteRandomizer() {
             <Skeleton className="h-6 w-full" />
             <Skeleton className="h-6 w-5/6" />
             <Skeleton className="h-6 w-3/4" />
-            <div className="pt-4">
-              <Skeleton className="h-5 w-1/3" />
+            <div className="pt-4 w-full relative">
+              <Skeleton className="h-5 w-1/3 absolute right-0" />
             </div>
           </div>
         )}
