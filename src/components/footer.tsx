@@ -8,6 +8,9 @@ export function Footer() {
           &copy; {new Date().getFullYear()} Randomizer.fun. All rights reserved.
         </p>
         <div className='flex gap-x-4'>
+            <Link href="/about" className="text-sm hover:text-foreground transition-colors">
+            About
+            </Link>
             <Link href="/privacy" className="text-sm hover:text-foreground transition-colors">
             Privacy Policy
             </Link>

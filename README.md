@@ -2,19 +2,15 @@
 
 "A fun app to randomize anything! and Your fun-filled tool for making choices!"
 
-Step by step to running on your own host :
-
-1. copy dev.env to .env and change the value with your key / variable
-2. docker run Dockerfile
-
 ## Changelog :
 
-- v1.0.0 : MVP of randomizer.fun with simple randomizer feature, firebase authentication and change the theme
-- v1.0.1 : Add PWA feature
-- v1.0.2 : Add duration animation and randomizer audio
+- v1.1.1 : Quote randomizer release
 - v1.1.0 : Add tool ordering feature
+- v1.0.2 : Add duration animation and randomizer audio
+- v1.0.1 : Add PWA feature
+- v1.0.0 : MVP of randomizer.fun with simple randomizer feature, firebase authentication and change the theme
 
-## Randomizer Feature :
+## Randomizer Feature Tool :
 
 - List Randomizer ✅
 - Number Randomizer ✅
@@ -38,7 +34,7 @@ Step by step to running on your own host :
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
-- Random Quote
+- Random Quote ✅
 - Random name generator
 - Plant
 - Animalia
@@ -71,7 +67,22 @@ Step by step to running on your own host :
 - User can save and share the result (PRO)
 - Mobile support
 - Confetti after suffling / randomization done
+- Sitemap to Crawling Index from Search Engine ✅
 
 ### Thanks to :
 
-- Sound Effect by <a href="https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590">freesound_community</a> from <a href="https://pixabay.com/sound-effects/037766-8039s-synth-67009/">Pixabay</a>
+- Firebase Studio → [studio.firebase.google.com](https://studio.firebase.google.com)
+- Vercel → [vercel.com](https://vercel.com)
+- Github → [github.com](https://github.com)
+- Runware AI → [runware.ai](https://runware.ai)
+- Az Quotes → [azquotes.com](https://azquotes.com)
+- Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
+
+
+---
+## Want to play
+
+Step by step to running on your own host :
+
+1. copy dev.env to .env and change the value with your key / variable
+2. docker run Dockerfile
