@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -60,6 +61,23 @@ const OCCASIONS = [
 const uniqueRecipients = ['all', ...RECIPIENTS];
 const uniqueOccasions = ['all', ...Array.from(new Set(OCCASIONS))].sort();
 
+function getImageHint(itemName: string): string {
+    // A simple function to extract a couple of keywords from the gift item name.
+    const lowerCaseItem = itemName.toLowerCase();
+    const commonWords = new Set(['a', 'an', 'the', 'with', 'for', 'or', 'and', 'of', 'set', 'kit']);
+    const words = lowerCaseItem.split(' ').filter(word => !commonWords.has(word));
+    
+    if (words.length >= 2) {
+        // Prefer taking the first adjective/noun and the last noun. This is a heuristic.
+        return `${words[0]} ${words[words.length - 1]}`;
+    }
+    if (words.length === 1) {
+        return words[0];
+    }
+    return 'gift present'; // Fallback
+}
+
+
 export default function GiftRandomizer() {
   const [recipient, setRecipient] = useState('all');
   const [occasion, setOccasion] = useState('all');
@@ -107,6 +125,7 @@ export default function GiftRandomizer() {
   };
 
   const imageSeed = useMemo(() => Math.floor(Math.random() * 1000) + 1, [result]);
+  const imageHint = result ? getImageHint(result.item) : "gift present";
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -181,7 +200,7 @@ export default function GiftRandomizer() {
                   alt={result.item}
                   fill
                   className="object-cover"
-                  data-ai-hint="gift present"
+                  data-ai-hint={imageHint}
                 />
               </div>
               <div className="absolute -top-2 right-0">
