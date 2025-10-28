@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -28,7 +29,7 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 
 export default function CountryRandomizer() {
-  const [count, setCount] = useState("5");
+  const [count, setCount] = useState("1");
   const [results, setResults] = useState<CountryResult[]>([]);
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +121,7 @@ export default function CountryRandomizer() {
 
         <div className="relative">
           {(isRandomizing || results.length > 0) && (
-             <div className="absolute -top-4 right-0">
+             <div className="absolute top-2 right-2">
                 <Button variant="ghost" size="icon" onClick={handleCopy} disabled={isRandomizing}>
                     {isCopied ? (
                     <Check className="h-5 w-5 text-green-500" />
@@ -130,27 +131,27 @@ export default function CountryRandomizer() {
                 </Button>
             </div>
           )}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 min-h-[200px] p-4 bg-muted/50 rounded-lg">
+          <div className="flex flex-wrap justify-center gap-4 min-h-[200px] p-4 bg-muted/50 rounded-lg">
             {isRandomizing &&
               [...Array(parseInt(count, 10) || 5)].map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-2">
-                  <Skeleton className="h-20 w-32 rounded-md" />
-                  <Skeleton className="h-4 w-24 rounded-md" />
+                <div key={i} className="flex flex-col items-center gap-2 w-full">
+                  <Skeleton className="min-h-[218px] h-auto w-1/2 xl:w-1/4 rounded-md" />
+                  <Skeleton className="h-4 w-1/2 xl:w-1/4 rounded-md" />
                 </div>
               ))}
             {!isRandomizing &&
               results.map((country, index) => (
                 <div
                   key={country.code}
-                  className="flex flex-col items-center text-center gap-2 animate-fade-in"
+                  className="flex flex-col items-center text-center gap-2 animate-fade-in w-1/2 xl:w-1/4"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <Image
                     src={country.flagUrl}
                     alt={`${country.name} flag`}
-                    width={128}
-                    height={80}
-                    className="h-20 w-32 object-cover rounded-md border border-border"
+                    width={256}
+                    height={160}
+                    className="h-auto w-full object-cover rounded-md border border-border"
                   />
                   <span className="text-sm font-medium">{country.name}</span>
                 </div>
@@ -173,8 +174,8 @@ export default function CountryRandomizer() {
           {isRandomizing
             ? "Generating..."
             : isRateLimited
-            ? "Please wait..."
-            : "Randomize Countries"}
+              ? "Please wait..."
+              : "Randomize Countries"}
         </Button>
       </CardFooter>
     </Card>
