@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.2 : Country Randomizer release
 - v1.1.1 : Quote randomizer release
 - v1.1.0 : Add tool ordering feature
 - v1.0.2 : Add duration animation and randomizer audio
@@ -40,7 +41,7 @@
 - Animalia
 - Object / Things Randomizer
 - Random word by language
-- Random Country with flag
+- Random Country with flag ✅
 - Random Places on Google Maps
 - Movie Randomizer
 - Music Randomizer
@@ -53,6 +54,7 @@
 - Webtoon Randomizer
 - Football Club Randomizer
 - Riddle Randomizer
+- Random Gift
 
 ## Development Roadmap :
 
