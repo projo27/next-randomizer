@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Wand2, Gift as GiftIcon, Copy, Check } from 'lucide-react';
+import { Wand2, Gift as GiftIcon, Copy, Check, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
@@ -29,6 +29,7 @@ import { getRandomGift, GiftResult } from '@/app/actions/gift-randomizer-action'
 import { GIFTS_LIST } from '@/lib/gift-data';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
+import Link from 'next/link';
 
 const RECIPIENTS = [
   'Wife',
@@ -166,7 +167,7 @@ export default function GiftRandomizer() {
             </div>
           )}
           {!isLoading && result && (
-            <div className="relative w-full text-center p-4 animate-fade-in">
+            <div className="relative w-full text-center p-4 animate-fade-in space-y-4">
               <h3 className="text-2xl md:text-3xl font-bold text-primary mb-2">{result.item}</h3>
               <div className="flex justify-center gap-2 mb-4">
                 <span className="text-sm bg-secondary text-secondary-foreground px-2 py-1 rounded-full">{result.for}</span>
@@ -182,6 +183,16 @@ export default function GiftRandomizer() {
                   className="object-cover"
                 />
               </div>
+              
+              {result.amazonSearchUrl && (
+                <Button asChild>
+                  <Link href={result.amazonSearchUrl} target="_blank" rel="noopener noreferrer sponsored">
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    View on Amazon
+                  </Link>
+                </Button>
+              )}
+
               <div className="absolute -top-2 right-0">
                 <Button variant="ghost" size="icon" onClick={handleCopy}>
                   {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}

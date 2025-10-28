@@ -7,9 +7,10 @@ export type Gift = (typeof GIFTS_LIST)[0];
 
 export type GiftResult = Gift & {
     imageUrl: string;
+    amazonSearchUrl: string;
 };
 
-async function getImageHint(itemName: string): Promise<string> {
+async function getImageUrl(itemName: string): Promise<string> {
     const photoUrls = await searchPhotos(itemName);
     if (photoUrls && photoUrls.length > 0) {
         // Return a random photo from the results for variety
@@ -49,10 +50,13 @@ export async function getRandomGift(
   const randomIndex = Math.floor(Math.random() * filteredGifts.length);
   const selectedGift = filteredGifts[randomIndex];
 
-  const imageUrl = await getImageHint(selectedGift.item);
+  const imageUrl = await getImageUrl(selectedGift.item);
+  const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(selectedGift.item)}&tag=randomizerfun-20`;
+
 
   return {
       ...selectedGift,
       imageUrl: imageUrl,
+      amazonSearchUrl: amazonSearchUrl
   };
 }
