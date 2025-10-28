@@ -22,6 +22,7 @@ import TravelRandomizer from "@/components/travel-randomizer";
 import RandomNews from "@/components/random-news";
 // import GoogleSheetRandomizer from "@/components/google-sheet-randomizer";
 import QuoteRandomizer from "@/components/quote-randomizer";
+import CountryRandomizer from "@/components/country-randomizer";
 
 import {
   ListTodo,
@@ -47,6 +48,7 @@ import {
   Hand,
   Sheet,
   Quote,
+  Flag,
 } from "lucide-react";
 
 export type MenuItemData = typeof triggerList[0];
@@ -178,6 +180,14 @@ export const triggerList = [
       hidden: false,
       icon: <Quote className="h-5 w-5" />,
       content: <QuoteRandomizer />,
+      contentGuard: false,
+    },
+    {
+      value: "country",
+      text: "Country",
+      hidden: false,
+      icon: <Flag className="h-5 w-5" />,
+      content: <CountryRandomizer />,
       contentGuard: false,
     },
     // Not Showed, feature not ready

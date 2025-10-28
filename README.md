@@ -40,7 +40,7 @@
 - Animalia
 - Object / Things Randomizer
 - Random word by language
-- Random Country
+- Random Country with flag
 - Random Places on Google Maps
 - Movie Randomizer
 - Music Randomizer
@@ -51,6 +51,8 @@
 - Meme Randomizer
 - Anime Randomizer
 - Webtoon Randomizer
+- Football Club Randomizer
+- Riddle Randomizer
 
 ## Development Roadmap :
 
