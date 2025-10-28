@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
-import { getRandomGift, Gift } from '@/app/actions/gift-randomizer-action';
+import { getRandomGift, GiftResult } from '@/app/actions/gift-randomizer-action';
 import { GIFTS_LIST } from '@/lib/gift-data';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
@@ -61,27 +61,10 @@ const OCCASIONS = [
 const uniqueRecipients = ['all', ...RECIPIENTS];
 const uniqueOccasions = ['all', ...Array.from(new Set(OCCASIONS))].sort();
 
-function getImageHint(itemName: string): string {
-    // A simple function to extract a couple of keywords from the gift item name.
-    const lowerCaseItem = itemName.toLowerCase();
-    const commonWords = new Set(['a', 'an', 'the', 'with', 'for', 'or', 'and', 'of', 'set', 'kit']);
-    const words = lowerCaseItem.split(' ').filter(word => !commonWords.has(word));
-    
-    if (words.length >= 2) {
-        // Prefer taking the first adjective/noun and the last noun. This is a heuristic.
-        return `${words[0]} ${words[words.length - 1]}`;
-    }
-    if (words.length === 1) {
-        return words[0];
-    }
-    return 'gift present'; // Fallback
-}
-
-
 export default function GiftRandomizer() {
   const [recipient, setRecipient] = useState('all');
   const [occasion, setOccasion] = useState('all');
-  const [result, setResult] = useState<Gift | null>(null);
+  const [result, setResult] = useState<GiftResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
@@ -123,9 +106,6 @@ export default function GiftRandomizer() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-
-  const imageSeed = useMemo(() => Math.floor(Math.random() * 1000) + 1, [result]);
-  const imageHint = result ? getImageHint(result.item) : "gift present";
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -196,11 +176,10 @@ export default function GiftRandomizer() {
               </div>
               <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden border-2 border-accent shadow-lg">
                 <Image
-                  src={`https://picsum.photos/seed/${imageSeed}/600/400`}
+                  src={result.imageUrl}
                   alt={result.item}
                   fill
                   className="object-cover"
-                  data-ai-hint={imageHint}
                 />
               </div>
               <div className="absolute -top-2 right-0">
