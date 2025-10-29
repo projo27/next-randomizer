@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -52,8 +53,6 @@ export default function MapsRandomizer() {
       embedUrl.searchParams.set("center", `${newLocation.lat},${newLocation.lng}`);
       embedUrl.searchParams.set("zoom", "18");
       embedUrl.searchParams.set("maptype", "satellite");
-      embedUrl.searchParams.set("heading", "90");
-      embedUrl.searchParams.set("tilt", "45");
       
       setMapUrl(embedUrl.toString());
 
