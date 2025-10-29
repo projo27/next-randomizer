@@ -89,5 +89,16 @@
 
 Step by step to running on your own host :
 
-1. copy dev.env to .env and change the value with your key / variable
-2. docker run Dockerfile
+1.  copy dev.env to .env and change the value with your key / variable
+2.  Enable the required APIs in your Google Cloud Console.
+3.  docker run Dockerfile
+
+### Required APIs
+
+To ensure all features of the application work correctly, you must enable the following APIs in the Google Cloud Console for your Firebase project:
+
+-   **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
+-   **Cloud Firestore API**: For saving user preferences.
+-   **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
+-   **YouTube Data API v3**: For the YouTube Randomizer.
+-   **Maps Embed API**: For the Google Maps Place Randomizer.
