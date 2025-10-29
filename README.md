@@ -4,7 +4,7 @@
 
 ## Changelog :
 
-- v1.1.2 : Country Randomizer release
+- v1.1.2 : Country Randomizer and Gift Randomizer release
 - v1.1.1 : Quote randomizer release
 - v1.1.0 : Add tool ordering feature
 - v1.0.2 : Add duration animation and randomizer audio
@@ -54,7 +54,7 @@
 - Webtoon Randomizer
 - Football Club Randomizer
 - Riddle Randomizer
-- Random Gift
+- Random Gift ✅
 
 ## Development Roadmap :
 
