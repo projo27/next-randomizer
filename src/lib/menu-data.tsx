@@ -24,6 +24,7 @@ import RandomNews from "@/components/random-news";
 import QuoteRandomizer from "@/components/quote-randomizer";
 import CountryRandomizer from "@/components/country-randomizer";
 import GiftRandomizer from "@/components/gift-randomizer";
+import MapsRandomizer from "@/components/maps-randomizer";
 
 import {
   ListTodo,
@@ -51,6 +52,7 @@ import {
   Quote,
   Flag,
   Gift,
+  Map,
 } from "lucide-react";
 
 export type MenuItemData = typeof triggerList[0];
@@ -248,6 +250,14 @@ export const triggerList = [
       hidden: false,
       icon: <Plane className="h-5 w-5" />,
       content: <TravelRandomizer />,
+      contentGuard: true,
+    },
+    {
+      value: "maps",
+      text: "Maps",
+      hidden: false,
+      icon: <Map className="h-5 w-5" />,
+      content: <MapsRandomizer />,
       contentGuard: true,
     },
     // {

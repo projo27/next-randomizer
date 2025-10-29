@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.3 : Google Maps Place Randomizer release
 - v1.1.2 : Country Randomizer and Gift Randomizer release
 - v1.1.1 : Quote randomizer release
 - v1.1.0 : Add tool ordering feature
@@ -42,7 +43,7 @@
 - Object / Things Randomizer
 - Random word by language
 - Random Country with flag ✅
-- Random Places on Google Maps
+- Random Places on Google Maps ✅
 - Movie Randomizer
 - Music Randomizer
 - Radio Channel Randomizer
