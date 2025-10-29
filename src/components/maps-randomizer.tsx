@@ -11,30 +11,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Wand2 } from "lucide-react";
+import { Map, Wand2, Satellite, PersonStanding } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { getRandomPlace, LatLng } from "@/app/actions/maps-randomizer-action";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+
+type ViewMode = "satellite" | "streetview";
 
 export default function MapsRandomizer() {
   const [location, setLocation] = useState<LatLng | null>(null);
   const [mapUrl, setMapUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("satellite");
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
-  
+
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const handleRandomize = async () => {
-    sendGTMEvent({ event: "action_maps_randomizer", user_email: user?.email ?? 'guest' });
+    sendGTMEvent({
+      event: "action_maps_randomizer",
+      user_email: user?.email ?? "guest",
+    });
     if (isLoading || isRateLimited) return;
-    
+
     if (!apiKey) {
-      setError("Google Maps API Key is not configured. Please set it in the environment variables.");
+      setError(
+        "Google Maps API Key is not configured. Please set it in the environment variables.",
+      );
       return;
     }
 
@@ -47,15 +57,20 @@ export default function MapsRandomizer() {
     try {
       const newLocation = await getRandomPlace();
       setLocation(newLocation);
-      
-      const embedUrl = new URL("https://www.google.com/maps/embed/v1/view");
-      embedUrl.searchParams.set("key", apiKey);
-      embedUrl.searchParams.set("center", `${newLocation.lat},${newLocation.lng}`);
-      embedUrl.searchParams.set("zoom", "18");
-      embedUrl.searchParams.set("maptype", "satellite");
-      
-      setMapUrl(embedUrl.toString());
 
+      let embedUrl;
+      if (viewMode === "streetview") {
+        embedUrl = new URL("https://www.google.com/maps/embed/v1/streetview");
+        embedUrl.searchParams.set("location", `${newLocation.lat},${newLocation.lng}`);
+      } else {
+        embedUrl = new URL("https://www.google.com/maps/embed/v1/view");
+        embedUrl.searchParams.set("center", `${newLocation.lat},${newLocation.lng}`);
+        embedUrl.searchParams.set("zoom", "18");
+        embedUrl.searchParams.set("maptype", "satellite");
+      }
+      embedUrl.searchParams.set("key", apiKey);
+
+      setMapUrl(embedUrl.toString());
     } catch (err: any) {
       setError("Could not get a random place. Please try again.");
       console.error(err);
@@ -69,16 +84,30 @@ export default function MapsRandomizer() {
       <CardHeader>
         <CardTitle>Google Maps Place Randomizer</CardTitle>
         <CardDescription>
-          Discover a random place on Earth with a 3D satellite view.
+          Discover a random place on Earth with a satellite or street view.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertTitle>Configuration Error</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        
+        <div className="flex items-center justify-center space-x-2">
+            <Satellite className="h-5 w-5"/>
+            <Label htmlFor="view-mode-switch">Satellite View</Label>
+            <Switch
+                id="view-mode-switch"
+                checked={viewMode === 'streetview'}
+                onCheckedChange={(checked) => setViewMode(checked ? 'streetview' : 'satellite')}
+                disabled={isLoading || isRateLimited}
+            />
+            <Label htmlFor="view-mode-switch">Street View</Label>
+            <PersonStanding className="h-5 w-5"/>
+        </div>
+
         <div className="aspect-video w-full bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
           {isLoading && <Skeleton className="w-full h-full" />}
           {!isLoading && mapUrl && (
@@ -107,7 +136,11 @@ export default function MapsRandomizer() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading ? "Finding a place..." : isRateLimited ? "Please wait..." : "Randomize Place"}
+          {isLoading
+            ? "Finding a place..."
+            : isRateLimited
+            ? "Please wait..."
+            : "Randomize Place"}
         </Button>
       </CardFooter>
     </Card>
