@@ -19,7 +19,6 @@ import {
   Album,
   Calendar,
   PenSquare,
-  ExternalLink,
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
@@ -27,6 +26,8 @@ import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomMusic, MusicResult } from '@/app/actions/music-randomizer-action';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Label } from './ui/label';
 
 function SpotifyIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -70,11 +71,58 @@ function YouTubeIcon(props: React.SVGProps<SVGSVGElement>) {
     )
 }
 
+function MusicResultCard({ result }: { result: MusicResult }) {
+  return (
+    <div className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] gap-6 animate-fade-in p-4 border rounded-lg bg-card/50">
+        <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center text-muted-foreground">
+            {result.coverArtUrl ? (
+            <Image
+                src={result.coverArtUrl}
+                alt={`Cover art for ${result.album}`}
+                fill
+                className="object-cover"
+            />
+            ) : (
+            <Album className="h-16 w-16" />
+            )}
+        </div>
+        <div className="space-y-4">
+            <h3 className="text-2xl lg:text-3xl font-bold text-primary">{result.title}</h3>
+            <div className="space-y-3 text-sm text-card-foreground/90">
+            <p className="flex items-center gap-3"><User className="h-4 w-4 text-accent" /> {result.artist}</p>
+            <p className="flex items-center gap-3"><Album className="h-4 w-4 text-accent" /> {result.album || 'N/A'}</p>
+            {result.releaseDate && <p className="flex items-center gap-3"><Calendar className="h-4 w-4 text-accent" /> Released on {result.releaseDate}</p>}
+            {result.composers.length > 0 && <p className="flex items-center gap-3"><PenSquare className="h-4 w-4 text-accent" /> Composed by {result.composers.join(', ')}</p>}
+            </div>
+            <div className="flex flex-wrap gap-2 pt-4">
+            {result.spotifyUrl && (
+                <Button asChild variant="outline">
+                    <Link href={result.spotifyUrl} target='_blank' rel='noopener noreferrer'>
+                        <SpotifyIcon className='mr-2'/>
+                        Find on Spotify
+                    </Link>
+                </Button>
+            )}
+            {result.youtubeUrl && (
+                    <Button asChild variant="outline">
+                    <Link href={result.youtubeUrl} target='_blank' rel='noopener noreferrer'>
+                        <YouTubeIcon className='mr-2'/>
+                        Find on YouTube
+                    </Link>
+                </Button>
+            )}
+            </div>
+        </div>
+    </div>
+  )
+}
+
 export default function MusicRandomizer() {
-  const [result, setResult] = useState<MusicResult | null>(null);
+  const [results, setResults] = useState<MusicResult[]>([]);
+  const [numberOfSongs, setNumberOfSongs] = useState("1");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
   const { user } = useAuth();
 
   const handleRandomize = async () => {
@@ -86,11 +134,14 @@ export default function MusicRandomizer() {
     triggerRateLimit();
     setIsLoading(true);
     setError(null);
-    setResult(null);
+    setResults([]);
 
     try {
-      const musicResult = await getRandomMusic();
-      setResult(musicResult);
+      const musicResults = await getRandomMusic(parseInt(numberOfSongs, 10));
+      if (musicResults.length === 0) {
+        setError("Could not find any songs. The MusicBrainz API might be busy. Please try again in a moment.");
+      }
+      setResults(musicResults);
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
@@ -104,76 +155,60 @@ export default function MusicRandomizer() {
       <CardHeader>
         <CardTitle>Music Randomizer</CardTitle>
         <CardDescription>
-          Discover a random song from the vast MusicBrainz database.
+          Discover random songs from the vast MusicBrainz database.
         </CardDescription>
       </CardHeader>
-      <CardContent className="min-h-[400px] flex items-center justify-center">
-        {isLoading && (
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            <Skeleton className="w-full aspect-square rounded-lg" />
-            <div className="md:col-span-2 space-y-4">
-              <Skeleton className="h-8 w-3/4" />
-              <Skeleton className="h-6 w-1/2" />
-              <Skeleton className="h-4 w-full mt-4" />
-              <Skeleton className="h-4 w-5/6" />
-            </div>
-          </div>
-        )}
-        {!isLoading && result && (
-          <div className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] gap-6 animate-fade-in">
-            <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center text-muted-foreground">
-              {result.coverArtUrl ? (
-                <Image
-                  src={result.coverArtUrl}
-                  alt={`Cover art for ${result.album}`}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <Album className="h-16 w-16" />
-              )}
-            </div>
-            <div className="space-y-4">
-              <h3 className="text-2xl lg:text-3xl font-bold text-primary">{result.title}</h3>
-              <div className="space-y-3 text-sm text-card-foreground/90">
-                <p className="flex items-center gap-3"><User className="h-4 w-4 text-accent" /> {result.artist}</p>
-                <p className="flex items-center gap-3"><Album className="h-4 w-4 text-accent" /> {result.album || 'N/A'}</p>
-                {result.releaseDate && <p className="flex items-center gap-3"><Calendar className="h-4 w-4 text-accent" /> Released on {result.releaseDate}</p>}
-                {result.composers.length > 0 && <p className="flex items-center gap-3"><PenSquare className="h-4 w-4 text-accent" /> Composed by {result.composers.join(', ')}</p>}
+      <CardContent className="space-y-6">
+        <div className="grid w-full max-w-xs items-center gap-1.5">
+          <Label htmlFor="num-songs">Number of Songs</Label>
+          <Select
+            value={numberOfSongs}
+            onValueChange={setNumberOfSongs}
+            disabled={isLoading || isRateLimited}
+          >
+            <SelectTrigger id="num-songs" className="w-24">
+              <SelectValue placeholder="1" />
+            </SelectTrigger>
+            <SelectContent>
+              {[...Array(5)].map((_, i) => (
+                <SelectItem key={i + 1} value={(i + 1).toString()}>
+                  {i + 1}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
+          {isLoading && (
+            [...Array(parseInt(numberOfSongs, 10))].map((_, i) => (
+              <div key={i} className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-4">
+                <Skeleton className="w-full aspect-square rounded-lg" />
+                <div className="md:col-span-2 space-y-4">
+                  <Skeleton className="h-8 w-3/4" />
+                  <Skeleton className="h-6 w-1/2" />
+                  <Skeleton className="h-4 w-full mt-4" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2 pt-4">
-                {result.spotifyUrl && (
-                    <Button asChild variant="outline">
-                        <Link href={result.spotifyUrl} target='_blank' rel='noopener noreferrer'>
-                            <SpotifyIcon className='mr-2'/>
-                            Find on Spotify
-                        </Link>
-                    </Button>
-                )}
-                {result.youtubeUrl && (
-                     <Button asChild variant="outline">
-                        <Link href={result.youtubeUrl} target='_blank' rel='noopener noreferrer'>
-                            <YouTubeIcon className='mr-2'/>
-                            Find on YouTube
-                        </Link>
-                    </Button>
-                )}
-              </div>
+            ))
+          )}
+          {!isLoading && results.length > 0 && (
+            results.map((result, index) => <MusicResultCard key={index} result={result} />)
+          )}
+          {!isLoading && results.length === 0 && !error && (
+            <div className="text-center text-muted-foreground p-4">
+              <Music className="h-16 w-16 mx-auto mb-4" />
+              <p>Click the button to discover a random song.</p>
             </div>
-          </div>
-        )}
-        {!isLoading && !result && !error && (
-          <div className="text-center text-muted-foreground p-4">
-            <Music className="h-16 w-16 mx-auto mb-4" />
-            <p>Click the button to discover a random song.</p>
-          </div>
-        )}
-        {error && (
-          <Alert variant="destructive">
-            <AlertTitle>Oops!</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+          )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Oops!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </div>
       </CardContent>
       <CardFooter>
         <Button
