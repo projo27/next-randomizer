@@ -56,7 +56,6 @@
 - Football Club Randomizer
 - Riddle Randomizer
 - Random Gift ✅
-- Google Maps Randomizer ✅
 
 ## Development Roadmap :
 
