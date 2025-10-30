@@ -71,12 +71,12 @@ export default function MemeRandomizer() {
             <h3 className="text-xl font-bold text-primary mb-2">
               {result.title}
             </h3>
-            <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden border-2 border-accent shadow-lg">
+            <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden">
               <Image
                 src={result.imageUrl}
                 alt={result.title || 'Random Meme'}
                 fill
-                className="object-contain"
+                className="object-contain rounded-lg"
                 unoptimized // Gifs can be large, unoptimized is better here
               />
             </div>
