@@ -26,6 +26,7 @@ import CountryRandomizer from "@/components/country-randomizer";
 import GiftRandomizer from "@/components/gift-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
+import MusicRandomizer from "@/components/music-randomizer";
 
 import {
   ListTodo,
@@ -55,6 +56,7 @@ import {
   Gift,
   Map,
   Laugh,
+  Music,
 } from "lucide-react";
 
 export type MenuItemData = typeof triggerList[0];
@@ -211,6 +213,14 @@ export const triggerList = [
       icon: <Laugh className="h-5 w-5" />,
       content: <MemeRandomizer />,
       contentGuard: true,
+    },
+    {
+      value: "music",
+      text: "Music",
+      hidden: false,
+      icon: <Music className="h-5 w-5" />,
+      content: <MusicRandomizer />,
+      contentGuard: false,
     },
     // Not Showed, feature not ready
     // {
