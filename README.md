@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.4 : Meme Randomizer release
 - v1.1.3 : Google Maps Place Randomizer release
 - v1.1.2 : Country Randomizer and Gift Randomizer release
 - v1.1.1 : Quote randomizer release
@@ -50,7 +51,7 @@
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
 - IOS APK Randomizer
-- Meme Randomizer
+- Meme Randomizer ✅
 - Anime Randomizer
 - Webtoon Randomizer
 - Football Club Randomizer
@@ -102,3 +103,6 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
+-   **Giphy API**: For the Meme Randomizer.
+
+```
