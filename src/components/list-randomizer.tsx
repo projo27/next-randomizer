@@ -37,9 +37,6 @@ const initialItems: Item[] = [
   { id: "5", value: "Stawberry" },
   { id: "6", value: "Mango" },
   { id: "7", value: "Kiwi" },
-  { id: "8", value: "Cherry" },
-  { id: "9", value: "Watermellon" },
-  { id: "10", value: "Pineapple" },
 ];
 
 function ResultDisplay({
@@ -278,32 +275,36 @@ export default function ListRandomizer() {
               disabled={isShuffling}
             />
           ) : (
-            <div className="space-y-2 mt-1 p-4 border rounded-md max-h-96 overflow-y-auto">
-              {items.map((item) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <Input
-                    placeholder="Enter an item"
-                    value={item.value}
-                    onChange={(e) => handleItemChange(item.id, e.target.value)}
-                    className="flex-grow"
-                    disabled={isShuffling}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveItem(item.id)}
-                    disabled={isShuffling}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            <div className="mt-1 space-y-2">
+              <div className="space-y-2 p-4 border rounded-md max-h-96 overflow-y-auto">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Enter an item"
+                      value={item.value}
+                      onChange={(e) =>
+                        handleItemChange(item.id, e.target.value)
+                      }
+                      className="flex-grow"
+                      disabled={isShuffling}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={isShuffling}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleAddItem}
                 disabled={isShuffling}
-                className="mt-2 w-full"
+                className="w-full"
               >
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Item
               </Button>

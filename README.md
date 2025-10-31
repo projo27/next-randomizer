@@ -4,7 +4,7 @@
 
 ## Changelog :
 
-- v1.1.4 : Meme Randomizer release
+- v1.1.4 : Meme Randomizer and Song Randomizer release
 - v1.1.3 : Google Maps Place Randomizer release
 - v1.1.2 : Country Randomizer and Gift Randomizer release
 - v1.1.1 : Quote randomizer release
@@ -46,7 +46,7 @@
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
 - Movie Randomizer
-- Music Randomizer
+- Song Randomizer
 - Radio Channel Randomizer
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
@@ -82,6 +82,9 @@
 - Github → [github.com](https://github.com)
 - Runware AI → [runware.ai](https://runware.ai)
 - Az Quotes → [azquotes.com](https://azquotes.com)
+- Google Maps → [maps.google.com](https://maps.google.com)
+- Giphy → [giphy.com](https://giphy.com)
+- Music Brainz → [musicbrainz.com](https://musicbrainz.com)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
 

@@ -117,7 +117,7 @@ function MusicResultCard({ result }: { result: MusicResult }) {
   )
 }
 
-export default function MusicRandomizer() {
+export default function SongRandomizer() {
   const [results, setResults] = useState<MusicResult[]>([]);
   const [numberOfSongs, setNumberOfSongs] = useState("1");
   const [isLoading, setIsLoading] = useState(false);
@@ -153,7 +153,7 @@ export default function MusicRandomizer() {
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>Music Randomizer</CardTitle>
+        <CardTitle>Song Randomizer</CardTitle>
         <CardDescription>
           Discover random songs from the vast MusicBrainz database.
         </CardDescription>
@@ -182,13 +182,17 @@ export default function MusicRandomizer() {
         <div className="min-h-[400px] flex flex-col items-center justify-center gap-4">
           {isLoading && (
             [...Array(parseInt(numberOfSongs, 10))].map((_, i) => (
-              <div key={i} className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-4">
-                <Skeleton className="w-full aspect-square rounded-lg" />
-                <div className="md:col-span-2 space-y-4">
+              <div key={i} className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[250px_1fr] gap-6 animate-fade-in p-4 rounded-lg bg-card/50">
+                <Skeleton className="relative aspect-square w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center text-muted-foreground" />
+                <div className="space-y-4">
                   <Skeleton className="h-8 w-3/4" />
                   <Skeleton className="h-6 w-1/2" />
                   <Skeleton className="h-4 w-full mt-4" />
                   <Skeleton className="h-4 w-5/6" />
+                  <div className="flex">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-4 w-1/4" />
+                    </div>
                 </div>
               </div>
             ))

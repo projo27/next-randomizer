@@ -26,7 +26,7 @@ import CountryRandomizer from "@/components/country-randomizer";
 import GiftRandomizer from "@/components/gift-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
-import MusicRandomizer from "@/components/music-randomizer";
+import MusicRandomizer from "@/components/song-randomizer";
 
 import {
   ListTodo,

@@ -95,6 +95,18 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "coverartarchive.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "coverartarchive.org",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   webpack: (config, { dev, isServer }) => {
