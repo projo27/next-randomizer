@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-const API_KEY = process.env.THESPORTSDB_API_KEY;
+const API_KEY = process.env.THESPORTSDB_API_KEY || '1'; // Default to free key '1'
 const API_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${API_KEY}`;
 
 // A curated list of popular football leagues
@@ -43,7 +43,7 @@ export interface FootballerResult extends Player {
 
 // Helper to fetch data and handle errors
 async function fetchData(url: string) {
-  if (!API_KEY || API_KEY === '1') {
+  if (!API_KEY) {
     throw new Error('TheSportsDB API Key is not configured. Please set THESPORTSDB_API_KEY in your environment variables.');
   }
   const response = await fetch(url, { cache: 'no-store' });
@@ -52,7 +52,7 @@ async function fetchData(url: string) {
   }
   const data = await response.json();
   if (data === null || data.teams === null || data.player === null) {
-      throw new Error("TheSportsDB returned no data. The API might be temporarily unavailable or the league/team doesn't exist.");
+      throw new Error("TheSportsDB returned no data. This can happen with the free API. Please try again.");
   }
   return data;
 }
