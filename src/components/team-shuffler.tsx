@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -305,43 +306,45 @@ export default function TeamShuffler() {
               disabled={isShuffling}
             />
           ) : (
-            <div className="space-y-2 mt-1 p-4 border rounded-md max-h-96 overflow-y-auto">
-              {participants.map((p) => (
-                <div key={p.id} className="flex items-center gap-2">
-                  <Input
-                    placeholder="Participant Name"
-                    value={p.name}
-                    onChange={(e) =>
-                      handleParticipantChange(p.id, "name", e.target.value)
-                    }
-                    className="flex-grow"
-                    disabled={isShuffling}
-                  />
-                  {useLevels && (
-                    <StarRating
-                      level={p.level}
-                      setLevel={(level) =>
-                        handleParticipantChange(p.id, "level", level)
+            <div className="mt-1 space-y-2">
+              <div className="space-y-2 p-4 border rounded-md max-h-96 overflow-y-auto">
+                {participants.map((p) => (
+                  <div key={p.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Participant Name"
+                      value={p.name}
+                      onChange={(e) =>
+                        handleParticipantChange(p.id, "name", e.target.value)
                       }
-                      readOnly={isShuffling}
+                      className="flex-grow"
+                      disabled={isShuffling}
                     />
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveParticipant(p.id)}
-                    disabled={isShuffling}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                    {useLevels && (
+                      <StarRating
+                        level={p.level}
+                        setLevel={(level) =>
+                          handleParticipantChange(p.id, "level", level)
+                        }
+                        readOnly={isShuffling}
+                      />
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveParticipant(p.id)}
+                      disabled={isShuffling}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleAddParticipant}
                 disabled={isShuffling}
-                className="mt-2 w-full"
+                className="w-full"
               >
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Participant
               </Button>

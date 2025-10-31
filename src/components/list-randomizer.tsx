@@ -312,7 +312,7 @@ export default function ListRandomizer() {
           )}
         </div>
 
-        <div className="grid w-1/2 max-w-1/2 items-center gap-1.5">
+        <div className="grid w-full max-w-1/2 items-center gap-1.5">
           <Label htmlFor="num-items">Number of Items to Pick</Label>
           <Input
             id="num-items"

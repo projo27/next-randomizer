@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Wand2, Copy, Check, Trash2 } from "lucide-react";
+import { Wand2, Copy, Check, Trash2, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { randomizeSequence } from "@/app/actions/sequence-randomizer-action";
@@ -19,6 +20,21 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { Input } from "./ui/input";
+
+type Item = {
+  id: string;
+  value: string;
+};
+
+const initialItems: Item[] = [
+  { id: "1", value: "Participant 1" },
+  { id: "2", value: "Participant 2" },
+  { id: "3", value: "Participant 3" },
+  { id: "4", value: "Participant 4" },
+];
 
 function AnimatedResultList({
   isShuffling,
@@ -81,13 +97,13 @@ function AnimatedResultList({
 }
 
 export default function SequenceRandomizer() {
-  const [itemsText, setItemsText] = useState(`Participant 1
-Participant 2
-Participant 3
-Participant 4`);
+  const [items, setItems] = useState<Item[]>(initialItems);
+  const [itemsText, setItemsText] = useState(
+    initialItems.map((i) => i.value).join("\n"),
+  );
+  const [inputMode, setInputMode] = useState<"panel" | "textarea">("panel");
   const [shuffledItems, setShuffledItems] = useState<string[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
-  const [isInputCopied, setIsInputCopied] = useState(false);
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
@@ -100,6 +116,26 @@ Participant 4`);
       stopAudio();
     }
   }, [isShuffling, stopAudio]);
+
+  const handleInputModeChange = (checked: boolean) => {
+    const newMode = checked ? "textarea" : "panel";
+    setInputMode(newMode);
+
+    if (newMode === "panel" && itemsText) {
+      const lines = itemsText
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
+      setItems(
+        lines.map((line, index) => ({
+          id: `${Date.now()}-${index}`,
+          value: line,
+        })),
+      );
+    } else if (newMode === "textarea") {
+      setItemsText(items.map((p) => p.value).join("\n"));
+    }
+  };
 
   const handleShuffle = async () => {
     sendGTMEvent({
@@ -115,8 +151,9 @@ Participant 4`);
     setShuffledItems([]);
     setIsResultCopied(false);
 
-    const currentItems = itemsText
-      .split("\n")
+    const currentItems = (
+      inputMode === "textarea" ? itemsText.split("\n") : items.map((i) => i.value)
+    )
       .map((c) => c.trim())
       .filter((c) => c.length > 0);
 
@@ -135,20 +172,6 @@ Participant 4`);
     }
   };
 
-  const handleCopyInput = () => {
-    navigator.clipboard.writeText(itemsText);
-    setIsInputCopied(true);
-    toast({
-      title: "Copied!",
-      description: "Input list copied to clipboard.",
-    });
-    setTimeout(() => setIsInputCopied(false), 2000);
-  };
-
-  const handleClearInput = () => {
-    setItemsText("");
-  };
-
   const handleCopyResult = () => {
     const resultString = shuffledItems
       .map((item, index) => `${index + 1}. ${item}`)
@@ -162,6 +185,18 @@ Participant 4`);
     setTimeout(() => setIsResultCopied(false), 2000);
   };
 
+  const handleAddItem = () => {
+    setItems([...items, { id: `${Date.now()}`, value: "" }]);
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setItems(items.filter((p) => p.id !== id));
+  };
+
+  const handleItemChange = (id: string, value: string) => {
+    setItems(items.map((p) => (p.id === id ? { ...p, value } : p)));
+  };
+
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
@@ -171,26 +206,75 @@ Participant 4`);
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="relative">
-          <Textarea
-            placeholder="Enter items, one per line..."
-            rows={8}
-            value={itemsText}
-            onChange={(e) => setItemsText(e.target.value)}
-            className="resize-none pr-20"
+        <div className="flex items-center space-x-2 mb-4">
+          <Switch
+            id="input-mode-seq"
+            checked={inputMode === "textarea"}
+            onCheckedChange={handleInputModeChange}
           />
-          <div className="absolute top-2 right-2 flex flex-col gap-2">
-            <Button variant="ghost" size="icon" onClick={handleCopyInput}>
-              {isInputCopied ? (
-                <Check className="h-5 w-5 text-green-500" />
-              ) : (
-                <Copy className="h-5 w-5" />
-              )}
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleClearInput}>
-              <Trash2 className="h-5 w-5" />
-            </Button>
+          <Label htmlFor="input-mode-seq">Use Text Area Input</Label>
+        </div>
+
+        <div className="grid w-full items-center gap-1.5">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="participants">List of Items</Label>
+            <span className="text-xs text-muted-foreground">
+              {
+                (inputMode === "panel"
+                  ? items.filter((i) => i.value.trim())
+                  : itemsText.split("\n").filter(Boolean)
+                ).length
+              }{" "}
+              item(s)
+            </span>
           </div>
+
+          {inputMode === "textarea" ? (
+            <Textarea
+              id="participants-text"
+              placeholder={initialItems.map((i) => i.value).join("\n")}
+              rows={8}
+              value={itemsText}
+              onChange={(e) => setItemsText(e.target.value)}
+              className="resize-none mt-1"
+              disabled={isShuffling}
+            />
+          ) : (
+            <div className="mt-1 space-y-2">
+              <div className="space-y-2 p-4 border rounded-md max-h-96 overflow-y-auto">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Enter an item"
+                      value={item.value}
+                      onChange={(e) =>
+                        handleItemChange(item.id, e.target.value)
+                      }
+                      className="flex-grow"
+                      disabled={isShuffling}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={isShuffling}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAddItem}
+                disabled={isShuffling}
+                className="w-full"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+              </Button>
+            </div>
+          )}
         </div>
 
         {(isShuffling || shuffledItems.length > 0) && (
