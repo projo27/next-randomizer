@@ -46,7 +46,7 @@
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
 - Movie Randomizer
-- Song Randomizer
+- Song Randomizer ✅
 - Radio Channel Randomizer
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
