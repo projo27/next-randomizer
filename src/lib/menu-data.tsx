@@ -27,6 +27,7 @@ import GiftRandomizer from "@/components/gift-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
 import MusicRandomizer from "@/components/song-randomizer";
+import SportRandomizer from "@/components/sport-randomizer";
 
 import {
   ListTodo,
@@ -221,6 +222,14 @@ export const triggerList = [
       icon: <Music className="h-5 w-5" />,
       content: <MusicRandomizer />,
       contentGuard: false,
+    },
+    {
+      value: "sport",
+      text: "Football",
+      hidden: false,
+      icon: <Users className="h-5 w-5" />,
+      content: <SportRandomizer />,
+      contentGuard: true,
     },
     // Not Showed, feature not ready
     // {
