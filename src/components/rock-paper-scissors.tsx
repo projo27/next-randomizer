@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -34,11 +35,12 @@ const EMOJIS: Record<RpsResult, string> = {
   Paper: "🖐️",
   Scissors: "✌️",
 };
+const EMOJI_VALUES = Object.values(EMOJIS);
 
 export default function RockPaperScissors() {
   const [numberOfPlays, setNumberOfPlays] = useState("1");
   const [results, setResults] = useState<RpsResult[]>([]);
-  const [previousResults, setPreviousResults] = useState<RpsResult[]>([]);
+  const [displayEmojis, setDisplayEmojis] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
@@ -46,12 +48,17 @@ export default function RockPaperScissors() {
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
+  const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isPlaying) {
       stopAudio();
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
     }
-  }, [isPlaying, stopAudio]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying]);
 
   const handlePlay = async () => {
     sendGTMEvent({
@@ -64,15 +71,37 @@ export default function RockPaperScissors() {
 
     setIsPlaying(true);
     setIsCopied(false);
-    setPreviousResults(results);
+    setResults([]);
 
     const numPlays = parseInt(numberOfPlays, 10);
-    const newResults = await playRps(numPlays);
+    
+    // Start shuffling animation
+    animationIntervalRef.current = setInterval(() => {
+        const tempEmojis = Array.from({ length: numPlays }, () => 
+            EMOJI_VALUES[Math.floor(Math.random() * EMOJI_VALUES.length)]
+        );
+        setDisplayEmojis(tempEmojis);
+    }, 100);
 
-    setTimeout(() => {
-      setResults(newResults);
+    try {
+      const finalResults = await playRps(numPlays);
+
+      setTimeout(() => {
+        if (animationIntervalRef.current) {
+          clearInterval(animationIntervalRef.current);
+        }
+        setResults(finalResults);
+        setDisplayEmojis(finalResults.map(r => EMOJIS[r]));
+        setIsPlaying(false);
+      }, animationDuration * 1000);
+
+    } catch (e) {
+      console.error(e);
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
       setIsPlaying(false);
-    }, animationDuration * 1000);
+    }
   };
 
   const handleCopy = () => {
@@ -86,10 +115,12 @@ export default function RockPaperScissors() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-
-  const displayedResults = isPlaying
-    ? Array(parseInt(numberOfPlays, 10)).fill(null)
-    : results;
+  
+  useEffect(() => {
+    setDisplayEmojis(Array(parseInt(numberOfPlays, 10)).fill(EMOJI_VALUES[0]));
+    setResults([]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numberOfPlays]);
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -104,11 +135,7 @@ export default function RockPaperScissors() {
           <Label htmlFor="num-plays">Number of Plays</Label>
           <Select
             value={numberOfPlays}
-            onValueChange={(val) => {
-              setNumberOfPlays(val);
-              setResults([]);
-              setPreviousResults([]);
-            }}
+            onValueChange={setNumberOfPlays}
             disabled={isPlaying || isRateLimited}
           >
             <SelectTrigger id="num-plays" className="w-24">
@@ -124,29 +151,13 @@ export default function RockPaperScissors() {
           </Select>
         </div>
         <div className="relative flex justify-center items-center min-h-[200px] gap-8 flex-wrap p-4 bg-muted/50 rounded-lg">
-          {displayedResults.length > 0 ? (
+          {displayEmojis.length > 0 ? (
             <>
-              {displayedResults.map((result, i) => {
-                const prevResult =
-                  previousResults[i] || MOVES[Math.floor(Math.random() * 3)];
-                const finalResult =
-                  result || MOVES[Math.floor(Math.random() * 3)];
-                return (
-                  <div
-                    key={i}
-                    className={`coin ${isPlaying ? "flipping" : ""}`}
-                  >
-                    <div className="coin-inner text-7xl">
-                      <div className="coin-front">
-                        {EMOJIS[finalResult as RpsResult]}
-                      </div>
-                      <div className="coin-back">
-                        {EMOJIS[prevResult as RpsResult]}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {displayEmojis.map((emoji, i) => (
+                <div key={i} className="text-7xl">
+                  {emoji}
+                </div>
+              ))}
               {!isPlaying && results.length > 0 && (
                 <div className="absolute top-2 right-2">
                   <Button variant="ghost" size="icon" onClick={handleCopy}>
@@ -183,3 +194,4 @@ export default function RockPaperScissors() {
     </Card>
   );
 }
+
