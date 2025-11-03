@@ -1,12 +1,20 @@
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Dice5 } from "lucide-react";
+import { Dice5, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import FirebaseLoginButton from "./firebase-login-button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
 
 // List of available feature tabs (excluding protected/hidden ones for this logic)
 const availableTabs = [
@@ -77,7 +85,27 @@ export function Header() {
             </h1>
           </Link>
         </div>
-        <div className="flex md:flex-1 order-3 justify-end md:order-3 md:mr-8">
+        <div className="flex md:flex-1 order-3 justify-end md:order-3 md:mr-8 items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="ring-1 ring-accent dark:ring-0"
+              >
+                <HelpCircle className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Open helper menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href="#">Request New Randomizer Tools</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="#">Tutorial</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ThemeToggle />
         </div>
       </div>
