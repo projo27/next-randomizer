@@ -225,7 +225,7 @@ export const triggerList = [
   },
   {
     value: "sport",
-    text: "Football",
+    text: "Football Club",
     hidden: false,
     icon: <Users className="h-5 w-5" />,
     content: <SportRandomizer />,

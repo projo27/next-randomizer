@@ -101,7 +101,7 @@ export function Header() {
             <DropdownMenuContent align="end">
               <SurveyDialog />
               <DropdownMenuItem asChild>
-                <Link href="#">Tutorial</Link>
+                <Link href="/tutorial">Tutorial</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
