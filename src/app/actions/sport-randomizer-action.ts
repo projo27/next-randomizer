@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-const API_KEY = process.env.THESPORTSDB_API_KEY || '1'; // Default to free key '1'
+const API_KEY = process.env.THESPORTSDB_API_KEY || '1';
 const API_BASE_URL = `https://www.thesportsdb.com/api/v1/json/${API_KEY}`;
 
 // A curated list of popular football leagues
@@ -18,8 +18,7 @@ const LEAGUES = [
 const PlayerSchema = z.object({
   idPlayer: z.string(),
   strPlayer: z.string(),
-  strTeam: z.string(),
-  strPosition: z.string(),
+  strPosition: z.string().nullable(),
   strCutout: z.string().nullable(), // Player photo
   strFanart1: z.string().nullable(), // Background image
   strDescriptionEN: z.string().nullable(),
@@ -32,11 +31,12 @@ const TeamSchema = z.object({
   idTeam: z.string(),
   strTeam: z.string(),
   strTeamBadge: z.string().nullable(),
+  strLeague: z.string(),
 });
-type Team = z.infer<typeof TeamSchema>;
-
+export type Team = z.infer<typeof TeamSchema>;
 
 export interface FootballerResult extends Player {
+    strTeam: string;
     strTeamBadge: string | null;
     strLeague: string;
 }
@@ -51,13 +51,13 @@ async function fetchData(url: string) {
     throw new Error(`Failed to fetch data from TheSportsDB. Status: ${response.status}`);
   }
   const data = await response.json();
-  if (data === null || data.teams === null || data.player === null) {
+  if (data === null || data.teams === null || (data.player === null && data.teams === undefined)) {
       throw new Error("TheSportsDB returned no data. This can happen with the free API. Please try again.");
   }
   return data;
 }
 
-export async function getRandomFootballer(): Promise<FootballerResult> {
+export async function getRandomTeam(): Promise<Team> {
     try {
         // 1. Select a random league
         const randomLeague = LEAGUES[Math.floor(Math.random() * LEAGUES.length)];
@@ -65,40 +65,67 @@ export async function getRandomFootballer(): Promise<FootballerResult> {
         
         // 2. Get all teams from that league
         const teamsData = await fetchData(`${API_BASE_URL}/search_all_teams.php?l=${leagueQuery}`);
-        const teams: Team[] = TeamSchema.array().parse(teamsData.teams);
+        const teamsResult = TeamSchema.pick({ idTeam: true, strTeam: true, strTeamBadge: true }).array().safeParse(teamsData.teams);
 
-        if (teams.length === 0) {
+        if (!teamsResult.success || teamsResult.data.length === 0) {
             throw new Error(`No teams found for league: ${randomLeague}`);
         }
 
         // 3. Select a random team
-        const randomTeam = teams[Math.floor(Math.random() * teams.length)];
-        const teamQuery = encodeURIComponent(randomTeam.strTeam);
-
-        // 4. Get all players from that team
-        const playersData = await fetchData(`${API_BASE_URL}/searchplayers.php?t=${teamQuery}`);
-        const players: Player[] = PlayerSchema.array().parse(playersData.player);
-
-        if (players.length === 0) {
-             throw new Error(`No players found for team: ${randomTeam.strTeam}. Trying again.`);
-        }
-
-        // 5. Select a random player
-        const randomPlayer = players[Math.floor(Math.random() * players.length)];
+        const randomTeam = teamsResult.data[Math.floor(Math.random() * teamsResult.data.length)];
         
         return {
-            ...randomPlayer,
-            strTeamBadge: randomTeam.strTeamBadge,
+            ...randomTeam,
             strLeague: randomLeague
         };
 
     } catch (error) {
         if (error instanceof z.ZodError) {
-            console.error("Zod validation error:", error.issues);
-            throw new Error("Received unexpected data format from TheSportsDB API.");
+            console.error("Zod validation error in getRandomTeam:", error.issues);
+            throw new Error("Received unexpected data format from TheSportsDB API for teams.");
         }
-        console.error("Error in getRandomFootballer:", error);
-        // Re-throw the error to be handled by the client
+        console.error("Error in getRandomTeam:", error);
+        throw error; // Re-throw the error to be handled by the client
+    }
+}
+
+
+export async function getRandomPlayerFromTeam(teamId: string, teamName: string, teamBadge: string | null, league: string): Promise<FootballerResult> {
+    try {
+        // 1. Get all players from the specified team
+        const playersData = await fetchData(`${API_BASE_URL}/lookup_all_players.php?id=${teamId}`);
+
+        const playersResult = PlayerSchema.pick({ 
+            idPlayer: true, 
+            strPlayer: true, 
+            strPosition: true, 
+            strCutout: true, 
+            strFanart1: true,
+            strDescriptionEN: true,
+            dateBorn: true,
+            strNationality: true
+        }).array().safeParse(playersData.players);
+
+        if (!playersResult.success || playersResult.data.length === 0) {
+             throw new Error(`No players found for team: ${teamName}. Trying again.`);
+        }
+
+        // 2. Select a random player
+        const randomPlayer = playersResult.data[Math.floor(Math.random() * playersResult.data.length)];
+        
+        return {
+            ...randomPlayer,
+            strTeam: teamName,
+            strTeamBadge: teamBadge,
+            strLeague: league
+        };
+
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            console.error("Zod validation error in getRandomPlayerFromTeam:", error.issues);
+            throw new Error("Received unexpected data format from TheSportsDB API for players.");
+        }
+        console.error("Error in getRandomPlayerFromTeam:", error);
         throw error;
     }
 }
