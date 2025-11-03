@@ -1,7 +1,15 @@
 import { db } from "@/lib/firebase-config";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  runTransaction,
+  collection,
+  increment,
+} from "firebase/firestore";
 
 const USER_PREFERENCE_COLLECTION = "userPreferences";
+const SURVEY_COLLECTION = "surveys";
 
 export type MenuOrder = {
   visible: string[];
@@ -212,5 +220,103 @@ export async function getVisibleToolCount(
   } catch (error) {
     console.error("Error getting visible tool count:", error);
     return null;
+  }
+}
+
+// --- Survey Functions ---
+
+/**
+ * Increments the vote count for given tools in a Firestore transaction.
+ * @param toolNames An array of tool names to vote for.
+ */
+export async function incrementSurveyVotes(toolNames: string[]): Promise<void> {
+  const surveyDocRef = doc(db, SURVEY_COLLECTION, "newToolRequests");
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      const surveyDoc = await transaction.get(surveyDocRef);
+      const currentVotes = surveyDoc.data() || {};
+      const updates: { [key: string]: any } = {};
+
+      toolNames.forEach((toolName) => {
+        updates[toolName] = increment(1);
+      });
+
+      if (!surveyDoc.exists()) {
+        await transaction.set(surveyDocRef, updates);
+      } else {
+        await transaction.update(surveyDocRef, updates);
+      }
+    });
+  } catch (error) {
+    console.error("Error incrementing survey votes:", error);
+    throw error;
+  }
+}
+
+/**
+ * Retrieves the list of tools a user has already voted for.
+ * @param userId The ID of the user.
+ * @returns An array of tool names.
+ */
+export async function getVotedTools(userId: string): Promise<string[]> {
+  if (!userId) return [];
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+    const data = docSnap.data();
+    return (
+      (docSnap.exists() &&
+        Array.isArray(data?.votedTools) &&
+        data.votedTools) ||
+      []
+    );
+  } catch (error) {
+    console.error("Error getting voted tools:", error);
+    return [];
+  }
+}
+
+/**
+ * Records the tools a user has just voted for.
+ * @param userId The ID of the user.
+ * @param toolNames The array of tool names the user voted for.
+ */
+export async function recordUserVote(
+  userId: string,
+  toolNames: string[],
+): Promise<void> {
+  if (!userId || toolNames.length === 0) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+
+    const existingVotes =
+      (docSnap.exists() &&
+        Array.isArray(docSnap.data()?.votedTools) &&
+        docSnap.data().votedTools) ||
+      [];
+    const newVotes = Array.from(new Set([...existingVotes, ...toolNames]));
+
+    await setDoc(userPrefRef, { votedTools: newVotes }, { merge: true });
+  } catch (error) {
+    console.error("Error recording user vote:", error);
+  }
+}
+
+/**
+ * Retrieves the current results of the new tool survey.
+ * @returns A promise that resolves to an object mapping tool names to vote counts.
+ */
+export async function getSurveyResults(): Promise<{ [key: string]: number }> {
+  try {
+    const surveyDocRef = doc(db, SURVEY_COLLECTION, "newToolRequests");
+    const docSnap = await getDoc(surveyDocRef);
+    return (docSnap.exists() ? docSnap.data() : {}) as {
+      [key: string]: number;
+    };
+  } catch (error) {
+    console.error("Error getting survey results:", error);
+    return {};
   }
 }

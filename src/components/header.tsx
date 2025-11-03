@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
+import { SurveyDialog } from "./survey-dialog";
 
 // List of available feature tabs (excluding protected/hidden ones for this logic)
 const availableTabs = [
@@ -98,9 +99,7 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="#">Request New Randomizer Tools</Link>
-              </DropdownMenuItem>
+              <SurveyDialog />
               <DropdownMenuItem asChild>
                 <Link href="#">Tutorial</Link>
               </DropdownMenuItem>
