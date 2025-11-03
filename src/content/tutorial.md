@@ -1,4 +1,4 @@
-# Welcome to the Randomizer.fun Tutorial!
+# The Randomizer.fun Tutorial!
 
 This guide will walk you through the main features of our application.
 

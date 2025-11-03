@@ -9,6 +9,7 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -35,6 +36,13 @@ export function MenuOrderSettings() {
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Prevent page scrolling on mobile when dragging starts
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     }),
   );
