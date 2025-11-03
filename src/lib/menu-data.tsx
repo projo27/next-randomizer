@@ -26,7 +26,6 @@ import CountryRandomizer from "@/components/country-randomizer";
 import GiftRandomizer from "@/components/gift-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
-import MusicRandomizer from "@/components/song-randomizer";
 import SportRandomizer from "@/components/sport-randomizer";
 
 import {
@@ -59,6 +58,7 @@ import {
   Laugh,
   Music,
 } from "lucide-react";
+import SongRandomizer from "@/components/song-randomizer";
 
 export type MenuItemData = typeof triggerList[0];
 
@@ -217,10 +217,10 @@ export const triggerList = [
     },
     {
       value: "music",
-      text: "Music",
+      text: "Song",
       hidden: false,
       icon: <Music className="h-5 w-5" />,
-      content: <MusicRandomizer />,
+      content: <SongRandomizer />,
       contentGuard: false,
     },
     {

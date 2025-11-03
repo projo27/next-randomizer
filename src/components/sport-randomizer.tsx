@@ -27,9 +27,9 @@ function TeamCard({ team }: { team: Team }) {
         <Card className="w-full max-w-md mx-auto animate-fade-in bg-card/50 overflow-hidden">
             <CardHeader className="text-center">
                  <div className="relative h-24 w-24 mx-auto">
-                    {team.strTeamBadge ? (
+                    {team.strBadge ? (
                         <Image
-                            src={team.strTeamBadge}
+                            src={team.strBadge}
                             alt={`${team.strTeam} badge`}
                             fill
                             className="object-contain"
@@ -147,7 +147,7 @@ export default function SportRandomizer() {
     setPlayer(null);
 
     try {
-        const newPlayer = await getRandomPlayerFromTeam(team.idTeam, team.strTeam, team.strTeamBadge, team.strLeague);
+        const newPlayer = await getRandomPlayerFromTeam(team.idTeam, team.strTeam, team.strBadge, team.strLeague);
         setPlayer(newPlayer);
     } catch (err: any) {
          setError(err.message || 'An unexpected error occurred while finding a player.');

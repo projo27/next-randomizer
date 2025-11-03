@@ -30,7 +30,7 @@ export type Player = z.infer<typeof PlayerSchema>;
 const TeamSchema = z.object({
   idTeam: z.string(),
   strTeam: z.string(),
-  strTeamBadge: z.string().nullable(),
+  strBadge: z.string().nullable(),
   strLeague: z.string(),
 });
 export type Team = z.infer<typeof TeamSchema>;
@@ -43,6 +43,7 @@ export interface FootballerResult extends Player {
 
 // Helper to fetch data and handle errors
 async function fetchData(url: string) {
+  console.log(url);
   if (!API_KEY) {
     throw new Error('TheSportsDB API Key is not configured. Please set THESPORTSDB_API_KEY in your environment variables.');
   }
@@ -65,7 +66,7 @@ export async function getRandomTeam(): Promise<Team> {
         
         // 2. Get all teams from that league
         const teamsData = await fetchData(`${API_BASE_URL}/search_all_teams.php?l=${leagueQuery}`);
-        const teamsResult = TeamSchema.pick({ idTeam: true, strTeam: true, strTeamBadge: true }).array().safeParse(teamsData.teams);
+        const teamsResult = TeamSchema.pick({ idTeam: true, strTeam: true, strBadge: true }).array().safeParse(teamsData.teams);
 
         if (!teamsResult.success || teamsResult.data.length === 0) {
             throw new Error(`No teams found for league: ${randomLeague}`);
@@ -104,7 +105,7 @@ export async function getRandomPlayerFromTeam(teamId: string, teamName: string, 
             strDescriptionEN: true,
             dateBorn: true,
             strNationality: true
-        }).array().safeParse(playersData.players);
+        }).array().safeParse(playersData.player);
 
         if (!playersResult.success || playersResult.data.length === 0) {
              throw new Error(`No players found for team: ${teamName}. Trying again.`);
