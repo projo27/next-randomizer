@@ -40,6 +40,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { LockKeyhole } from "lucide-react";
 
 type SurveyResultData = { name: string; votes: number }[];
+const SURVEY_ID = "newToolRequests";
 
 export function SurveyDialog() {
   const { user } = useAuth();
@@ -62,7 +63,7 @@ export function SurveyDialog() {
     try {
       const [options, results, userVotedTools] = await Promise.all([
         getSurveyList(),
-        getSurveyResults(),
+        getSurveyResults(SURVEY_ID),
         user ? getVotedTools(user.uid) : Promise.resolve([]),
       ]);
 
@@ -132,7 +133,7 @@ export function SurveyDialog() {
     setError(null);
     try {
       // Pass the current options to check against for new entries
-      await incrementSurveyVotes(uniqueSelections, surveyOptions);
+      await incrementSurveyVotes(SURVEY_ID, uniqueSelections, surveyOptions);
       await recordUserVote(user.uid, uniqueSelections);
       toast({
         title: "Vote Submitted!",
