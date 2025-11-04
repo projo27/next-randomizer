@@ -113,7 +113,7 @@ export function MenuOrderSettings() {
           {allSortableItems.map((item, index) => (
             <>
               {index === visibleToolCount && (
-                <div className="relative flex items-center justify-center my-4">
+                <div key={index} className="relative flex items-center justify-center my-4">
                   <Separator className="w-full" />
                   <div className="absolute px-4 bg-card text-sm text-muted-foreground flex items-center gap-2">
                     <ArrowDown className="h-4 w-4" />
