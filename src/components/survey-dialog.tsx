@@ -24,10 +24,12 @@ import { useAuth } from "@/context/AuthContext";
 import {
   getVotedTools,
   recordUserVote,
+} from "@/services/user-preferences";
+import {
+  getSurveyList,
   incrementSurveyVotes,
   getSurveyResults,
-  getSurveyList,
-} from "@/services/user-preferences";
+} from "@/services/survey-service";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
