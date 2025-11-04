@@ -26,6 +26,7 @@ import {
   recordUserVote,
   incrementSurveyVotes,
   getSurveyResults,
+  getSurveyList,
 } from "@/services/user-preferences";
 import { DropdownMenuItem } from "./ui/dropdown-menu";
 import { Checkbox } from "./ui/checkbox";
@@ -36,23 +37,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { LockKeyhole } from "lucide-react";
 
-// Predefined list of potential new tools for the survey
-const SURVEY_OPTIONS = [
-  "Tarot Card Reader",
-  "Random Name Generator",
-  "Bible/Quran Verse Randomizer",
-  "Random Poetry Generator",
-  "Movie/TV Show Randomizer",
-  "Animal Randomizer",
-  "Magic 8-Ball",
-];
-
 type SurveyResultData = { name: string; votes: number }[];
 
 export function SurveyDialog() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [surveyOptions, setSurveyOptions] = useState<string[]>([]);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [otherTool, setOtherTool] = useState("");
   const [votedTools, setVotedTools] = useState<string[]>([]);
@@ -64,17 +55,17 @@ export function SurveyDialog() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchInitialData = useCallback(async () => {
-    if (!user) {
-      setIsLoading(false);
-      return;
-    }
     setIsLoading(true);
+    setError(null);
     try {
-      const [voted, results] = await Promise.all([
-        getVotedTools(user.uid),
+      const [options, results, userVotedTools] = await Promise.all([
+        getSurveyList(),
         getSurveyResults(),
+        user ? getVotedTools(user.uid) : Promise.resolve([]),
       ]);
-      setVotedTools(voted);
+
+      setSurveyOptions(options);
+      setVotedTools(userVotedTools);
 
       // Transform results for the chart
       const chartData = Object.entries(results)
@@ -83,6 +74,7 @@ export function SurveyDialog() {
       setSurveyResults(chartData);
     } catch (e) {
       setError("Could not load survey data. Please try again later.");
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -108,16 +100,24 @@ export function SurveyDialog() {
     const normalizedOther = otherTool.trim();
 
     if (normalizedOther) {
-      // Check if "other" is already in the main list to avoid duplicates
-      const exists = SURVEY_OPTIONS.some(
+      // Find if "other" matches an existing option, ignoring case
+      const existingOption = surveyOptions.find(
         (opt) => opt.toLowerCase() === normalizedOther.toLowerCase(),
       );
-      if (!exists) {
+      if (existingOption) {
+        // If it exists, add the properly cased version to selections if not already there
+        if(!finalSelections.includes(existingOption)) {
+          finalSelections.push(existingOption);
+        }
+      } else {
+        // If it's a truly new tool, add it
         finalSelections.push(normalizedOther);
       }
     }
+    
+    const uniqueSelections = [...new Set(finalSelections)];
 
-    if (finalSelections.length === 0) {
+    if (uniqueSelections.length === 0) {
       toast({
         variant: "destructive",
         title: "No Selection",
@@ -129,8 +129,9 @@ export function SurveyDialog() {
     setIsSubmitting(true);
     setError(null);
     try {
-      await incrementSurveyVotes(finalSelections);
-      await recordUserVote(user.uid, finalSelections);
+      // Pass the current options to check against for new entries
+      await incrementSurveyVotes(uniqueSelections, surveyOptions);
+      await recordUserVote(user.uid, uniqueSelections);
       toast({
         title: "Vote Submitted!",
         description: "Thank you for your feedback!",
@@ -178,7 +179,7 @@ export function SurveyDialog() {
           <p className="text-sm text-muted-foreground">
             Select all that apply. Your votes help us decide what to build!
           </p>
-          {SURVEY_OPTIONS.map((tool) => {
+          {surveyOptions.map((tool) => {
             const hasVoted = votedTools.includes(tool);
             return (
               <div key={tool} className="flex items-center space-x-2">
@@ -221,7 +222,7 @@ export function SurveyDialog() {
           )}
           <Button
             onClick={handleSubmit}
-            disabled={isSubmitting || selectedTools.length === 0 && !otherTool.trim()}
+            disabled={isSubmitting || (selectedTools.length === 0 && !otherTool.trim())}
             className="w-full"
           >
             {isSubmitting ? "Submitting Vote..." : "Vote Now"}
@@ -245,6 +246,7 @@ export function SurveyDialog() {
                     width={150}
                     tickLine={false}
                     axisLine={false}
+                    tick={{fontSize: 12}}
                   />
                   <Tooltip
                     cursor={{ fill: "hsl(var(--muted))" }}
