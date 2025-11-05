@@ -38,6 +38,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { LockKeyhole } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 type SurveyResultData = { name: string; votes: number }[];
 const SURVEY_ID = "newToolRequests";
@@ -175,8 +176,11 @@ export function SurveyDialog() {
       );
     }
 
+    const barHeight = 25; // Height for each bar in pixels
+    const chartHeight = surveyResults ? Math.max(100, surveyResults.length * barHeight + 40) : 100;
+
     return (
-      <>
+      <ScrollArea className="max-h-[70vh] pr-6">
         <div className="space-y-4 mb-8">
           <h4 className="font-semibold">Which new randomizer tool would you like to see next?</h4>
           <p className="text-sm text-muted-foreground">
@@ -235,7 +239,7 @@ export function SurveyDialog() {
         <div className="border-t pt-6">
           <h4 className="font-semibold mb-4 text-center">Current Results</h4>
           {surveyResults && surveyResults.length > 0 ? (
-            <div className="w-full h-80">
+            <div style={{ height: `${chartHeight}px`, width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={surveyResults}
@@ -249,7 +253,7 @@ export function SurveyDialog() {
                     width={150}
                     tickLine={false}
                     axisLine={false}
-                    tick={{fontSize: 12}}
+                    tick={{fontSize: 12, fill: "hsl(var(--muted-foreground))"}}
                   />
                   <Tooltip
                     cursor={{ fill: "hsl(var(--muted))" }}
@@ -270,7 +274,7 @@ export function SurveyDialog() {
             </p>
           )}
         </div>
-      </>
+      </ScrollArea>
     );
   };
 
