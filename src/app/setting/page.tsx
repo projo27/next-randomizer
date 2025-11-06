@@ -83,7 +83,7 @@ function SettingsPageContent() {
             <Label htmlFor="animation-duration" className="text-base">
               Animation Duration
             </Label>
-            <span className="font-mono text-xl text-accent dark:text-primary">
+            <span className="font-mono font-bold text-2xl dark:text-primary">
               {animationDuration}s
             </span>
           </div>
@@ -127,7 +127,7 @@ function SettingsPageContent() {
             <Label htmlFor="visible-tool-count" className="text-base">
               Visible Tool Count
             </Label>
-            <span className="font-mono text-xl text-primary">
+            <span className="font-mono font-bold text-2xl dark:text-primary">
               {visibleToolCount}
             </span>
           </div>

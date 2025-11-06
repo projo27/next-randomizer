@@ -166,8 +166,7 @@ export default function TruthOrDareRandomizer() {
              <Button
                 onClick={() => handleRandomize("truth")}
                 disabled={isAnyLoading || isRateLimited}
-                className="w-full"
-                variant="outline"
+                className="w-full bg-primary"
             >
                 <HelpCircle className="mr-2 h-4 w-4" />
                 Random Truth
@@ -181,7 +180,7 @@ export default function TruthOrDareRandomizer() {
             <div className="relative min-h-[120px] flex items-center justify-center p-4 bg-muted/50 rounded-lg">
                 {(isLoading.dare || displayDare) ? (
                     <div className="text-center animate-fade-in">
-                        <h3 className="text-xl md:text-2xl font-bold text-destructive mb-2">Dare</h3>
+                        <h3 className="text-xl md:text-2xl font-bold text-red-200 mb-2">Dare</h3>
                         <p className="text-lg md:text-xl italic">"{displayDare}"</p>
                     </div>
                 ) : (
