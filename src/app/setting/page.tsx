@@ -83,7 +83,7 @@ function SettingsPageContent() {
             <Label htmlFor="animation-duration" className="text-base">
               Animation Duration
             </Label>
-            <span className="font-mono text-xl text-primary">
+            <span className="font-mono text-xl text-accent dark:text-primary">
               {animationDuration}s
             </span>
           </div>
