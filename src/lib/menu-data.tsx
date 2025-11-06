@@ -27,6 +27,7 @@ import GiftRandomizer from "@/components/gift-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
 import SportRandomizer from "@/components/sport-randomizer";
+import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
 
 import {
   ListTodo,
@@ -57,6 +58,7 @@ import {
   Map,
   Laugh,
   Music,
+  FlameKindling,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -230,6 +232,14 @@ export const triggerList = [
     icon: <Users className="h-5 w-5" />,
     content: <SportRandomizer />,
     contentGuard: true,
+  },
+  {
+    value: "truth-or-dare",
+    text: "Truth or Dare",
+    hidden: false,
+    icon: <FlameKindling className="h-5 w-5" />,
+    content: <TruthOrDareRandomizer />,
+    contentGuard: false,
   },
   // Not Showed, feature not ready
   // {

@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.5 : Truth or Dare Randomizer release
 - v1.1.4 : Meme Randomizer and Song Randomizer release
 - v1.1.3 : Google Maps Place Randomizer release
 - v1.1.2 : Country Randomizer and Gift Randomizer release
@@ -34,6 +35,7 @@
 - Youtube Randomizer (powered by youtube API) ✅
 - OOTD - Fashion Out of The Day Randomizer (powered by runway.ai) ✅
 - Travel City Randomizer (powered by gemini.ai and pixabay) ✅
+- Truth or Dare Question Randomizer ✅
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
@@ -54,7 +56,7 @@
 - Meme Randomizer ✅
 - Anime Randomizer
 - Webtoon Randomizer
-- Football Club Randomizer
+- Football Club Randomizer ✅
 - Riddle Randomizer
 - Random Gift ✅
 
@@ -108,4 +110,3 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
 
-```
