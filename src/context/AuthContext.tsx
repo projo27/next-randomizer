@@ -38,7 +38,7 @@ const dummyUser: FirebaseUser = {
   reload: () => Promise.resolve(),
   toJSON: () => ({}),
   refreshToken: "",
-  phoneNumber: null
+  phoneNumber: null,
 };
 
 // Nilai default untuk context
@@ -82,7 +82,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // --- DEVELOPMENT MODE: Use Dummy User ---
-    if ((process.env.NEXT_ENVIRONMENT || process.env.NODE_ENV) === "development") {
+    if (
+      (process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV) ===
+      "development"
+    ) {
       console.log("DEV MODE: Using dummy user.");
       // Use a timeout to simulate async loading
       const timer = setTimeout(() => {

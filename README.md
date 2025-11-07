@@ -70,8 +70,8 @@
 - Make randomize duration into global state ✅
 - Play music when click randomize (play randomization animation) ✅
 - User can rearrange the menu / tools to satisfy their needs ✅
-- Add survey whats new feature to catch user needs 
-- Add API to support another developer to generate randomize (PRO) 
+- Add survey whats new feature to catch user needs
+- Add API to support another developer to generate randomize (PRO)
 - Add Running news after title and subtitle, to aware user for new feature or news
 - User can save and share the result (PRO)
 - Mobile support
@@ -88,10 +88,11 @@
 - Google Maps → [maps.google.com](https://maps.google.com)
 - Giphy → [giphy.com](https://giphy.com)
 - Music Brainz → [musicbrainz.com](https://musicbrainz.com)
+- API Radio Browser [radio-browser.info](https://de1.api.radio-browser.info)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
-
 ---
+
 ## Want to play
 
 Step by step to running on your own host :
@@ -104,9 +105,9 @@ Step by step to running on your own host :
 
 To ensure all features of the application work correctly, you must enable the following APIs in the Google Cloud Console for your Firebase project:
 
--   **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
--   **Cloud Firestore API**: For saving user preferences.
--   **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
--   **YouTube Data API v3**: For the YouTube Randomizer.
--   **Maps Embed API**: For the Google Maps Place Randomizer.
--   **Giphy API**: For the Meme Randomizer.
+- **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
+- **Cloud Firestore API**: For saving user preferences.
+- **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
+- **YouTube Data API v3**: For the YouTube Randomizer.
+- **Maps Embed API**: For the Google Maps Place Randomizer.
+- **Giphy API**: For the Meme Randomizer.
