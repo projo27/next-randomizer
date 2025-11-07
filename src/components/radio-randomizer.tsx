@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -26,13 +27,15 @@ import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
-import { getCountries, getRandomStationByCountry, RadioStation, Country } from '@/services/radio-browser.ts';
+import { getCountries, getRandomStationByCountry, RadioStation, Country } from '@/services/radio-browser';
 import { Slider } from './ui/slider';
+import { useToast } from '@/hooks/use-toast';
 
 function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPlay: () => void, onPause: () => void }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
+  const { toast } = useToast();
 
   useEffect(() => {
     // When the station changes, pause the audio
@@ -44,7 +47,7 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
 
   useEffect(() => {
     if (audioRef.current) {
-        audioRef.current.volume = volume;
+      audioRef.current.volume = volume;
     }
   }, [volume])
 
@@ -55,37 +58,50 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
     } else {
       // Set the source and play. This ensures it works on station change.
       audioRef.current.src = station.url_resolved;
-      audioRef.current.play().catch(e => console.error("Audio play failed:", e));
+      audioRef.current.play().catch(e => {
+        console.error("Audio play failed:", e);
+        toast({
+          variant: 'destructive',
+          title: 'Playback Error',
+          description: 'Could not connect to the radio stream. The station might be offline.'
+        })
+      });
     }
     setIsPlaying(!isPlaying);
   };
-  
+
   return (
     <div className="relative w-full text-center p-4 animate-fade-in space-y-4">
-       <div className="relative h-32 w-32 mx-auto rounded-lg overflow-hidden bg-muted border-2 border-primary/50 shadow-lg flex items-center justify-center">
-            {station.favicon ? (
-                <Image
-                src={station.favicon}
-                alt={`${station.name} logo`}
-                fill
-                className="object-cover"
-                unoptimized
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
-            ) : (
-                <Radio className="h-16 w-16 text-muted-foreground" />
-            )}
-        </div>
+      <div className="relative h-32 w-32 mx-auto rounded-lg overflow-hidden bg-muted border-2 border-primary/50 shadow-lg flex items-center justify-center">
+        {station.favicon ? (
+          <Image
+            src={station.favicon}
+            alt={`${station.name} logo`}
+            fill
+            className="object-cover"
+            unoptimized
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        ) : (
+          <Radio className="h-16 w-16 text-muted-foreground" />
+        )}
+      </div>
       <h3 className="text-2xl font-bold text-primary">{station.name}</h3>
       <div className="flex justify-center items-center gap-2 text-sm text-muted-foreground">
-          <Globe className="h-4 w-4"/>
-          <span>{station.country} ({station.language})</span>
-          <Separator orientation="vertical" className="h-4 mx-2" />
-          <Heart className="h-4 w-4 text-red-500" />
-          <span>{station.votes}</span>
+        <Globe className="h-4 w-4" />
+        <span>{station.country} ({station.language})</span>
+        <Separator orientation="vertical" className="h-4 mx-2" />
+        <Heart className="h-4 w-4 text-red-500" />
+        <span>{station.votes}</span>
       </div>
-      
-      <audio 
+      {station.homepage && (
+        <Button asChild variant="outline">
+          <Link href={station.homepage} target="_blank" rel="noopener noreferrer">
+            Visit Homepage <ExternalLink className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      )}
+      <audio
         ref={audioRef}
         onPlay={() => { setIsPlaying(true); onPlay(); }}
         onPause={() => { setIsPlaying(false); onPause(); }}
@@ -100,35 +116,28 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
           {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
           {isPlaying ? 'Pause' : 'Play'}
         </Button>
-        <div className="flex items-center gap-2 w-32">
-            <Volume2 className="h-5 w-5"/>
-            <Slider
-                value={[volume * 100]}
-                onValueChange={(value) => setVolume(value[0] / 100)}
-                max={100}
-                step={1}
-            />
+        <Separator orientation="vertical" className="h-4 mx-2" />
+        <div className="flex items-center gap-2 w-64">
+          <Volume2 className="h-5 w-5" />
+          <Slider
+            value={[volume * 100]}
+            onValueChange={(value) => setVolume(value[0] / 100)}
+            max={100}
+            step={1}
+          />
         </div>
-        {station.homepage && (
-          <Button asChild variant="outline">
-            <Link href={station.homepage} target="_blank" rel="noopener noreferrer">
-              Visit Homepage <ExternalLink className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        )}
       </div>
     </div>
   );
 }
 
 function Separator({ orientation = 'horizontal', className = '' }: { orientation?: 'horizontal' | 'vertical', className?: string }) {
-    return (
-        <div
-        className={`bg-border ${
-            orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]'
+  return (
+    <div
+      className={`bg-border ${orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]'
         } ${className}`}
-        />
-    );
+    />
+  );
 }
 
 export default function RadioRandomizer() {
@@ -220,12 +229,12 @@ export default function RadioRandomizer() {
             </div>
           )}
           {!isLoading && station && (
-             <RadioPlayer station={station} onPlay={() => {}} onPause={() => {}} />
+            <RadioPlayer station={station} onPlay={() => { }} onPause={() => { }} />
           )}
           {!isLoading && !station && !error && (
             <div className="text-center text-muted-foreground p-4">
-                <Radio className="h-16 w-16 mx-auto mb-4" />
-                <p>Find your next favorite radio station!</p>
+              <Radio className="h-16 w-16 mx-auto mb-4" />
+              <p>Find your next favorite radio station!</p>
             </div>
           )}
           {error && (
