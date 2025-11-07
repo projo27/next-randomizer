@@ -20,17 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Wand2, Radio, Play, Pause, ExternalLink, Globe, Heart } from 'lucide-react';
+import { Wand2, Radio, Play, Pause, ExternalLink, Globe, Heart, Volume2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getCountries, getRandomStationByCountry, RadioStation, Country } from '@/services/radio-browser.ts';
+import { Slider } from './ui/slider';
 
 function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPlay: () => void, onPause: () => void }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.8);
 
   useEffect(() => {
     // When the station changes, pause the audio
@@ -39,6 +41,12 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
       audioRef.current.pause();
     }
   }, [station.stationuuid]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+        audioRef.current.volume = volume;
+    }
+  }, [volume])
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -87,11 +95,20 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
         Your browser does not support the audio element.
       </audio>
 
-      <div className="flex flex-wrap gap-2 justify-center pt-4">
+      <div className="flex flex-wrap gap-4 justify-center items-center pt-4">
         <Button onClick={togglePlay}>
           {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
           {isPlaying ? 'Pause' : 'Play'}
         </Button>
+        <div className="flex items-center gap-2 w-32">
+            <Volume2 className="h-5 w-5"/>
+            <Slider
+                value={[volume * 100]}
+                onValueChange={(value) => setVolume(value[0] / 100)}
+                max={100}
+                step={1}
+            />
+        </div>
         {station.homepage && (
           <Button asChild variant="outline">
             <Link href={station.homepage} target="_blank" rel="noopener noreferrer">
