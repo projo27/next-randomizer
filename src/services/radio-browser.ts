@@ -74,7 +74,7 @@ async function fetchFromApi<T>(endpoint: string, schema: z.ZodType<T>): Promise<
 export async function getCountries(): Promise<Country[]> {
   const countries = await fetchFromApi('countries?order=stationcount&reverse=true', z.array(CountrySchema));
   // Filter out countries with no stations
-  return countries.filter(c => c.stationcount > 0);
+  return countries.filter(c => c.stationcount > 0).sort((a, b) => a.name < b.name ? -1 : 1);
 }
 
 

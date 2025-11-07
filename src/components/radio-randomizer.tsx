@@ -89,7 +89,7 @@ function RadioPlayer({ station, onPlay, onPause }: { station: RadioStation, onPl
       <h3 className="text-2xl font-bold text-primary">{station.name}</h3>
       <div className="flex justify-center items-center gap-2 text-sm text-muted-foreground">
         <Globe className="h-4 w-4" />
-        <span>{station.country} ({station.language})</span>
+        <span>Country : {station.country} {station.language && `— (Language : ${station.language})`}</span>
         <Separator orientation="vertical" className="h-4 mx-2" />
         <Heart className="h-4 w-4 text-red-500" />
         <span>{station.votes}</span>
