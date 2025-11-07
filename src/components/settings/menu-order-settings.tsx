@@ -1,4 +1,3 @@
-
 // src/components/settings/menu-order-settings.tsx
 "use client";
 
@@ -13,10 +12,13 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
+  MouseSensor,
+  KeyboardSensor,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   arrayMove,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
@@ -34,8 +36,19 @@ export function MenuOrderSettings() {
   const [activeItem, setActiveItem] = useState<MenuItemData | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(TouchSensor)
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Prevent page scrolling on mobile when dragging starts
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -57,21 +70,21 @@ export function MenuOrderSettings() {
       const newIndex = allItems.findIndex((item) => item.value === over.id);
 
       const newOrderedItems = arrayMove(allItems, oldIndex, newIndex);
-      
+
       // Update the visibleToolCount based on where the drag ended
       // If an item is dragged from hidden to visible, or vice-versa
       const activeWasVisible = oldIndex < visibleToolCount;
       const newPositionIsVisible = newIndex < visibleToolCount;
-      
+
       let newVisibleCount = visibleToolCount;
       if (activeWasVisible && !newPositionIsVisible) {
-          // Dragged from visible to hidden
-          newVisibleCount = Math.max(1, newIndex);
+        // Dragged from visible to hidden
+        newVisibleCount = Math.max(1, newIndex);
       } else if (!activeWasVisible && newPositionIsVisible) {
-          // Dragged from hidden to visible
-          newVisibleCount = newIndex + 1;
+        // Dragged from hidden to visible
+        newVisibleCount = newIndex + 1;
       }
-      
+
       // Update the count setting
       setVisibleToolCount(newVisibleCount);
 
@@ -82,7 +95,7 @@ export function MenuOrderSettings() {
       });
     }
   };
-  
+
   if (loading) {
     return <Skeleton className="h-64 w-full" />;
   }
@@ -100,7 +113,7 @@ export function MenuOrderSettings() {
         items={allSortableItems.map((item) => item.value)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="p-4 border rounded-lg space-y-2">
+        <div className="p-2 border rounded-lg space-y-2">
           {allSortableItems.map((item, index) => (
             <>
               {index === visibleToolCount && (
