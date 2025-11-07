@@ -1,3 +1,4 @@
+
 // src/components/settings/menu-order-settings.tsx
 "use client";
 
@@ -33,18 +34,8 @@ export function MenuOrderSettings() {
   const [activeItem, setActiveItem] = useState<MenuItemData | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      // Prevent page scrolling on mobile when dragging starts
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    }),
+    useSensor(PointerSensor),
+    useSensor(TouchSensor)
   );
 
   const handleDragStart = (event: DragStartEvent) => {
