@@ -180,7 +180,7 @@ export default function TruthOrDareRandomizer() {
             <div className="relative min-h-[120px] flex items-center justify-center p-4 bg-muted/50 rounded-lg">
                 {(isLoading.dare || displayDare) ? (
                     <div className="text-center animate-fade-in">
-                        <h3 className="text-xl md:text-2xl font-bold text-red-200 mb-2">Dare</h3>
+                        <h3 className="text-xl md:text-2xl font-bold text-destructive dark:text-red-500 mb-2">Dare</h3>
                         <p className="text-lg md:text-xl italic">"{displayDare}"</p>
                     </div>
                 ) : (

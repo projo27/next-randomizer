@@ -28,6 +28,7 @@ import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
 import SportRandomizer from "@/components/sport-randomizer";
 import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
+import RadioRandomizer from "@/components/radio-randomizer";
 
 import {
   ListTodo,
@@ -59,6 +60,7 @@ import {
   Laugh,
   Music,
   FlameKindling,
+  Radio,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -223,6 +225,14 @@ export const triggerList = [
     hidden: false,
     icon: <Music className="h-5 w-5" />,
     content: <SongRandomizer />,
+    contentGuard: false,
+  },
+   {
+    value: "radio",
+    text: "Radio",
+    hidden: false,
+    icon: <Radio className="h-5 w-5" />,
+    content: <RadioRandomizer />,
     contentGuard: false,
   },
   {

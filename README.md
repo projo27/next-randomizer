@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.6 : Radio Channel Randomizer release
 - v1.1.5 : Truth or Dare Randomizer release
 - v1.1.4 : Meme Randomizer and Song Randomizer release
 - v1.1.3 : Google Maps Place Randomizer release
@@ -49,7 +50,7 @@
 - Random Places on Google Maps ✅
 - Movie Randomizer
 - Song Randomizer ✅
-- Radio Channel Randomizer
+- Radio Channel Randomizer ✅
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
 - IOS APK Randomizer
@@ -109,4 +110,3 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
-
