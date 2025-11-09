@@ -19,10 +19,10 @@ import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomPlant, PlantResult } from '@/app/actions/plant-randomizer-action';
-import { Badge } from './ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
-function PlantDetails({ label, value, tooltip }: { label: string, value: string, tooltip?: string }) {
+function PlantDetails({ label, value, tooltip }: { label: string, value: string | number | undefined | null, tooltip?: string }) {
+    if (!value) return null;
     return (
         <div className="flex flex-col">
             <div className="flex items-center gap-1">
@@ -40,7 +40,7 @@ function PlantDetails({ label, value, tooltip }: { label: string, value: string,
                     </TooltipProvider>
                 )}
             </div>
-            <p className="text-md font-semibold">{value}</p>
+            <p className="text-md font-semibold capitalize">{value.toString()}</p>
         </div>
     );
 }
@@ -49,7 +49,7 @@ export default function PlantRandomizer() {
   const [result, setResult] = useState<PlantResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(4000);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(5000); // Longer timeout for external API
   const { user } = useAuth();
 
   const handleRandomize = async () => {
@@ -78,7 +78,7 @@ export default function PlantRandomizer() {
       <CardHeader>
         <CardTitle>Plant Randomizer</CardTitle>
         <CardDescription>
-          Discover a random plant from the vast encyclopedia of nature.
+          Discover a random plant from a vast botanical database. Powered by Trefle.io.
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[400px] flex flex-col items-center justify-center">
@@ -96,30 +96,23 @@ export default function PlantRandomizer() {
           <div className="w-full animate-fade-in space-y-4">
             <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg">
                <Image
-                    src={result.imageUrl}
-                    alt={result.name}
+                    src={result.image_url || `https://picsum.photos/seed/${result.id}/800/600`}
+                    alt={result.common_name || result.scientific_name}
                     fill
                     className="object-cover"
-                    data-ai-hint={result.imageSearchTerm}
+                    data-ai-hint={`${result.genus} ${result.family}`}
                 />
             </div>
             <div className="space-y-4">
-                <h3 className="text-3xl font-bold text-primary">{result.name}</h3>
-                <p className="text-sm text-muted-foreground italic">{result.scientificName}</p>
+                <h3 className="text-3xl font-bold text-primary capitalize">{result.common_name || result.scientific_name}</h3>
+                <p className="text-sm text-muted-foreground italic">{result.scientific_name}</p>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 border-t pt-4">
-                    <PlantDetails label="Family" value={result.family} tooltip="A group of related genera." />
-                    <PlantDetails label="Order" value={result.order} tooltip="A group of related families." />
+                    <PlantDetails label="Family" value={result.family_common_name || result.family} />
+                    <PlantDetails label="Genus" value={result.genus} />
+                    <PlantDetails label="Year Discovered" value={result.year} />
                 </div>
 
-                <div>
-                    <Label className="text-sm text-muted-foreground">Characteristics</Label>
-                    <p>{result.characteristics}</p>
-                </div>
-                 <div>
-                    <Label className="text-sm text-muted-foreground">Benefits & Uses</Label>
-                    <p>{result.benefits}</p>
-                </div>
             </div>
           </div>
         )}
@@ -146,8 +139,8 @@ export default function PlantRandomizer() {
           {isLoading
             ? 'Searching the wild...'
             : isRateLimited
-            ? 'Please wait...'
-            : 'Randomize Plant'}
+              ? 'Please wait...'
+              : 'Randomize Plant'}
         </Button>
       </CardFooter>
     </Card>

@@ -1,37 +1,18 @@
 'use server';
 
-import { PLANT_DATA, Plant } from '@/lib/plant-data';
-import { searchPhotos } from '@/services/unsplash';
+import { getRandomPlantFromTrefle, TreflePlant } from '@/services/trefle';
 
-export type PlantResult = Plant & {
-  imageUrl: string;
-};
+export type PlantResult = TreflePlant;
 
 /**
- * Gets a random plant from the local data and finds a suitable image for it.
- * @returns A promise that resolves to a PlantResult object.
+ * Gets a random plant from the Trefle API.
+ * @returns A promise that resolves to a PlantResult object or null if none is found.
  */
-export async function getRandomPlant(): Promise<PlantResult> {
-  if (PLANT_DATA.length === 0) {
-    throw new Error('No plant data is available.');
+export async function getRandomPlant(): Promise<PlantResult | null> {
+  const plant = await getRandomPlantFromTrefle();
+  if (!plant) {
+    throw new Error('Could not retrieve a random plant from the API. Please try again.');
   }
 
-  // 1. Select a random plant from our curated list
-  const randomIndex = Math.floor(Math.random() * PLANT_DATA.length);
-  const selectedPlant = PLANT_DATA[randomIndex];
-
-  // 2. Search for a photo of the plant using the Unsplash service
-  const photoUrls = await searchPhotos(selectedPlant.imageSearchTerm);
-  
-  let imageUrl = `https://picsum.photos/seed/${randomIndex}/800/600`; // Fallback
-  if (photoUrls && photoUrls.length > 0) {
-    // Pick a random photo from the results for variety
-    imageUrl = photoUrls[Math.floor(Math.random() * photoUrls.length)];
-  }
-
-  // 3. Return the combined result
-  return {
-    ...selectedPlant,
-    imageUrl: imageUrl,
-  };
+  return plant;
 }
