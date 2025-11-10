@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     GIPHY_API_KEY: process.env.GIPHY_API_KEY,
+    THESPORTSDB_API_KEY: process.env.THESPORTSDB_API_KEY,
+    TREFLE_API_KEY: process.env.TREFLE_API_KEY,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -98,6 +100,30 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "coverartarchive.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "coverartarchive.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.thesportsdb.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "r2.thesportsdb.com",
+        port: "",
+        pathname: "/**",
+      },
+       {
+        protocol: "https",
+        hostname: "bs.floristic.org",
         port: "",
         pathname: "/**",
       },

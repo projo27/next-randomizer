@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
 - v1.1.5 : Truth or Dare Randomizer release
 - v1.1.4 : Meme Randomizer and Song Randomizer release
@@ -42,7 +43,7 @@
 - Random Poetry
 - Random Quote ✅
 - Random name generator
-- Plant
+- Plant ✅
 - Animalia
 - Object / Things Randomizer
 - Random word by language
