@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { searchPhotos } from './unsplash';
 
 const TREFLE_API_URL = 'https://trefle.io/api/v1';
+const TREFLE_LAST_PAGE = 21863;
 
 const PlantSchema = z.object({
   id: z.number(),
@@ -14,6 +15,8 @@ const PlantSchema = z.object({
   family: z.string(),
   family_common_name: z.string().nullable(),
   image_url: z.string().url().nullable(),
+  bibliography: z.string().nullable(),
+  author: z.string().nullable(),
 });
 
 const PlantListSchema = z.object({
@@ -49,6 +52,7 @@ async function fetchFromTrefle<T>(
     }
 
     const data = await response.json();
+    console.log(url, data);
     const validation = schema.safeParse(data);
     if (!validation.success) {
       console.error('Trefle API Zod validation error:', validation.error.issues);
@@ -70,8 +74,9 @@ async function fetchFromTrefle<T>(
  */
 export async function getRandomPlantFromTrefle(): Promise<TreflePlant | null> {
   // Max page number for common plants is ~6800. Let's use a safe lower number.
-  const randomPage = Math.floor(Math.random() * 5000) + 1;
+  const randomPage = Math.floor(Math.random() * TREFLE_LAST_PAGE) + 1;
   const plantListResponse = await fetchFromTrefle(`plants?page=${randomPage}`, PlantListSchema);
+  console.log(plantListResponse);
 
   if (!plantListResponse || plantListResponse.data.length === 0) {
     return null;
@@ -82,7 +87,7 @@ export async function getRandomPlantFromTrefle(): Promise<TreflePlant | null> {
 
   // If the plant from Trefle doesn't have an image, try to fetch one from Unsplash
   if (!randomPlant.image_url) {
-      constsearchTerm = randomPlant.common_name || randomPlant.scientific_name;
+      const searchTerm = randomPlant.common_name || randomPlant.scientific_name;
       const photos = await searchPhotos(searchTerm);
       if (photos.length > 0) {
           randomPlant.image_url = photos[Math.floor(Math.random() * photos.length)];
