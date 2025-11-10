@@ -21,10 +21,10 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
-    YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
-    UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
+    UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
     GIPHY_API_KEY: process.env.GIPHY_API_KEY,
     THESPORTSDB_API_KEY: process.env.THESPORTSDB_API_KEY,
   },
@@ -119,6 +119,18 @@ const nextConfig: NextConfig = {
         hostname: "r2.thesportsdb.com",
         port: "",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "bs.plantnet.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: 'https', // Specify the protocol (http or https)
+        hostname: '*.cloudfront.net', // Use a wildcard for the subdomain
+        port: '', // Leave empty if no specific port is used
+        pathname: '/**', // Allow any path for the image
       },
     ],
   },

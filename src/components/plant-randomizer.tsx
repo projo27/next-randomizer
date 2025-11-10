@@ -111,6 +111,8 @@ export default function PlantRandomizer() {
                     <PlantDetails label="Family" value={result.family_common_name || result.family} />
                     <PlantDetails label="Genus" value={result.genus} />
                     <PlantDetails label="Year Discovered" value={result.year} />
+                    { result.author && <PlantDetails label="Author" value={result.author} /> }
+                    { result.bibliography && <PlantDetails label="Bibliography" value={result.bibliography} /> }
                 </div>
 
             </div>
