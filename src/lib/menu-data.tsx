@@ -30,6 +30,7 @@ import SportRandomizer from "@/components/sport-randomizer";
 import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
 import RadioRandomizer from "@/components/radio-randomizer";
 import PlantRandomizer from "@/components/plant-randomizer";
+import ActivityRandomizer from "@/components/activity-randomizer";
 
 import {
   ListTodo,
@@ -63,6 +64,7 @@ import {
   FlameKindling,
   Radio,
   Sprout,
+  ClipboardCheck,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -213,12 +215,20 @@ export const triggerList = [
     content: <GiftRandomizer />,
     contentGuard: false,
   },
-   {
-    value: 'plant',
-    text: 'Plant',
+  {
+    value: "plant",
+    text: "Plant",
     hidden: false,
     icon: <Sprout className="h-5 w-5" />,
     content: <PlantRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "activity",
+    text: "Today's Activity",
+    hidden: false,
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    content: <ActivityRandomizer />,
     contentGuard: false,
   },
   {
@@ -237,7 +247,7 @@ export const triggerList = [
     content: <SongRandomizer />,
     contentGuard: false,
   },
-   {
+  {
     value: "radio",
     text: "Radio",
     hidden: false,

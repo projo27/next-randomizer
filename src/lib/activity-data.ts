@@ -1,0 +1,61 @@
+export const ACTIVITIES = [
+  // Level 1: Very Light & Silly
+  { level: 1, activity: "Say 'hi' to at least two strangers you meet today." },
+  { level: 1, activity: "Give a genuine compliment to a friend or family member." },
+  { level: 1, activity: "Try to balance a spoon on your nose for 10 seconds." },
+  { level: 1, activity: "Take a picture of something interesting you see on your walk." },
+  { level: 1, activity: "Listen to a song from a genre you've never tried before." },
+  { level: 1, activity: "Spend 5 minutes stretching." },
+  { level: 1, activity: "Draw a silly doodle of your favorite animal." },
+  { level: 1, activity: "Write down one thing you are grateful for today." },
+  { level: 1, activity: "Watch a short, funny video online." },
+  { level: 1, activity: "Smile at yourself in the mirror." },
+
+  // Level 2: Light & Easy
+  { level: 2, activity: "Read at least 10 pages of a book." },
+  { level: 2, activity: "Go for a 15-minute walk outside." },
+  { level: 2, activity: "Tidy up one small area of your room or desk." },
+  { level: 2, activity: "Try a simple, new recipe for a snack or drink." },
+  { level: 2, activity: "Call or text a friend you haven't spoken to in a while." },
+  { level: 2, activity: "Write a short journal entry about your day." },
+  { level: 2, activity: "Do a quick 10-minute guided meditation." },
+  { level: 2, activity: "Learn how to say 'hello' and 'thank you' in a new language." },
+  { level: 2, activity: "Organize the apps on your phone's home screen." },
+  { level: 2, activity: "Water your plants or a plant in your neighborhood." },
+
+  // Level 3: Moderate
+  { level: 3, activity: "Try a 30-minute home workout video." },
+  { level: 3, activity: "Cook a full meal from a recipe you've never tried before." },
+  { level: 3, activity: "Visit a local park or library." },
+  { level: 3, activity: "Spend an hour on a hobby you enjoy (e.g., painting, coding, music)." },
+  { level: 3, activity: "Deep clean one room in your house." },
+  { level: 3, activity: "Watch a documentary on a topic you know nothing about." },
+  { level:3, activity: "Plan out your goals for the upcoming week." },
+  { level: 3, activity: "Go to a coffee shop and read or people-watch for an hour." },
+  { level: 3, activity: "Start a free online course on a subject that interests you." },
+  { level: 3, activity: "Write a letter to your future self." },
+
+  // Level 4: Challenging
+  { level: 4, activity: "Go for a jog or run for at least 2 kilometers (or 1.2 miles)." },
+  { level: 4, activity: "Visit a museum or art gallery you've never been to." },
+  { level: 4, activity: "Have a 'no-screen' evening for at least 3 hours before bed." },
+  { level: 4, activity: "Learn the basics of a new skill, like juggling or a card trick." },
+  { level: 4, activity: "Do a major declutter of your closet or a storage area." },
+  { level: 4, activity: "Volunteer for a local cause for a couple of hours." },
+  { level: 4, activity: "Try to recreate a complex dish you saw on a cooking show." },
+  { level: 4, activity: "Start a small DIY project, like building a shelf or painting a piece of furniture." },
+  { level: 4, activity: "Take a different route for your commute or daily walk and explore a new area." },
+  { level: 4, activity: "Strike up a conversation with a barista or cashier and ask them about their day." },
+
+  // Level 5: Adventurous / Heavy
+  { level: 5, activity: "Go for a hike on a local trail or go to a nearby mountain." },
+  { level: 5, activity: "Take a day trip to a nearby town or city you've never explored." },
+  { level: 5, activity: "Sign up for a class or workshop (e.g., pottery, dancing, martial arts)." },
+  { level: 5, activity: "Plan and start a long-term project, like writing a story or creating a website." },
+  { level: 5, activity: "Completely rearrange the furniture in one room for a fresh look." },
+  { level: 5, activity: "Perform at an open mic night or share your creative work online." },
+  { level: 5, activity: "Train for and sign up for a local 5k run." },
+  { level: 5, activity: "Spend a day volunteering for a cause you're passionate about." },
+  { level: 5, activity: "Face a small fear (e.g., public speaking, trying a food you dislike)." },
+  { level: 5, activity: "Learn and perform a full song on an instrument or through singing." },
+];
