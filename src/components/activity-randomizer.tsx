@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -18,8 +19,11 @@ import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomActivity, Activity } from '@/app/actions/activity-randomizer-action';
+import { ACTIVITIES } from '@/lib/activity-data';
 import { Slider } from './ui/slider';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings } from '@/context/SettingsContext';
+import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
 
 const LEVEL_DESCRIPTIONS: { [key: number]: string } = {
   1: 'Very Light & Silly',
@@ -32,29 +36,65 @@ const LEVEL_DESCRIPTIONS: { [key: number]: string } = {
 export default function ActivityRandomizer() {
   const [level, setLevel] = useState(3);
   const [result, setResult] = useState<Activity | null>(null);
+  const [displayActivity, setDisplayActivity] = useState<Activity | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { animationDuration } = useSettings();
+  const { playAudio, stopAudio } = useRandomizerAudio();
+  const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+   useEffect(() => {
+    // Cleanup interval on component unmount or when loading stops
+    return () => {
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_activity_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
+    
     triggerRateLimit();
+    playAudio();
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setIsCopied(false);
+
+    // Start shuffling animation
+    animationIntervalRef.current = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * ACTIVITIES.length);
+      setDisplayActivity(ACTIVITIES[randomIndex]);
+    }, 100);
 
     try {
       const activityResult = await getRandomActivity(level);
-      setResult(activityResult);
+      
+      // Stop animation after the duration and show the final result
+      setTimeout(() => {
+        if (animationIntervalRef.current) {
+          clearInterval(animationIntervalRef.current);
+        }
+        setResult(activityResult);
+        setDisplayActivity(activityResult);
+        setIsLoading(false);
+        stopAudio();
+      }, animationDuration * 1000);
+
     } catch (err: any) {
+      if (animationIntervalRef.current) {
+        clearInterval(animationIntervalRef.current);
+      }
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
-    } finally {
       setIsLoading(false);
+      stopAudio();
     }
   };
 
@@ -68,6 +108,8 @@ export default function ActivityRandomizer() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
+
+  const activityToShow = isLoading ? displayActivity : result;
 
   return (
     <Card className="w-full shadow-lg border-none">
@@ -98,34 +140,30 @@ export default function ActivityRandomizer() {
         </div>
         
         <div className="w-full flex-grow flex items-center justify-center p-4">
-            {isLoading && (
-            <div className="w-full max-w-lg space-y-2">
-                <Skeleton className="h-8 w-3/4 mx-auto" />
-                <Skeleton className="h-4 w-1/2 mx-auto" />
-            </div>
+            {activityToShow && (
+              <div className="relative w-full text-center p-4 animate-fade-in">
+                  <blockquote className="text-2xl md:text-3xl font-bold text-accent italic">
+                  "{activityToShow.activity}"
+                  </blockquote>
+                  {!isLoading && result && (
+                    <div className="absolute -top-2 right-0">
+                        <Button variant="ghost" size="icon" onClick={handleCopy}>
+                        {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+                        </Button>
+                    </div>
+                  )}
+              </div>
             )}
-            {!isLoading && result && (
-            <div className="relative w-full text-center p-4 animate-fade-in">
-                <blockquote className="text-2xl md:text-3xl font-bold text-accent italic">
-                "{result.activity}"
-                </blockquote>
-                <div className="absolute -top-2 right-0">
-                    <Button variant="ghost" size="icon" onClick={handleCopy}>
-                    {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                    </Button>
-                </div>
-            </div>
-            )}
-            {!isLoading && !result && !error && (
-            <p className="text-muted-foreground text-center">
-                Adjust the slider and click the button to get a random activity.
-            </p>
+            {!isLoading && !activityToShow && !error && (
+              <p className="text-muted-foreground text-center">
+                  Adjust the slider and click the button to get a random activity.
+              </p>
             )}
             {error && (
-            <Alert variant="destructive">
-                <AlertTitle>Oops!</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+              <Alert variant="destructive">
+                  <AlertTitle>Oops!</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
         </div>
 
