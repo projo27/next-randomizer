@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.9 : Science Fact Randomizer (powered by AI) release
 - v1.1.8 : Today's Activity Randomizer release
 - v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
@@ -54,6 +55,7 @@
 - Movie Randomizer
 - Song Randomizer ✅
 - Radio Channel Randomizer ✅
+- Science Fact Randomizer ✅
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
 - IOS APK Randomizer
@@ -113,4 +115,3 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
-```

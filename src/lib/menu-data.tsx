@@ -31,6 +31,7 @@ import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
 import RadioRandomizer from "@/components/radio-randomizer";
 import PlantRandomizer from "@/components/plant-randomizer";
 import ActivityRandomizer from "@/components/activity-randomizer";
+import ScienceFactRandomizer from "@/components/science-fact-randomizer";
 
 import {
   ListTodo,
@@ -65,6 +66,7 @@ import {
   Radio,
   Sprout,
   ClipboardCheck,
+  FlaskConical,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -270,6 +272,14 @@ export const triggerList = [
     icon: <FlameKindling className="h-5 w-5" />,
     content: <TruthOrDareRandomizer />,
     contentGuard: false,
+  },
+  {
+    value: "science-fact",
+    text: "Science Fact",
+    hidden: false,
+    icon: <FlaskConical className="h-5 w-5" />,
+    content: <ScienceFactRandomizer />,
+    contentGuard: true,
   },
   // Not Showed, feature not ready
   // {
