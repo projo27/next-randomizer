@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.8 : Today's Activity Randomizer release
 - v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
 - v1.1.5 : Truth or Dare Randomizer release
@@ -38,6 +39,7 @@
 - OOTD - Fashion Out of The Day Randomizer (powered by runway.ai) ✅
 - Travel City Randomizer (powered by gemini.ai and pixabay) ✅
 - Truth or Dare Question Randomizer ✅
+- Today's Activity Randomizer ✅
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
