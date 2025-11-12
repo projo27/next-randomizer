@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.1.9 : Science Fact Randomizer (powered by AI) release
 - v1.1.8 : Today's Activity Randomizer release
 - v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
@@ -54,6 +55,7 @@
 - Movie Randomizer
 - Song Randomizer ✅
 - Radio Channel Randomizer ✅
+- Science Fact Randomizer ✅
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
 - IOS APK Randomizer
@@ -108,9 +110,9 @@ Step by step to running on your own host :
 
 To ensure all features of the application work correctly, you must enable the following APIs in the Google Cloud Console for your Firebase project:
 
-- **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
-- **Cloud Firestore API**: For saving user preferences.
-- **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
-- **YouTube Data API v3**: For the YouTube Randomizer.
-- **Maps Embed API**: For the Google Maps Place Randomizer.
-- **Giphy API**: For the Meme Randomizer.
+-   **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
+-   **Cloud Firestore API**: For saving user preferences.
+-   **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
+-   **YouTube Data API v3**: For the YouTube Randomizer.
+-   **Maps Embed API**: For the Google Maps Place Randomizer.
+-   **Giphy API**: For the Meme Randomizer.
