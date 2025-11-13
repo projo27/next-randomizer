@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Wand2, BookOpen, ExternalLink } from 'lucide-react';
+import { Wand2, BookOpen, ExternalLink, Calendar, Users, FileText, Globe } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
@@ -28,6 +28,7 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomBook } from '@/app/actions/book-randomizer-action';
 import type { BookResult } from '@/types/book-result';
+import { LANGUAGE_CODES } from '@/lib/language-codes';
 
 const GENRES = [
   { value: 'all', label: 'All Genres (Random)' },
@@ -47,10 +48,11 @@ const GENRES = [
 
 export default function BookRandomizer() {
   const [genre, setGenre] = useState('all');
+  const [language, setLanguage] = useState('all');
   const [result, setResult] = useState<BookResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(5000); // Longer timeout for external API
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
   const { user } = useAuth();
 
   const handleRandomize = async () => {
@@ -62,11 +64,11 @@ export default function BookRandomizer() {
     setResult(null);
 
     try {
-      const bookResult = await getRandomBook(genre);
+      const bookResult = await getRandomBook(genre, language);
       if (bookResult) {
         setResult(bookResult);
       } else {
-        setError('Could not find a book for this genre. Please try again or select another genre.');
+        setError('Could not find a book for this criteria. Please try again or select other options.');
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred while fetching a book.');
@@ -81,28 +83,38 @@ export default function BookRandomizer() {
       <CardHeader>
         <CardTitle>Book Randomizer</CardTitle>
         <CardDescription>
-          Discover a random book from a selected genre. Powered by Open Library.
+          Discover a random book from a selected genre and language. Powered by Open Library.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5 mx-auto">
-          <Label htmlFor="genre-select">Choose a Genre</Label>
-          <Select
-            value={genre}
-            onValueChange={setGenre}
-            disabled={isLoading || isRateLimited}
-          >
-            <SelectTrigger id="genre-select">
-              <SelectValue placeholder="Select a Genre" />
-            </SelectTrigger>
-            <SelectContent>
-              {GENRES.map((g) => (
-                <SelectItem key={g.value} value={g.value}>
-                  {g.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="genre-select">Choose a Genre</Label>
+            <Select value={genre} onValueChange={setGenre} disabled={isLoading || isRateLimited}>
+              <SelectTrigger id="genre-select">
+                <SelectValue placeholder="Select a Genre" />
+              </SelectTrigger>
+              <SelectContent>
+                {GENRES.map((g) => (
+                  <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="language-select">Choose a Language</Label>
+            <Select value={language} onValueChange={setLanguage} disabled={isLoading || isRateLimited}>
+              <SelectTrigger id="language-select">
+                <SelectValue placeholder="Select Language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Languages</SelectItem>
+                {LANGUAGE_CODES.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="min-h-[400px] flex items-center justify-center">
@@ -113,37 +125,44 @@ export default function BookRandomizer() {
                 <Skeleton className="h-8 w-3/4" />
                 <Skeleton className="h-6 w-1/2" />
                 <div className="space-y-2 pt-4">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6" />
                 </div>
+                 <div className="grid grid-cols-2 gap-4 pt-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                 </div>
               </div>
             </div>
           )}
           {!isLoading && result && (
             <div className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 animate-fade-in p-4 border rounded-lg bg-card/50">
-                <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden border">
-                    <Image
-                        src={result.coverUrl}
-                        alt={`Cover of ${result.title}`}
-                        fill
-                        className="object-cover"
-                    />
+              <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden border">
+                <Image src={result.coverUrl} alt={`Cover of ${result.title}`} fill className="object-cover" />
+              </div>
+              <div className="flex flex-col">
+                <h3 className="text-2xl font-bold text-primary">{result.title}</h3>
+                <p className="text-md text-muted-foreground mt-1 mb-3 flex items-center gap-2">
+                  <Users className="h-4 w-4" /> {result.author}
+                </p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-card-foreground/80 mb-4">
+                  {result.publishDate && <p className="flex items-center gap-2"><Calendar className="h-4 w-4 text-accent"/> {result.publishDate}</p>}
+                  {result.publisher && <p className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent"/> {result.publisher}</p>}
+                  {result.language && <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-accent"/> {LANGUAGE_CODES.find(l => l.code === result.language)?.name || result.language}</p>}
+                  {result.pageCount && <p className="flex items-center gap-2"><FileText className="h-4 w-4 text-accent"/> {result.pageCount} pages</p>}
                 </div>
-                <div className="space-y-3">
-                    <h3 className="text-2xl font-bold text-primary">{result.title}</h3>
-                    <p className="text-md text-muted-foreground">by {result.author}</p>
-                    <p className="text-sm text-card-foreground/80 pt-2 line-clamp-6">
-                        {result.description || 'No description available.'}
-                    </p>
-                    <div className="pt-4">
-                        <Button asChild>
-                            <Link href={result.openLibraryUrl} target="_blank" rel="noopener noreferrer">
-                                View on Open Library <ExternalLink className="ml-2 h-4 w-4" />
-                            </Link>
-                        </Button>
-                    </div>
+                <p className="text-sm text-card-foreground/80 line-clamp-6 flex-grow">
+                  {result.description || 'No description available.'}
+                </p>
+                <div className="pt-4 mt-auto">
+                  <Button asChild>
+                    <Link href={result.openLibraryUrl} target="_blank" rel="noopener noreferrer">
+                      View on Open Library <ExternalLink className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
+              </div>
             </div>
           )}
           {!isLoading && !result && !error && (
@@ -161,17 +180,9 @@ export default function BookRandomizer() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          onClick={handleRandomize}
-          disabled={isLoading || isRateLimited}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-        >
+        <Button onClick={handleRandomize} disabled={isLoading || isRateLimited} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
           <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading
-            ? 'Finding a Book...'
-            : isRateLimited
-            ? 'Please wait...'
-            : 'Randomize Book'}
+          {isLoading ? 'Finding a Book...' : isRateLimited ? 'Please wait...' : 'Randomize Book'}
         </Button>
       </CardFooter>
     </Card>
