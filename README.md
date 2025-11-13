@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.0 : Book Randomizer (powered by OpenLibrary API) release
 - v1.1.9 : Science Fact Randomizer (powered by AI) release
 - v1.1.8 : Today's Activity Randomizer release
 - v1.1.7 : Plant Randomizer release
@@ -53,6 +54,7 @@
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
 - Movie Randomizer
+- Book Randomizer ✅
 - Song Randomizer ✅
 - Radio Channel Randomizer ✅
 - Science Fact Randomizer ✅

@@ -32,6 +32,7 @@ import RadioRandomizer from "@/components/radio-randomizer";
 import PlantRandomizer from "@/components/plant-randomizer";
 import ActivityRandomizer from "@/components/activity-randomizer";
 import ScienceFactRandomizer from "@/components/science-fact-randomizer";
+import BookRandomizer from "@/components/book-randomizer";
 
 import {
   ListTodo,
@@ -67,6 +68,7 @@ import {
   Sprout,
   ClipboardCheck,
   FlaskConical,
+  BookOpen,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -231,6 +233,14 @@ export const triggerList = [
     hidden: false,
     icon: <ClipboardCheck className="h-5 w-5" />,
     content: <ActivityRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'book',
+    text: 'Book',
+    hidden: false,
+    icon: <BookOpen className="h-5 w-5" />,
+    content: <BookRandomizer />,
     contentGuard: false,
   },
   {
