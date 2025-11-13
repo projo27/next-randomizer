@@ -13,13 +13,20 @@ const ALL_GENRES = [
 ];
 
 // --- Zod Schemas for API validation ---
+const EditionSchema = z.object({
+  isbn_10: z.array(z.string()).optional(),
+  isbn_13: z.array(z.string()).optional(),
+  publishers: z.array(z.string()).optional(),
+  number_of_pages: z.number().optional(),
+});
+
 const SubjectWorkSchema = z.object({
   key: z.string(),
   title: z.string(),
   authors: z.array(z.object({ name: z.string() })).min(1),
   cover_id: z.number().nullable().optional(),
   first_publish_year: z.number().optional(),
-  language: z.array(z.string()).optional(),
+  edition_keys: z.array(z.string()).optional(), // OLID keys
 });
 
 const SubjectResponseSchema = z.object({
@@ -32,8 +39,6 @@ const WorkResponseSchema = z.object({
     z.string(),
     z.object({ type: z.string(), value: z.string() })
   ]).optional(),
-  publishers: z.array(z.string()).optional(),
-  number_of_pages: z.number().optional(),
 });
 
 
@@ -54,7 +59,7 @@ async function fetchFromApi(endpoint: string) {
 }
 
 // --- Server Action to get a random book ---
-export async function getRandomBook(genre: string, languageCode: string): Promise<BookResult | null> {
+export async function getRandomBook(genre: string): Promise<BookResult | null> {
   let selectedGenre = genre;
 
   if (selectedGenre === 'all') {
@@ -71,11 +76,8 @@ export async function getRandomBook(genre: string, languageCode: string): Promis
     return null;
   }
 
-  // Filter works by cover and language if specified
-  let works = subjectValidation.data.works.filter(work => work.cover_id);
-  if (languageCode !== 'all' && works.length > 0) {
-    works = works.filter(work => work.language?.includes(languageCode));
-  }
+  // Filter works to ensure they have a cover
+  let works = subjectValidation.data.works.filter(work => work.cover_id && work.edition_keys && work.edition_keys.length > 0);
   
   if (works.length === 0) {
     return null; // No books found with the specified criteria
@@ -83,27 +85,42 @@ export async function getRandomBook(genre: string, languageCode: string): Promis
 
   const randomWork = works[Math.floor(Math.random() * works.length)];
 
-  // 3. Fetch the work's details to get description, publisher, and page count
+  // 3. Fetch details for the work and one of its editions
   const workKey = randomWork.key;
+  const editionKey = randomWork.edition_keys![0]; // Get the first edition OLID
+  
   let description: string | null = null;
   let publisher: string | null = null;
   let pageCount: number | null = null;
-  
+  let isbn: string | null = null;
+
   try {
-    const workData = await fetchFromApi(`${workKey}.json`);
+    const [workData, editionData] = await Promise.all([
+        fetchFromApi(`${workKey}.json`),
+        fetchFromApi(`/books/${editionKey}.json`)
+    ]);
+
+    // Parse work data for description
     const workValidation = WorkResponseSchema.safeParse(workData);
-    if (workValidation.success) {
-      const data = workValidation.data;
-      if (data.description) {
-        description = typeof data.description === 'string' ? data.description : data.description.value;
+    if (workValidation.success && workValidation.data.description) {
+        const desc = workValidation.data.description;
+        description = typeof desc === 'string' ? desc : desc.value;
         description = description.split(/[\n\r]----/)[0].trim();
-      }
-      publisher = data.publishers?.[0] || null;
-      pageCount = data.number_of_pages || null;
     }
+
+    // Parse edition data for ISBN, publisher, page count
+    const editionValidation = EditionSchema.safeParse(editionData);
+    if (editionValidation.success) {
+        const data = editionValidation.data;
+        isbn = data.isbn_13?.[0] || data.isbn_10?.[0] || null;
+        publisher = data.publishers?.[0] || null;
+        pageCount = data.number_of_pages || null;
+    }
+
   } catch (e) {
     console.warn(`Could not fetch full details for ${workKey}`);
   }
+
 
   // 4. Construct the final result object
   const coverUrl = `https://covers.openlibrary.org/b/id/${randomWork.cover_id}-L.jpg`;
@@ -117,7 +134,7 @@ export async function getRandomBook(genre: string, languageCode: string): Promis
     description,
     publishDate: randomWork.first_publish_year?.toString() || null,
     publisher,
-    language: randomWork.language?.[0] || null,
+    isbn,
     pageCount,
   };
 }

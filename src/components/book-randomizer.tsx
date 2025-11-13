@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Wand2, BookOpen, ExternalLink, Calendar, Users, FileText, Globe } from 'lucide-react';
+import { Wand2, BookOpen, ExternalLink, Calendar, Users, FileText, Barcode } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
@@ -28,7 +28,6 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomBook } from '@/app/actions/book-randomizer-action';
 import type { BookResult } from '@/types/book-result';
-import { LANGUAGE_CODES } from '@/lib/language-codes';
 
 const GENRES = [
   { value: 'all', label: 'All Genres (Random)' },
@@ -48,7 +47,6 @@ const GENRES = [
 
 export default function BookRandomizer() {
   const [genre, setGenre] = useState('all');
-  const [language, setLanguage] = useState('all');
   const [result, setResult] = useState<BookResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +62,7 @@ export default function BookRandomizer() {
     setResult(null);
 
     try {
-      const bookResult = await getRandomBook(genre, language);
+      const bookResult = await getRandomBook(genre);
       if (bookResult) {
         setResult(bookResult);
       } else {
@@ -83,40 +81,24 @@ export default function BookRandomizer() {
       <CardHeader>
         <CardTitle>Book Randomizer</CardTitle>
         <CardDescription>
-          Discover a random book from a selected genre and language. Powered by Open Library.
+          Discover a random book from a selected genre. Powered by Open Library.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="genre-select">Choose a Genre</Label>
-            <Select value={genre} onValueChange={setGenre} disabled={isLoading || isRateLimited}>
-              <SelectTrigger id="genre-select">
-                <SelectValue placeholder="Select a Genre" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENRES.map((g) => (
-                  <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="language-select">Choose a Language</Label>
-            <Select value={language} onValueChange={setLanguage} disabled={isLoading || isRateLimited}>
-              <SelectTrigger id="language-select">
-                <SelectValue placeholder="Select Language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Languages</SelectItem>
-                {LANGUAGE_CODES.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>{lang.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="genre-select">Choose a Genre</Label>
+          <Select value={genre} onValueChange={setGenre} disabled={isLoading || isRateLimited}>
+            <SelectTrigger id="genre-select">
+              <SelectValue placeholder="Select a Genre" />
+            </SelectTrigger>
+            <SelectContent>
+              {GENRES.map((g) => (
+                <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-
+        
         <div className="min-h-[400px] flex items-center justify-center">
           {isLoading && (
             <div className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4">
@@ -149,8 +131,8 @@ export default function BookRandomizer() {
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-card-foreground/80 mb-4">
                   {result.publishDate && <p className="flex items-center gap-2"><Calendar className="h-4 w-4 text-accent"/> {result.publishDate}</p>}
                   {result.publisher && <p className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent"/> {result.publisher}</p>}
-                  {result.language && <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-accent"/> {LANGUAGE_CODES.find(l => l.code === result.language)?.name || result.language}</p>}
                   {result.pageCount && <p className="flex items-center gap-2"><FileText className="h-4 w-4 text-accent"/> {result.pageCount} pages</p>}
+                  {result.isbn && <p className="flex items-center gap-2"><Barcode className="h-4 w-4 text-accent"/> ISBN: {result.isbn}</p>}
                 </div>
                 <p className="text-sm text-card-foreground/80 line-clamp-6 flex-grow">
                   {result.description || 'No description available.'}
