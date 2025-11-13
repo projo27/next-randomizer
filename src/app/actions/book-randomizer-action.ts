@@ -5,6 +5,25 @@ import type { BookResult } from '@/types/book-result';
 
 const API_BASE_URL = 'https://openlibrary.org';
 
+// A server-side list of genres to pick from when 'all' is selected.
+const ALL_GENRES = [
+  'science_fiction',
+  'fantasy',
+  'mystery',
+  'romance',
+  'thriller',
+  'history',
+  'biography',
+  'science',
+  'psychology',
+  'philosophy',
+  'adventure',
+  'horror',
+  'love',
+  'technology',
+  'art'
+];
+
 // --- Zod Schemas for API validation ---
 const SubjectResponseSchema = z.object({
   works: z.array(
@@ -45,10 +64,17 @@ async function fetchFromApi(endpoint: string) {
 
 // --- Server Action to get a random book ---
 export async function getRandomBook(genre: string): Promise<BookResult | null> {
+  let selectedGenre = genre;
+
+  // If the user selected "all", pick a random genre from our server-side list.
+  if (selectedGenre === 'all') {
+    selectedGenre = ALL_GENRES[Math.floor(Math.random() * ALL_GENRES.length)];
+  }
+
   // 1. Get a list of works for the given genre
   // We fetch a random page to get different results each time.
   const randomOffset = Math.floor(Math.random() * 500); // Fetch from the first 500 results for relevance
-  const subjectData = await fetchFromApi(`/subjects/${genre}.json?limit=50&offset=${randomOffset}`);
+  const subjectData = await fetchFromApi(`/subjects/${selectedGenre}.json?limit=50&offset=${randomOffset}`);
   const subjectValidation = SubjectResponseSchema.safeParse(subjectData);
 
   if (!subjectValidation.success || subjectValidation.data.works.length === 0) {
