@@ -61,7 +61,7 @@ async function findRandomBook(genre: string, originalGenre: string): Promise<Boo
     selectedGenre = ALL_GENRES[Math.floor(Math.random() * ALL_GENRES.length)];
   }
 
-  const randomOffset = Math.floor(Math.random() * 50); // Reduced offset for better results
+  const randomOffset = Math.floor(Math.random() * 10000); // Reduced offset for better results
   const subjectData = await fetchFromApi(`/subjects/${selectedGenre}.json?limit=100&offset=${randomOffset}`);
   const subjectValidation = SubjectResponseSchema.safeParse(subjectData);
 
