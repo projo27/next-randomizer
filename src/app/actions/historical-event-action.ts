@@ -1,34 +1,37 @@
 'use server';
 
-import { HISTORICAL_EVENTS } from '@/lib/historical-events';
-import type { HistoricalEvent } from '@/lib/historical-events';
+import { getEventsForDay } from '@/services/wikipedia';
+import type { WikipediaEvent } from '@/services/wikipedia';
+
+export type HistoricalEvent = WikipediaEvent;
 
 /**
- * Gets a random historical event that occurred on the current day and month.
- * If no event is found for today, it returns a random event from any day.
- * @returns A promise that resolves to a HistoricalEvent object.
+ * Gets a random historical event that occurred on the current day and month from Wikipedia.
+ * @returns A promise that resolves to a HistoricalEvent object or null if none found.
  */
-export async function getTodaysHistoricalEvent(): Promise<HistoricalEvent> {
+export async function getTodaysHistoricalEvent(): Promise<HistoricalEvent | null> {
   const today = new Date();
-  const currentMonth = today.getMonth() + 1; // getMonth() is 0-indexed
-  const currentDay = today.getDate();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
 
-  // Filter events that happened on the same month and day
-  const eventsForToday = HISTORICAL_EVENTS.filter(event => {
-    const eventDate = new Date(event.date);
-    return (
-      eventDate.getMonth() + 1 === currentMonth &&
-      eventDate.getDate() === currentDay
-    );
-  });
+  try {
+    const events = await getEventsForDay(month, day);
 
-  if (eventsForToday.length > 0) {
-    // If there are events for today, pick a random one
-    const randomIndex = Math.floor(Math.random() * eventsForToday.length);
-    return eventsForToday[randomIndex];
-  } else {
-    // If no event for today, pick a random event from the entire list
-    const randomIndex = Math.floor(Math.random() * HISTORICAL_EVENTS.length);
-    return HISTORICAL_EVENTS[randomIndex];
+    if (events.length === 0) {
+      // This is unlikely with Wikipedia API, but good to have a fallback.
+      return null;
+    }
+    
+    // Pick a random event from the fetched list
+    const randomIndex = Math.floor(Math.random() * events.length);
+    return events[randomIndex];
+
+  } catch (error) {
+    console.error("Error fetching historical event:", error);
+    // Re-throw the error so the client can handle it
+    if (error instanceof Error) {
+        throw error;
+    }
+    throw new Error("An unknown error occurred while fetching the historical event.");
   }
 }

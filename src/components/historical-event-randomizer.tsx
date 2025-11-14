@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -10,17 +11,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wand2, Landmark, Calendar, Tags, Check, Copy } from 'lucide-react';
+import { Wand2, Landmark, Calendar, Check, Copy, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getTodaysHistoricalEvent } from '@/app/actions/historical-event-action';
-import type { HistoricalEvent } from '@/lib/historical-events';
+import type { HistoricalEvent } from '@/app/actions/historical-event-action';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
 
 export default function HistoricalEventRandomizer() {
   const [result, setResult] = useState<HistoricalEvent | null>(null);
@@ -54,8 +54,7 @@ export default function HistoricalEventRandomizer() {
 
   const handleCopy = () => {
     if (!result) return;
-    const dateString = format(new Date(result.date), 'MMMM d, yyyy');
-    const textToCopy = `${dateString}: ${result.description}`;
+    const textToCopy = `${result.year}: ${result.description}`;
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
     toast({
@@ -70,7 +69,7 @@ export default function HistoricalEventRandomizer() {
       <CardHeader>
         <CardTitle>On This Day in History</CardTitle>
         <CardDescription>
-          Discover a random historical event that happened on this day, or a random day if none are found.
+          Discover a random historical event that happened today. Powered by Wikipedia.
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[300px] flex flex-col items-center justify-center">
@@ -79,22 +78,33 @@ export default function HistoricalEventRandomizer() {
             <Skeleton className="h-6 w-1/3" />
             <Skeleton className="h-8 w-full mt-2" />
             <Skeleton className="h-8 w-5/6" />
-            <Skeleton className="h-6 w-1/4 mt-4" />
+            <div className="flex gap-2 pt-2">
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-32" />
+            </div>
           </div>
         )}
         {!isLoading && result && (
           <div className="relative w-full animate-fade-in space-y-4 p-4 rounded-lg bg-card/50 border">
             <p className="text-sm font-semibold text-primary flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              {format(new Date(result.date), 'MMMM d, yyyy')}
+              {result.year}
             </p>
             <p className="text-lg md:text-xl text-card-foreground">
               {result.description}
             </p>
-            <div className="flex items-center gap-2 pt-2">
-              <Tags className="h-4 w-4 text-muted-foreground" />
-              <Badge variant="secondary">{result.category}</Badge>
-            </div>
+            {result.links && result.links.length > 0 && (
+                 <div className="flex flex-wrap gap-2 pt-2">
+                    {result.links.map((link, index) => (
+                        <Button key={index} asChild variant="outline" size="sm">
+                            <Link href={link.url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                {link.title}
+                            </Link>
+                        </Button>
+                    ))}
+                 </div>
+            )}
             <div className="absolute -top-2 right-0">
                 <Button variant="ghost" size="icon" onClick={handleCopy}>
                 {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
