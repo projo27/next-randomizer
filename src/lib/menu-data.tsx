@@ -33,6 +33,7 @@ import PlantRandomizer from "@/components/plant-randomizer";
 import ActivityRandomizer from "@/components/activity-randomizer";
 import ScienceFactRandomizer from "@/components/science-fact-randomizer";
 import BookRandomizer from "@/components/book-randomizer";
+import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
 
 import {
   ListTodo,
@@ -69,6 +70,7 @@ import {
   ClipboardCheck,
   FlaskConical,
   BookOpen,
+  Landmark,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -241,6 +243,14 @@ export const triggerList = [
     hidden: false,
     icon: <BookOpen className="h-5 w-5" />,
     content: <BookRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'historical-event',
+    text: 'Historical Event',
+    hidden: false,
+    icon: <Landmark className="h-5 w-5" />,
+    content: <HistoricalEventRandomizer />,
     contentGuard: false,
   },
   {

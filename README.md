@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.1 : Historical Event Randomizer release
 - v1.2.0 : Book Randomizer (powered by OpenLibrary API) release
 - v1.1.9 : Science Fact Randomizer (powered by AI) release
 - v1.1.8 : Today's Activity Randomizer release
@@ -42,6 +43,7 @@
 - Travel City Randomizer (powered by gemini.ai and pixabay) ✅
 - Truth or Dare Question Randomizer ✅
 - Today's Activity Randomizer ✅
+- Historical Event Randomizer ✅
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
