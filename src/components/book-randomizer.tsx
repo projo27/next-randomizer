@@ -30,6 +30,7 @@ import { getRandomBook } from '@/app/actions/book-randomizer-action';
 import type { BookResult } from '@/types/book-result';
 
 const GENRES = [
+  { value: 'all', label: 'All Genres (Random)' },
   { value: 'science_fiction', label: 'Science Fiction' },
   { value: 'fantasy', label: 'Fantasy' },
   { value: 'mystery', label: 'Mystery' },
@@ -45,7 +46,7 @@ const GENRES = [
 ];
 
 export default function BookRandomizer() {
-  const [genre, setGenre] = useState('science_fiction');
+  const [genre, setGenre] = useState('all');
   const [result, setResult] = useState<BookResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
