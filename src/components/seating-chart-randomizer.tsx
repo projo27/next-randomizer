@@ -175,15 +175,15 @@ export default function SeatingChartRandomizer() {
                     </div>
                 )}
                 {isRandomizing ? (
-                    <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+                    <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
                         {Array.from({ length: Math.min(numSeats, 20) }).map((_, i) => (
                             <Skeleton key={i} className="h-12 w-full" />
                         ))}
                     </div>
                 ) : seatingChart ? (
-                    <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+                    <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
                         {seatingChart.flat().map((seat, index) => (
-                            <div key={index} className={`flex items-center justify-center h-12 p-1 rounded-md text-xs text-center font-semibold ${seat === 'Empty' ? 'bg-background/50 text-muted-foreground italic' : 'bg-primary/20 text-primary-foreground'}`}>
+                            <div key={index} className={`flex items-center justify-center h-12 p-1 rounded-md text-xs text-center font-semibold ${seat === 'Empty' ? 'bg-background/50 text-muted-foreground/30 italic' : 'bg-primary/20 text-muted-foreground'}`}>
                                 {seat}
                             </div>
                         ))}

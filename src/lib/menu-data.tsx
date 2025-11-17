@@ -35,6 +35,7 @@ import ScienceFactRandomizer from "@/components/science-fact-randomizer";
 import BookRandomizer from "@/components/book-randomizer";
 import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
 import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
+import PairRandomizer from "@/components/pair-randomizer";
 
 import {
   ListTodo,
@@ -73,6 +74,7 @@ import {
   BookOpen,
   Landmark,
   Armchair,
+  Combine,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -101,6 +103,14 @@ export const triggerList = [
     hidden: false,
     icon: <ListOrdered className="h-5 w-5" />,
     content: <SequenceRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "pair",
+    text: "Pair",
+    hidden: false,
+    icon: <Combine className="h-5 w-5" />,
+    content: <PairRandomizer />,
     contentGuard: false,
   },
   {
