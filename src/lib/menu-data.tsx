@@ -34,6 +34,7 @@ import ActivityRandomizer from "@/components/activity-randomizer";
 import ScienceFactRandomizer from "@/components/science-fact-randomizer";
 import BookRandomizer from "@/components/book-randomizer";
 import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
+import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
 
 import {
   ListTodo,
@@ -71,6 +72,7 @@ import {
   FlaskConical,
   BookOpen,
   Landmark,
+  Armchair,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -123,6 +125,14 @@ export const triggerList = [
     hidden: false,
     icon: <Users className="h-5 w-5" />,
     content: <TeamShuffler />,
+    contentGuard: false,
+  },
+  {
+    value: "seating",
+    text: "Seating Chart",
+    hidden: false,
+    icon: <Armchair className="h-5 w-5" />,
+    content: <SeatingChartRandomizer />,
     contentGuard: false,
   },
   {

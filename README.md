@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.2 : Seating Chart Randomizer release
 - v1.2.1 : Historical Event Randomizer release
 - v1.2.0 : Book Randomizer (powered by OpenLibrary API) release
 - v1.1.9 : Science Fact Randomizer (powered by AI) release
@@ -28,6 +29,7 @@
 - Password Generator ✅
 - Date Randomizer ✅
 - Team Shuffler ✅
+- Seating Chart Randomizer ✅
 - Coin Flipper ✅
 - Dice Roller ✅
 - Rock Paper Scissor ✅
@@ -120,3 +122,4 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
+```
