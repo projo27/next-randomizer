@@ -7,7 +7,6 @@ import {
   doc,
   query,
   where,
-  orderBy,
   serverTimestamp,
 } from "firebase/firestore";
 import type { ToolPreset, AnyPresetParams } from "@/types/presets";
@@ -73,14 +72,22 @@ export async function getPresets(
     );
     const q = query(
       presetsColRef,
-      where("toolId", "==", toolId),
-      orderBy("createdAt", "desc")
+      where("toolId", "==", toolId)
+      // orderBy("createdAt", "desc") // This requires a composite index. Removing it to prevent errors.
     );
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map(
+    const presets = querySnapshot.docs.map(
       (doc) => ({ id: doc.id, ...doc.data() } as ToolPreset)
     );
+    
+    // Sort on the client-side
+    return presets.sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    });
+
   } catch (error) {
     console.error("Error getting presets:", error);
     return [];

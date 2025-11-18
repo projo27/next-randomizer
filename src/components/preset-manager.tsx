@@ -45,6 +45,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { Label } from "./ui/label";
 
 interface PresetManagerProps {
   toolId: string;
