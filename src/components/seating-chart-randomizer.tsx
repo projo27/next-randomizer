@@ -23,6 +23,8 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { randomizeSeatingChart } from "@/app/actions/seating-chart-action";
 import { Skeleton } from "./ui/skeleton";
+import { PresetManager } from "./preset-manager";
+import type { SeatingChartPresetParams } from "@/types/presets";
 
 export default function SeatingChartRandomizer() {
   const [rows, setRows] = useState("4");
@@ -45,6 +47,20 @@ export default function SeatingChartRandomizer() {
       stopAudio();
     }
   }, [isRandomizing, stopAudio]);
+
+  const getCurrentParams = (): SeatingChartPresetParams => ({
+    rows,
+    cols,
+    participants: participantsText,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as SeatingChartPresetParams;
+    setRows(p.rows);
+    setCols(p.cols);
+    setParticipantsText(p.participants);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -117,6 +133,11 @@ export default function SeatingChartRandomizer() {
       </CardHeader>
       <CardContent className="grid md:grid-cols-2 gap-8">
         <div className="space-y-4">
+           <PresetManager
+            toolId="seating_chart"
+            currentParams={getCurrentParams()}
+            onLoadPreset={handleLoadPreset}
+          />
           <div className="grid grid-cols-2 gap-4">
             <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="columns">Columns</Label>

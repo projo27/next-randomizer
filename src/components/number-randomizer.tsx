@@ -21,6 +21,9 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useAuth } from "@/context/AuthContext";
+import { PresetManager } from "./preset-manager";
+import type { NumberPresetParams } from "@/types/presets";
+
 
 function ResultDisplay({
   isRandomizing,
@@ -104,12 +107,25 @@ export default function NumberRandomizer() {
   const { playAudio, stopAudio } = useRandomizerAudio();
     const { user } = useAuth();
   
-
   useEffect(() => {
     if (!isRandomizing) {
       stopAudio();
     }
   }, [isRandomizing, stopAudio]);
+
+  const getCurrentParams = (): NumberPresetParams => ({
+    min,
+    max,
+    count,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as NumberPresetParams;
+    setMin(p.min);
+    setMax(p.max);
+    setCount(p.count);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -178,6 +194,11 @@ export default function NumberRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <PresetManager
+          toolId="number"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="min">Minimum</Label>

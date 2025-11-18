@@ -23,6 +23,8 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { ListPresetParams } from "@/types/presets";
 
 type Item = {
   id: string;
@@ -129,6 +131,21 @@ export default function ListRandomizer() {
       stopAudio();
     }
   }, [isShuffling, stopAudio]);
+
+  const getCurrentParams = (): ListPresetParams => ({
+    items: inputMode === 'textarea' ? itemsText : items.map(i => i.value).join('\n'),
+    count: count,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as ListPresetParams;
+    setItemsText(p.items);
+    setCount(p.count);
+    
+    const lines = p.items.split("\n").map(l => l.trim()).filter(Boolean);
+    setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
 
   const handleInputModeChange = (checked: boolean) => {
     const newMode = checked ? "textarea" : "panel";
@@ -241,6 +258,11 @@ export default function ListRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <PresetManager 
+          toolId="list"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="flex items-center space-x-2">
           <Switch
             id="input-mode"

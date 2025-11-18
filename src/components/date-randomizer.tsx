@@ -31,6 +31,8 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { DatePresetParams } from "@/types/presets";
 
 function AnimatedResultList({
   isShuffling,
@@ -125,6 +127,31 @@ export default function DateRandomizer() {
     setStartDate(now);
     setEndDate(nextMonth);
   }, []);
+
+  const getCurrentParams = (): DatePresetParams => ({
+    startDate: startDate?.toISOString(),
+    endDate: endDate?.toISOString(),
+    count: numberOfDates,
+    includeTime,
+    startTime,
+    endTime,
+    is24Hour,
+    dateFormat,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as DatePresetParams;
+    if (p.startDate) setStartDate(new Date(p.startDate));
+    if (p.endDate) setEndDate(new Date(p.endDate));
+    setNumberOfDates(p.count);
+    setIncludeTime(p.includeTime);
+    setStartTime(p.startTime);
+    setEndTime(p.endTime);
+    setIs24Hour(p.is24Hour);
+    setDateFormat(p.dateFormat);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -227,6 +254,11 @@ export default function DateRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <PresetManager
+          toolId="date"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DatePicker
             label="Start Date"

@@ -30,6 +30,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { PresetManager } from './preset-manager';
+import type { PairPresetParams } from '@/types/presets';
 
 const initialListA = 'Jump Rope\nPush Up\nSquat Jump\nShuttle Run\nPlank';
 const initialListB = '45s\n30s\n20s';
@@ -46,6 +48,18 @@ export default function PairRandomizer() {
   const { animationDuration } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
+
+  const getCurrentParams = (): PairPresetParams => ({
+    listA,
+    listB,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as PairPresetParams;
+    setListA(p.listA);
+    setListB(p.listB);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -104,6 +118,11 @@ export default function PairRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <PresetManager
+          toolId="pair"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="list-a">List 1</Label>
