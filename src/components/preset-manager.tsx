@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -43,6 +44,7 @@ import { Save, ChevronDown, Trash2, LockKeyhole } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 interface PresetManagerProps {
   toolId: string;
@@ -55,15 +57,18 @@ export function PresetManager({
   currentParams,
   onLoadPreset,
 }: PresetManagerProps) {
-  const { user } = useAuth();
+  const { user, signInWithGoogle } = useAuth();
   const { toast } = useToast();
   const [presets, setPresets] = useState<ToolPreset[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
 
   const fetchPresets = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+        setIsLoading(false);
+        return;
+    };
     setIsLoading(true);
     const userPresets = await getPresets(user.uid, toolId);
     setPresets(userPresets);
@@ -76,6 +81,7 @@ export function PresetManager({
 
   const handleSave = async () => {
     if (!user || !newPresetName.trim()) return;
+    sendGTMEvent({ event: "action_preset_save", user_email: user.email, tool_id: toolId });
 
     try {
       await savePreset(user.uid, toolId, newPresetName, currentParams);
@@ -97,6 +103,7 @@ export function PresetManager({
 
   const handleDelete = async (presetId: string) => {
     if (!user) return;
+    sendGTMEvent({ event: "action_preset_delete", user_email: user.email, tool_id: toolId });
     try {
       await deletePreset(user.uid, presetId);
       toast({
@@ -118,7 +125,7 @@ export function PresetManager({
       <div className="flex items-center gap-2 p-2 rounded-lg border border-dashed text-sm text-muted-foreground">
         <LockKeyhole className="h-4 w-4" />
         <p>
-          <Button variant="link" className="p-0 h-auto" onClick={() => {}}>
+          <Button variant="link" className="p-0 h-auto" onClick={signInWithGoogle}>
             Sign in
           </Button>{" "}
           to save and load your parameters.
@@ -150,7 +157,10 @@ export function PresetManager({
             presets.map((preset) => (
               <div key={preset.id} className="flex items-center">
                 <DropdownMenuItem
-                  onClick={() => onLoadPreset(preset.parameters)}
+                  onClick={() => {
+                    sendGTMEvent({ event: "action_preset_load", user_email: user?.email ?? 'guest', tool_id: toolId });
+                    onLoadPreset(preset.parameters)
+                  }}
                   className="flex-grow cursor-pointer"
                 >
                   {preset.name}
