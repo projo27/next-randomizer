@@ -219,13 +219,14 @@ export default function SequenceRandomizer() {
           Enter a list of items to shuffle their order.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent  className="space-y-4">
          <PresetManager
           toolId="sequence"
           currentParams={getCurrentParams()}
           onLoadPreset={handleLoadPreset}
         />
-        <div className="flex items-center space-x-2 mb-4">
+        
+        <div className="flex items-center space-x-2">
           <Switch
             id="input-mode-seq"
             checked={inputMode === "textarea"}

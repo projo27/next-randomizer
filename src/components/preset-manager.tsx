@@ -156,7 +156,7 @@ export function PresetManager({
             <DropdownMenuItem disabled>No presets found</DropdownMenuItem>
           ) : (
             presets.map((preset) => (
-              <div key={preset.id} className="flex items-center">
+              <div key={preset.id} className="flex items-center gap-1">
                 <DropdownMenuItem
                   onClick={() => {
                     sendGTMEvent({ event: "action_preset_load", user_email: user?.email ?? 'guest', tool_id: toolId });
@@ -168,8 +168,8 @@ export function PresetManager({
                 </DropdownMenuItem>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="secondary" size="icon" className="h-7 w-7 mr-1 shrink-0">
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                    <Button variant="destructive" size="icon" className="h-7 w-7 mr-1 shrink-0">
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -196,7 +196,7 @@ export function PresetManager({
 
       <Dialog open={isSaveDialogOpen} onOpenChange={setSaveDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto" variant="secondary">
             <Save className="mr-2 h-4 w-4" /> Save Current
           </Button>
         </DialogTrigger>
