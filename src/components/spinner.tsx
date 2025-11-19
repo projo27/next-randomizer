@@ -21,6 +21,8 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { SpinnerPresetParams } from "@/types/presets";
 
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -104,6 +106,16 @@ export default function Spinner() {
     [itemsText],
   );
 
+  const getCurrentParams = (): SpinnerPresetParams => ({
+    items: itemsText,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as SpinnerPresetParams;
+    setItemsText(p.items);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
   const data = useMemo(() => {
     if (items.length === 0) return [{ option: "Empty" }];
     return items.map((item) => ({ option: item }));
@@ -118,6 +130,14 @@ export default function Spinner() {
       toast({
         title: "Not enough items",
         description: "Please enter at least 2 items to spin the wheel.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (items.length > 20) {
+      toast({
+        title: "Too many items",
+        description: "Please enter a maximum of 20 items for the best experience.",
         variant: "destructive",
       });
       return;
@@ -155,6 +175,20 @@ export default function Spinner() {
     toast({ title: "Copied!", description: "Winner copied to clipboard." });
     setTimeout(() => setIsResultCopied(false), 2000);
   };
+  
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const lines = e.target.value.split('\n');
+    if (lines.length > 20) {
+      setItemsText(lines.slice(0, 20).join('\n'));
+      toast({
+        variant: "destructive",
+        title: "Limit Reached",
+        description: "You can enter a maximum of 20 items."
+      });
+    } else {
+      setItemsText(e.target.value);
+    }
+  };
 
   const isSpinning = mustSpin || isRateLimited;
 
@@ -167,6 +201,14 @@ export default function Spinner() {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid md:grid-cols-[1fr_1fr] gap-4 items-center h-full">
+        <div
+          className="col-span-2">
+          <PresetManager
+            toolId="spinner"
+            currentParams={getCurrentParams()}
+            onLoadPreset={handleLoadPreset}
+          />
+        </div>
         <div className="relative">
           <div className="aspect-square relative flex items-center justify-center w-full h-full">
             <div className="rotate-[-45deg]">
@@ -202,14 +244,17 @@ export default function Spinner() {
         </div>
         <div className="space-y-4 flex flex-col h-full py-6">
           <div className="relative h-2/3 mb-8">
-            <Label htmlFor="spinner-items">Items (one per line)</Label>
+            <div className="flex justify-between items-center mb-1.5">
+              <Label htmlFor="spinner-items">Items (one per line)</Label>
+              <span className="text-xs text-muted-foreground">{items.length} / 20</span>
+            </div>
             <Textarea
               id="spinner-items"
               placeholder={"Enter items, one per line..."}
               rows={8}
               value={itemsText}
-              onChange={(e) => setItemsText(e.target.value)}
-              className="resize-none pr-20 mt-1.5 h-full"
+              onChange={handleTextChange}
+              className="resize-none pr-20 h-full"
               disabled={isSpinning}
             />
             <div className="absolute top-10 right-2 flex flex-col gap-2">

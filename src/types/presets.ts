@@ -65,6 +65,23 @@ export type SeatingChartPresetParams = {
   participants: string; // Stored as a newline-separated string
 };
 
+export type SpinnerPresetParams = {
+  items: string; // Stored as a newline-separated string
+};
+
+export type LotteryPresetParams = {
+  length: string;
+  includeLetters: boolean;
+};
+
+export type OotdPresetParams = {
+  gender: string;
+  style: string;
+  season: string;
+  height: string;
+  weight: string;
+};
+
 // Union type for any possible preset parameters
 export type AnyPresetParams =
   | ListPresetParams
@@ -74,7 +91,10 @@ export type AnyPresetParams =
   | PasswordPresetParams
   | DatePresetParams
   | TeamShufflerPresetParams
-  | SeatingChartPresetParams;
+  | SeatingChartPresetParams
+  | SpinnerPresetParams
+  | LotteryPresetParams
+  | OotdPresetParams;
 
 // Generic preset type for use in components
 export type ToolPreset = Preset<AnyPresetParams>;

@@ -22,6 +22,8 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { LotteryPresetParams } from "@/types/presets";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
@@ -55,6 +57,19 @@ export default function LotteryGenerator() {
         clearInterval(countdownIntervalRef.current);
     };
   }, []);
+
+  const getCurrentParams = (): LotteryPresetParams => ({
+    length,
+    includeLetters,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as LotteryPresetParams;
+    setLength(p.length);
+    setIncludeLetters(p.includeLetters);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
 
   const handleGenerate = async () => {
     sendGTMEvent({
@@ -158,6 +173,11 @@ export default function LotteryGenerator() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <PresetManager
+          toolId="lottery"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
           <div className="grid w-full items-center gap-2">
             <Label htmlFor="combination-length">Length</Label>

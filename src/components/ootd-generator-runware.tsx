@@ -52,6 +52,8 @@ import {
 } from "@/ai/flows/ootd-generator-runware";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { OotdPresetParams } from "@/types/presets";
 
 const GENDERS = ["Male", "Female"];
 const ICONS = [<Mars />, <Venus />, <Ghost />];
@@ -146,6 +148,25 @@ export default function OotdGeneratorRunware() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+
+  const getCurrentParams = (): OotdPresetParams => ({
+    gender,
+    style,
+    season,
+    height,
+    weight,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as OotdPresetParams;
+    setGender(p.gender);
+    setStyle(p.style);
+    setSeason(p.season);
+    setHeight(p.height);
+    setWeight(p.weight);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
 
   const handleGenerate = async () => {
     sendGTMEvent({
@@ -250,6 +271,11 @@ export default function OotdGeneratorRunware() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <PresetManager
+          toolId="ootd"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="gender">Gender</Label>

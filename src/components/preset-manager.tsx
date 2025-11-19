@@ -168,7 +168,7 @@ export function PresetManager({
                 </DropdownMenuItem>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 mr-1 shrink-0">
+                    <Button variant="secondary" size="icon" className="h-7 w-7 mr-1 shrink-0">
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </AlertDialogTrigger>
