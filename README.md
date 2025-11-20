@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.4 : Word Randomizer release
 - v1.2.3 : Pair Randomizer release
 - v1.2.2 : Seating Chart Randomizer release
 - v1.2.1 : Historical Event Randomizer release
@@ -28,6 +29,7 @@
 - Number Randomizer ✅
 - Sequence Shuffler ✅
 - Pair Randomizer ✅
+- Word Randomizer ✅
 - Password Generator ✅
 - Date Randomizer ✅
 - Team Shuffler ✅
@@ -124,3 +126,4 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
+

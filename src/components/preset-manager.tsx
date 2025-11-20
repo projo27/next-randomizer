@@ -40,7 +40,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
-import { Save, ChevronDown, Trash2, LockKeyhole } from "lucide-react";
+import { Save, ChevronDown, Trau2, LockKeyhole } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
