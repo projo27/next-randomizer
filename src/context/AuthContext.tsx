@@ -80,12 +80,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [setTheme],
   );
 
+  // In development, the real auth functions are replaced with no-ops
+  const isDevelopment = (process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV) === "development";
+
   useEffect(() => {
     // --- DEVELOPMENT MODE: Use Dummy User ---
-    if (
-      (process.env.NEXT_PUBLIC_ENVIRONMENT || process.env.NODE_ENV) ===
-      "development"
-    ) {
+    if (isDevelopment) {
       console.log("DEV MODE: Using dummy user.");
       // Use a timeout to simulate async loading
       const timer = setTimeout(() => {
@@ -99,8 +99,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => unsubscribe();
   }, [handleUserAuth]);
 
-  // In development, the real auth functions are replaced with no-ops
-  const isDevelopment = process.env.NODE_ENV === "development";
 
   const value: AuthContextType = {
     user,
