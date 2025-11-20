@@ -46,7 +46,16 @@ export function useMenuOrder() {
 export function MenuOrderProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { visibleToolCount, loading: settingsLoading } = useSettings();
-  const [menuOrderKeys, setMenuOrderKeys] = useState<MenuOrder>({ visible: [], hidden: [] });
+  
+  // Initialize with default order immediately to prevent blocking UI
+  const [menuOrderKeys, setMenuOrderKeys] = useState<MenuOrder>(() => {
+      const defaultCount = visibleToolCount; 
+      const allVisibleMenuItems = allMenuItems.filter(item => !item.hidden);
+      const visibleKeys = allVisibleMenuItems.slice(0, defaultCount).map(item => item.value);
+      const hiddenKeys = allVisibleMenuItems.slice(defaultCount).map(item => item.value);
+      return { visible: visibleKeys, hidden: hiddenKeys };
+  });
+
   const [loading, setLoading] = useState(true);
 
   // Function to sort the full menu data based on an array of keys
@@ -57,47 +66,80 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
   };
   
   const generateDefaultOrder = useCallback(() => {
+    const count = visibleToolCount;
     const allVisibleMenuItems = allMenuItems.filter(item => !item.hidden);
-    const visibleKeys = allVisibleMenuItems.slice(0, visibleToolCount).map(item => item.value);
-    const hiddenKeys = allVisibleMenuItems.slice(visibleToolCount).map(item => item.value);
+    const visibleKeys = allVisibleMenuItems.slice(0, count).map(item => item.value);
+    const hiddenKeys = allVisibleMenuItems.slice(count).map(item => item.value);
     return { visible: visibleKeys, hidden: hiddenKeys };
   }, [visibleToolCount]);
 
+  // Helper to merge/validate keys
+  const validateAndMergeKeys = useCallback((order: MenuOrder) => {
+      const allCurrentKeys = new Set(allMenuItems.map(i => i.value));
+      const allSavedKeys = new Set([...order.visible, ...order.hidden]);
+      
+      const newItems = allMenuItems.filter(item => !allSavedKeys.has(item.value) && !item.hidden);
+      
+      if (newItems.length > 0) {
+        order.hidden.push(...newItems.map(item => item.value));
+      }
+      // Remove keys that no longer exist
+      order.visible = order.visible.filter(key => allCurrentKeys.has(key));
+      order.hidden = order.hidden.filter(key => allCurrentKeys.has(key));
+      return order;
+  }, []);
 
   useEffect(() => {
     async function fetchMenuOrder() {
-      setLoading(true);
+      // If we are still waiting for auth or settings, don't do the full sync yet
+      // but we already have a default state so UI is visible.
+      if (authLoading || settingsLoading) return;
+
+      let isLocalLoaded = false;
+
       if (user) {
-        let savedOrder = await getMenuOrder(user.uid);
-        
-        // Ensure all menu items exist in the order, add new ones to hidden
-        const allCurrentKeys = new Set(allMenuItems.map(i => i.value));
-        const allSavedKeys = new Set(savedOrder ? [...savedOrder.visible, ...savedOrder.hidden] : []);
-        
-        const newItems = allMenuItems.filter(item => !allSavedKeys.has(item.value) && !item.hidden);
-        
-        if (savedOrder) {
-          if (newItems.length > 0) {
-            savedOrder.hidden.push(...newItems.map(item => item.value));
-          }
-          // Remove keys that no longer exist
-          savedOrder.visible = savedOrder.visible.filter(key => allCurrentKeys.has(key));
-          savedOrder.hidden = savedOrder.hidden.filter(key => allCurrentKeys.has(key));
-          
-          setMenuOrderKeys(savedOrder);
-        } else {
-          setMenuOrderKeys(generateDefaultOrder());
+        // 1. Try Local Storage
+        try {
+            const localKey = `menu_order_${user.uid}`;
+            const localData = localStorage.getItem(localKey);
+            if (localData) {
+                let parsedOrder = JSON.parse(localData);
+                parsedOrder = validateAndMergeKeys(parsedOrder);
+                setMenuOrderKeys(parsedOrder);
+                isLocalLoaded = true;
+            }
+        } catch (e) {
+            console.error("Error reading local storage", e);
+        }
+
+        // 2. Fetch from Firebase (Background update)
+        try {
+            let savedOrder = await getMenuOrder(user.uid);
+            
+            if (savedOrder) {
+              savedOrder = validateAndMergeKeys(savedOrder);
+              setMenuOrderKeys(savedOrder);
+              localStorage.setItem(`menu_order_${user.uid}`, JSON.stringify(savedOrder));
+            } else {
+               // If no data in firebase and NO local data, we might want to ensure 
+               // we are using the correct default based on the now-loaded settings
+               if (!isLocalLoaded) {
+                   setMenuOrderKeys(generateDefaultOrder());
+               }
+            }
+        } catch (error) {
+             console.error("Error fetching menu order", error);
         }
       } else {
+        // No user, just ensure we respect the settings for default order
         setMenuOrderKeys(generateDefaultOrder());
       }
+      
       setLoading(false);
     }
 
-    if (!authLoading && !settingsLoading) {
-      fetchMenuOrder();
-    }
-  }, [user, authLoading, settingsLoading, generateDefaultOrder]);
+    fetchMenuOrder();
+  }, [user, authLoading, settingsLoading, generateDefaultOrder, validateAndMergeKeys]);
 
   const handleSetMenuOrder = useCallback(
     (newOrder: { visible: MenuItemData[]; hidden: MenuItemData[] }) => {
@@ -108,8 +150,9 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
       
       // Update local state immediately for responsive UI
       setMenuOrderKeys(newOrderKeys);
-      // If user is logged in, save the new order to Firestore
+      
       if (user) {
+        localStorage.setItem(`menu_order_${user.uid}`, JSON.stringify(newOrderKeys));
         saveMenuOrder(user.uid, newOrderKeys);
       }
     },
@@ -123,7 +166,7 @@ export function MenuOrderProvider({ children }: { children: ReactNode }) {
           hidden: getItemsFromKeys(menuOrderKeys.hidden),
       },
       setMenuOrder: handleSetMenuOrder,
-      loading: authLoading || loading || settingsLoading,
+      loading: loading, // This now represents "syncing" status
   };
 
 
