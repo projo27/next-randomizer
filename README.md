@@ -4,6 +4,12 @@
 
 ## Changelog :
 
+- v1.2.3 : Pair Randomizer release
+- v1.2.2 : Seating Chart Randomizer release
+- v1.2.1 : Historical Event Randomizer release
+- v1.2.0 : Book Randomizer (powered by OpenLibrary API) release
+- v1.1.9 : Science Fact Randomizer (powered by AI) release
+- v1.1.8 : Today's Activity Randomizer release
 - v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
 - v1.1.5 : Truth or Dare Randomizer release
@@ -21,9 +27,11 @@
 - List Randomizer ✅
 - Number Randomizer ✅
 - Sequence Shuffler ✅
+- Pair Randomizer ✅
 - Password Generator ✅
 - Date Randomizer ✅
 - Team Shuffler ✅
+- Seating Chart Randomizer ✅
 - Coin Flipper ✅
 - Dice Roller ✅
 - Rock Paper Scissor ✅
@@ -38,6 +46,8 @@
 - OOTD - Fashion Out of The Day Randomizer (powered by runway.ai) ✅
 - Travel City Randomizer (powered by gemini.ai and pixabay) ✅
 - Truth or Dare Question Randomizer ✅
+- Today's Activity Randomizer ✅
+- Historical Event Randomizer ✅
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
 - Random Poetry
@@ -50,8 +60,10 @@
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
 - Movie Randomizer
+- Book Randomizer ✅
 - Song Randomizer ✅
 - Radio Channel Randomizer ✅
+- Science Fact Randomizer ✅
 - Identity Generator (Name, Address, Phone)
 - Android APK Randomizer
 - IOS APK Randomizer
@@ -106,9 +118,9 @@ Step by step to running on your own host :
 
 To ensure all features of the application work correctly, you must enable the following APIs in the Google Cloud Console for your Firebase project:
 
-- **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
-- **Cloud Firestore API**: For saving user preferences.
-- **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
-- **YouTube Data API v3**: For the YouTube Randomizer.
-- **Maps Embed API**: For the Google Maps Place Randomizer.
-- **Giphy API**: For the Meme Randomizer.
+-   **Identity Toolkit API**: For Firebase Authentication (Google Sign-In).
+-   **Cloud Firestore API**: For saving user preferences.
+-   **Vertex AI API**: For all AI-powered features using Gemini models (e.g., Travel, OOTD).
+-   **YouTube Data API v3**: For the YouTube Randomizer.
+-   **Maps Embed API**: For the Google Maps Place Randomizer.
+-   **Giphy API**: For the Meme Randomizer.

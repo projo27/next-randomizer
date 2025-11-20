@@ -17,6 +17,8 @@ import { generateReadablePassword } from "@/lib/password-generator";
 import { Check, Copy, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { PresetManager } from "./preset-manager";
+import type { PasswordPresetParams } from "@/types/presets";
 
 export default function PasswordGenerator() {
   const [length, setLength] = useState(12);
@@ -28,6 +30,23 @@ export default function PasswordGenerator() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(10000);
 
+  const getCurrentParams = (): PasswordPresetParams => ({
+    length,
+    includeNumbers,
+    includeSymbols,
+    includeUppercase,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as PasswordPresetParams;
+    setLength(p.length);
+    setIncludeNumbers(p.includeNumbers);
+    setIncludeSymbols(p.includeSymbols);
+    setIncludeUppercase(p.includeUppercase);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
+
   const handleGenerate = useCallback(() => {
     // triggerRateLimit();
     const newPassword = generateReadablePassword(
@@ -38,7 +57,7 @@ export default function PasswordGenerator() {
     );
     setPassword(newPassword);
     setIsCopied(false);
-  }, [length, includeNumbers, includeSymbols, includeUppercase, triggerRateLimit]);
+  }, [length, includeNumbers, includeSymbols, includeUppercase]);
 
   useEffect(() => {
     handleGenerate();
@@ -61,6 +80,11 @@ export default function PasswordGenerator() {
         <CardDescription>Create a strong and readable password.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <PresetManager
+          toolId="password"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="relative">
           <Input
             readOnly

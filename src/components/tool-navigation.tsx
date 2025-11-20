@@ -67,12 +67,12 @@ export function ToolNavigation() {
       </TabsList>
 
       {menuOrder.hidden.length > 0 && (
-        <div className="relative flex items-center justify-center mt-4 mb-4">
-          <Separator className="w-full" />
+        <div className="relative flex items-center justify-center mt-1 mb-4">
+          <Separator className="flex-1" />
           <CollapsibleTrigger asChild>
             <Button
               variant="secondary"
-              className="absolute px-4 h-8 group text-xs"
+              className="h-8 group text-xs bg-background-secondary"
             >
               <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
                 Show More
@@ -83,6 +83,7 @@ export function ToolNavigation() {
               <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
             </Button>
           </CollapsibleTrigger>
+          <Separator className="flex-1" />
         </div>
       )}
     </Collapsible>

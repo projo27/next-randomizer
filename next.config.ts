@@ -132,6 +132,12 @@ const nextConfig: NextConfig = {
         port: '', // Leave empty if no specific port is used
         pathname: '/**', // Allow any path for the image
       },
+      {
+        protocol: 'https', // Specify the protocol (http or https)
+        hostname: '*.openlibrary.org', // Use a wildcard for the subdomain
+        port: '', // Leave empty if no specific port is used
+        pathname: '/**', // Allow any path for the image
+      },
     ],
   },
   webpack: (config, { dev, isServer }) => {

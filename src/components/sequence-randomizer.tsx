@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -23,6 +22,8 @@ import { sendGTMEvent } from "@next/third-parties/google";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { Input } from "./ui/input";
+import { PresetManager } from "./preset-manager";
+import type { SequencePresetParams } from "@/types/presets";
 
 type Item = {
   id: string;
@@ -117,6 +118,19 @@ export default function SequenceRandomizer() {
     }
   }, [isShuffling, stopAudio]);
 
+  const getCurrentParams = (): SequencePresetParams => ({
+    items: inputMode === 'textarea' ? itemsText : items.map(i => i.value).join('\n'),
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as SequencePresetParams;
+    setItemsText(p.items);
+    const lines = p.items.split("\n").map(l => l.trim()).filter(Boolean);
+    setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
+
   const handleInputModeChange = (checked: boolean) => {
     const newMode = checked ? "textarea" : "panel";
     setInputMode(newMode);
@@ -205,8 +219,14 @@ export default function SequenceRandomizer() {
           Enter a list of items to shuffle their order.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center space-x-2 mb-4">
+      <CardContent  className="space-y-4">
+         <PresetManager
+          toolId="sequence"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
+        
+        <div className="flex items-center space-x-2">
           <Switch
             id="input-mode-seq"
             checked={inputMode === "textarea"}

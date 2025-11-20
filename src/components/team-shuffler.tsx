@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -27,6 +26,8 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { PresetManager } from "./preset-manager";
+import type { TeamShufflerPresetParams } from "@/types/presets";
 
 type Participant = {
   id: string;
@@ -95,6 +96,31 @@ export default function TeamShuffler() {
       stopAudio();
     }
   }, [isShuffling, stopAudio]);
+
+  const getCurrentParams = (): TeamShufflerPresetParams => ({
+    participants: inputMode === 'textarea' ? participantsText : participants.map(p => `${p.name} ${p.level}`).join('\n'),
+    teamSize,
+    useLevels,
+    inputMode,
+  });
+
+  const handleLoadPreset = (params: any) => {
+    const p = params as TeamShufflerPresetParams;
+    setInputMode(p.inputMode);
+    setUseLevels(p.useLevels);
+    setTeamSize(p.teamSize);
+    setParticipantsText(p.participants);
+
+    const parsedParticipants = p.participants.split('\n').map((line, index) => {
+      const parts = line.trim().split(' ');
+      const level = parseInt(parts.pop() || '1', 10);
+      const name = parts.join(' ');
+      return { id: `${Date.now()}-${index}`, name, level: isNaN(level) ? 1 : level };
+    });
+    setParticipants(parsedParticipants);
+    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+  };
+
 
   useEffect(() => {
     if (inputMode === "textarea") {
@@ -265,6 +291,11 @@ export default function TeamShuffler() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <PresetManager
+          toolId="team"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
         <div className="flex flex-wrap gap-x-8 gap-y-4">
           <div className="flex items-center space-x-2">
             <Switch

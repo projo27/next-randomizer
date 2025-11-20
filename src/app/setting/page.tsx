@@ -41,7 +41,7 @@ function SettingsPageContent() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-4xl">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <Skeleton className="h-8 w-1/2" />
           <Skeleton className="h-4 w-3/4" />

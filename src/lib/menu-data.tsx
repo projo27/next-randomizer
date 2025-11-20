@@ -30,6 +30,12 @@ import SportRandomizer from "@/components/sport-randomizer";
 import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
 import RadioRandomizer from "@/components/radio-randomizer";
 import PlantRandomizer from "@/components/plant-randomizer";
+import ActivityRandomizer from "@/components/activity-randomizer";
+import ScienceFactRandomizer from "@/components/science-fact-randomizer";
+import BookRandomizer from "@/components/book-randomizer";
+import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
+import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
+import PairRandomizer from "@/components/pair-randomizer";
 
 import {
   ListTodo,
@@ -63,6 +69,12 @@ import {
   FlameKindling,
   Radio,
   Sprout,
+  ClipboardCheck,
+  FlaskConical,
+  BookOpen,
+  Landmark,
+  Armchair,
+  Combine,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -94,6 +106,14 @@ export const triggerList = [
     contentGuard: false,
   },
   {
+    value: "pair",
+    text: "Pair",
+    hidden: false,
+    icon: <Combine className="h-5 w-5" />,
+    content: <PairRandomizer />,
+    contentGuard: false,
+  },
+  {
     value: "password",
     text: "Password",
     hidden: false,
@@ -115,6 +135,14 @@ export const triggerList = [
     hidden: false,
     icon: <Users className="h-5 w-5" />,
     content: <TeamShuffler />,
+    contentGuard: false,
+  },
+  {
+    value: "seating",
+    text: "Seating Chart",
+    hidden: false,
+    icon: <Armchair className="h-5 w-5" />,
+    content: <SeatingChartRandomizer />,
     contentGuard: false,
   },
   {
@@ -213,12 +241,36 @@ export const triggerList = [
     content: <GiftRandomizer />,
     contentGuard: false,
   },
-   {
-    value: 'plant',
-    text: 'Plant',
+  {
+    value: "plant",
+    text: "Plant",
     hidden: false,
     icon: <Sprout className="h-5 w-5" />,
     content: <PlantRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "activity",
+    text: "Today's Activity",
+    hidden: false,
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    content: <ActivityRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'book',
+    text: 'Book',
+    hidden: false,
+    icon: <BookOpen className="h-5 w-5" />,
+    content: <BookRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'historical-event',
+    text: 'Historical Event',
+    hidden: false,
+    icon: <Landmark className="h-5 w-5" />,
+    content: <HistoricalEventRandomizer />,
     contentGuard: false,
   },
   {
@@ -237,7 +289,7 @@ export const triggerList = [
     content: <SongRandomizer />,
     contentGuard: false,
   },
-   {
+  {
     value: "radio",
     text: "Radio",
     hidden: false,
@@ -260,6 +312,14 @@ export const triggerList = [
     icon: <FlameKindling className="h-5 w-5" />,
     content: <TruthOrDareRandomizer />,
     contentGuard: false,
+  },
+  {
+    value: "science-fact",
+    text: "Science Fact",
+    hidden: false,
+    icon: <FlaskConical className="h-5 w-5" />,
+    content: <ScienceFactRandomizer />,
+    contentGuard: true,
   },
   // Not Showed, feature not ready
   // {
