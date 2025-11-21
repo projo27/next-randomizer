@@ -37,6 +37,7 @@ import HistoricalEventRandomizer from "@/components/historical-event-randomizer"
 import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
 import PairRandomizer from "@/components/pair-randomizer";
 import WordRandomizer from "@/components/word-randomizer";
+import PoetryRandomizer from "@/components/poetry-randomizer";
 
 import {
   ListTodo,
@@ -77,6 +78,7 @@ import {
   Armchair,
   Combine,
   FileText,
+  Feather,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -121,6 +123,14 @@ export const triggerList = [
     hidden: false,
     icon: <FileText className="h-5 w-5" />,
     content: <WordRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "poetry",
+    text: "Poetry",
+    hidden: false,
+    icon: <Feather className="h-5 w-5" />,
+    content: <PoetryRandomizer />,
     contentGuard: false,
   },
   {
