@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -6,22 +7,28 @@ import { z } from 'zod';
 const PhoneticSchema = z.object({
   text: z.string().optional(),
   audio: z.string().url().optional(),
+  sourceUrl: z.string().url().optional(),
 });
 
 const DefinitionSchema = z.object({
   definition: z.string(),
   example: z.string().optional(),
+  synonyms: z.array(z.string()).optional(),
+  antonyms: z.array(z.string()).optional(),
 });
 
 const MeaningSchema = z.object({
   partOfSpeech: z.string(),
   definitions: z.array(DefinitionSchema),
+  synonyms: z.array(z.string()).optional(),
+  antonyms: z.array(z.string()).optional(),
 });
 
 const DictionaryEntrySchema = z.object({
   word: z.string(),
   phonetics: z.array(PhoneticSchema),
   meanings: z.array(MeaningSchema),
+  sourceUrls: z.array(z.string().url()),
 });
 
 export type DictionaryEntry = z.infer<typeof DictionaryEntrySchema>;

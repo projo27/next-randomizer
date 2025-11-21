@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -10,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wand2, Copy, Check, Volume2 } from 'lucide-react';
+import { Wand2, Copy, Check, Volume2, Link as LinkIcon } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -55,7 +57,7 @@ function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: {
             
             <div className="space-y-4">
                 {entry.meanings.map((meaning, index) => (
-                    <div key={index} className="space-y-2">
+                    <div key={index} className="space-y-3">
                         <Badge variant="secondary" className="capitalize">{meaning.partOfSpeech}</Badge>
                         <ul className="list-decimal list-inside space-y-3 pl-2">
                             {meaning.definitions.slice(0, 3).map((def, defIndex) => (
@@ -69,9 +71,41 @@ function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: {
                                 </li>
                             ))}
                         </ul>
+                         {(meaning.synonyms && meaning.synonyms.length > 0) && (
+                            <div className="pl-6">
+                                <h4 className="text-sm font-semibold text-muted-foreground">Synonyms</h4>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {meaning.synonyms.map(syn => <Badge key={syn} variant="outline">{syn}</Badge>)}
+                                </div>
+                            </div>
+                        )}
+                        {(meaning.antonyms && meaning.antonyms.length > 0) && (
+                            <div className="pl-6">
+                                <h4 className="text-sm font-semibold text-muted-foreground">Antonyms</h4>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                    {meaning.antonyms.map(ant => <Badge key={ant} variant="outline">{ant}</Badge>)}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
+
+            {entry.sourceUrls && entry.sourceUrls.length > 0 && (
+                <>
+                    <Separator />
+                    <div className="space-y-2">
+                        <h4 className="text-sm font-semibold text-muted-foreground">Sources</h4>
+                        {entry.sourceUrls.map((url, i) => (
+                             <Button key={i} asChild variant="link" size="sm" className="p-0 h-auto block">
+                                <Link href={url} target="_blank" rel="noopener noreferrer" className="text-xs truncate">
+                                    <LinkIcon className="mr-2 h-3 w-3 inline-block" />{url}
+                                </Link>
+                            </Button>
+                        ))}
+                    </div>
+                </>
+            )}
         </div>
     );
 }
