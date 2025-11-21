@@ -19,6 +19,7 @@ import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomPoem, PoetryResult } from '@/app/actions/poetry-randomizer-action';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from './ui/separator';
+import { Badge } from './ui/badge';
 
 export default function PoetryRandomizer() {
   const [result, setResult] = useState<PoetryResult | null>(null);
@@ -85,7 +86,7 @@ export default function PoetryRandomizer() {
           <div className="relative w-full animate-fade-in space-y-4 p-4 rounded-lg bg-card/50 border">
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-primary">{result.title}</h3>
-              <p className="text-sm text-muted-foreground">by {result.author}</p>
+              <p className="text-sm text-muted-foreground">by <Badge>{result.author}</Badge></p>
             </div>
             <Separator />
             <div className="mt-4 space-y-2 text-center text-card-foreground/90">

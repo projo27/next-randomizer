@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.6 : Poetry Randomizer release
 - v1.2.5 : Searching the Randomizer Tools release
 - v1.2.4 : Word Randomizer release
 - v1.2.3 : Pair Randomizer release
@@ -52,7 +53,7 @@
 - Historical Event Randomizer ✅
 - Google sheet Randomizer
 - Scripture randomizer (bible, quran, veda, tripitaka, Mormon),
-- Random Poetry
+- Random Poetry ✅
 - Random Quote ✅
 - Random name generator
 - Plant ✅
@@ -108,6 +109,7 @@
 - Wikipedia [wikipedia.com](https://en.wikipedia.org/)
 - Random Word API → [random-word-api.vercel.app](https://random-word-api.vercel.app)
 - Dictionary API → [dictionaryapi.dev](https://dictionaryapi.dev)
+- Poetry DB → [poetrydb.org](https://poetrydb.org)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
 ---
@@ -130,4 +132,3 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
-
