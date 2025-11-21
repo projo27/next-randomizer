@@ -35,23 +35,17 @@ export function ToolNavigation() {
     [pathname, router, searchParams],
   );
 
-  const filteredVisible = useMemo(
+  const lowercasedQuery = searchQuery.toLowerCase();
+  
+  const hasSearchResultsInHidden = useMemo(
     () =>
-      menuOrder.visible.filter((item) =>
-        item.text.toLowerCase().includes(searchQuery.toLowerCase()),
+      lowercasedQuery.length > 0 &&
+      menuOrder.hidden.some((item) =>
+        item.text.toLowerCase().includes(lowercasedQuery)
       ),
-    [menuOrder.visible, searchQuery],
-  );
-
-  const filteredHidden = useMemo(
-    () =>
-      menuOrder.hidden.filter((item) =>
-        item.text.toLowerCase().includes(searchQuery.toLowerCase()),
-      ),
-    [menuOrder.hidden, searchQuery],
+    [menuOrder.hidden, lowercasedQuery]
   );
   
-  const hasSearchResultsInHidden = searchQuery.length > 0 && filteredHidden.length > 0;
   const showCollapsible = menuOrder.hidden.length > 0 && searchQuery === "";
 
   return (
@@ -79,21 +73,23 @@ export function ToolNavigation() {
 
       <Collapsible open={isCollapsibleOpen || hasSearchResultsInHidden} onOpenChange={setIsCollapsibleOpen}>
         <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
-          {filteredVisible.map((item) => (
+          {menuOrder.visible.map((item) => (
             <MenuTriggerItem
               key={item.value}
               item={item}
               isActive={activeTab === item.value}
               onClick={() => handleTabChange(item.value)}
+              isHighlighted={lowercasedQuery ? item.text.toLowerCase().includes(lowercasedQuery) : false}
             />
           ))}
           <CollapsibleContent className="contents">
-            {filteredHidden.map((item) => (
+            {menuOrder.hidden.map((item) => (
               <MenuTriggerItem
                 key={item.value}
                 item={item}
                 isActive={activeTab === item.value}
                 onClick={() => handleTabChange(item.value)}
+                isHighlighted={lowercasedQuery ? item.text.toLowerCase().includes(lowercasedQuery) : false}
               />
             ))}
           </CollapsibleContent>
@@ -123,4 +119,3 @@ export function ToolNavigation() {
     </div>
   );
 }
-
