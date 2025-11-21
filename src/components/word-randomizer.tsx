@@ -55,14 +55,14 @@ function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: {
 
             <Separator />
             
-            <div className="space-y-4">
+            <div className="space-y-8">
                 {entry.meanings.map((meaning, index) => (
                     <div key={index} className="space-y-3">
                         <Badge variant="secondary" className="capitalize">{meaning.partOfSpeech}</Badge>
                         <ul className="list-decimal list-inside space-y-3 pl-2">
                             {meaning.definitions.slice(0, 3).map((def, defIndex) => (
                                 <li key={defIndex}>
-                                    <p>{def.definition}</p>
+                                    {def.definition}
                                     {def.example && (
                                         <p className="text-sm text-muted-foreground italic pl-4 mt-1">
                                             "{def.example}"
@@ -72,15 +72,15 @@ function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: {
                             ))}
                         </ul>
                          {(meaning.synonyms && meaning.synonyms.length > 0) && (
-                            <div className="pl-6">
+                            <div className="ml-2 pl-4 border-l-4 border-muted-background">
                                 <h4 className="text-sm font-semibold text-muted-foreground">Synonyms</h4>
-                                <div className="flex flex-wrap gap-2 mt-1">
+                                <div className="flex flex-wrap gap-2 mt-2">
                                     {meaning.synonyms.map(syn => <Badge key={syn} variant="outline">{syn}</Badge>)}
                                 </div>
                             </div>
                         )}
                         {(meaning.antonyms && meaning.antonyms.length > 0) && (
-                            <div className="pl-6">
+                            <div className="ml-2 pl-4 border-l-4 border-muted-background">
                                 <h4 className="text-sm font-semibold text-muted-foreground">Antonyms</h4>
                                 <div className="flex flex-wrap gap-2 mt-1">
                                     {meaning.antonyms.map(ant => <Badge key={ant} variant="outline">{ant}</Badge>)}
@@ -172,7 +172,9 @@ export default function WordRandomizer() {
       <CardHeader>
         <CardTitle>Random Dictionary Word</CardTitle>
         <CardDescription>
-          Generate a random English word and discover its definition, pronunciation, and usage.
+          Generate a random English word and discover its definition, pronunciation, and usage. 
+          <i>Powered by <Link href="//random-word-api.vercel.app" target="_blank">random-word-api.vercel.app</Link> 
+          and <Link href="//dictionaryapi.dev" target="_blank">dictionaryapi.dev</Link></i>
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[300px] flex items-center justify-center">
