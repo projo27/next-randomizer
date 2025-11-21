@@ -72,7 +72,7 @@ export async function getEventsForDay(month: number, day: number): Promise<Wikip
         console.warn("Skipping an invalid event from Wikipedia:", validation.error);
         return null;
       }
-    }).filter((event): event is WikipediaEvent => event !== null);
+    }).filter((event: any): event is WikipediaEvent => event !== null);
     
     return parsedEvents;
 

@@ -1,9 +1,9 @@
+
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { TabsList } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useMenuOrder } from "@/context/MenuOrderContext";
 import { MenuTriggerItem } from "./menu-trigger-item";
 import {
@@ -12,9 +12,10 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, Search, X } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { MenuItemData } from "@/lib/menu-data";
+import { Input } from "./ui/input";
+import { cn } from "@/lib/utils";
 
 export function ToolNavigation() {
   const router = useRouter();
@@ -23,6 +24,40 @@ export function ToolNavigation() {
   const activeTab = searchParams.get("tab") || "list";
 
   const { menuOrder, loading } = useMenuOrder();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isClosing) {
+      const timer = setTimeout(() => {
+        setIsSearchFocused(false);
+        setIsClosing(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isClosing]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        // Only unfocus if the search query is empty
+        if (!searchQuery && isSearchFocused) {
+          setIsClosing(true);
+        }
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [searchQuery, isSearchFocused]);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -33,52 +68,146 @@ export function ToolNavigation() {
     [pathname, router, searchParams],
   );
 
-  // Removed blocking skeleton loader to show default content immediately
+  const handleSearchIconClick = () => {
+    setIsSearchFocused(true);
+    setTimeout(() => searchInputRef.current?.focus(), 100);
+  };
+
+  const lowercasedQuery = searchQuery.toLowerCase();
+
+  const hasSearchResultsInHidden = useMemo(
+    () =>
+      lowercasedQuery.length > 0 &&
+      menuOrder.hidden.some((item) =>
+        item.text.toLowerCase().includes(lowercasedQuery),
+      ),
+    [menuOrder.hidden, lowercasedQuery],
+  );
+
+  const showCollapsible = menuOrder.hidden.length > 0 && searchQuery === "";
 
   return (
-    <Collapsible className="w-full">
-      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
-        {menuOrder.visible.map((item: any) => (
-          <MenuTriggerItem
-            key={item.value}
-            item={item}
-            isActive={activeTab === item.value}
-            onClick={() => handleTabChange(item.value)}
-          />
-        ))}
-        <CollapsibleContent className="contents">
-          {menuOrder.hidden.map((item: any) => (
+    <div className="w-full mb-4">
+      <div className="flex justify-end w-full mb-2">
+        <div
+          ref={searchContainerRef}
+          className={cn(
+            "relative flex items-center transition-all duration-300 ease-in-out overflow-hidden",
+            isSearchFocused && !isClosing
+              ? "w-full"
+              : "w-10 md:w-1/4 justify-end",
+          )}
+        >
+          {isSearchFocused ? (
+            <>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search for a tool..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => {
+                  if (!searchQuery) setIsClosing(true);
+                }}
+                className="pl-10 text-xs w-full"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                onClick={() => {
+                  setSearchQuery("");
+                  setIsClosing(true);
+                  searchInputRef.current?.blur();
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* Icon button for mobile */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleSearchIconClick}
+                className="md:hidden"
+              >
+                <Search className="h-5 w-5 text-muted-foreground" />
+              </Button>
+              {/* Readonly input for desktop */}
+              <div
+                className="relative hidden md:flex items-center w-full cursor-text"
+                onClick={handleSearchIconClick}
+              >
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+                <Input
+                  placeholder="Search..."
+                  className="pl-10 text-xs w-full"
+                  readOnly
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <Collapsible
+        open={isCollapsibleOpen || hasSearchResultsInHidden}
+        onOpenChange={setIsCollapsibleOpen}
+      >
+        <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
+          {menuOrder.visible.map((item) => (
             <MenuTriggerItem
               key={item.value}
               item={item}
               isActive={activeTab === item.value}
               onClick={() => handleTabChange(item.value)}
+              isHighlighted={
+                lowercasedQuery
+                  ? item.text.toLowerCase().includes(lowercasedQuery)
+                  : false
+              }
             />
           ))}
-        </CollapsibleContent>
-      </TabsList>
+          <CollapsibleContent className="contents">
+            {menuOrder.hidden.map((item) => (
+              <MenuTriggerItem
+                key={item.value}
+                item={item}
+                isActive={activeTab === item.value}
+                onClick={() => handleTabChange(item.value)}
+                isHighlighted={
+                  lowercasedQuery
+                    ? item.text.toLowerCase().includes(lowercasedQuery)
+                    : false
+                }
+              />
+            ))}
+          </CollapsibleContent>
+        </TabsList>
 
-      {menuOrder.hidden.length > 0 && (
-        <div className="relative flex items-center justify-center mt-1 mb-4">
-          <Separator className="flex-1" />
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-8 group text-xs"
-            >
-              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} 
-              <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
-                Show More
-              </span>
-              <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">
-                Show Less
-              </span>
-              {!loading && <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />}
-            </Button>
-          </CollapsibleTrigger>
-          <Separator className="flex-1" />
-        </div>
-      )}
-    </Collapsible>
+        {showCollapsible && (
+          <div className="relative flex items-center justify-center mt-1 mb-4">
+            <Separator className="flex-1" />
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="h-8 group text-xs">
+                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
+                  Show More
+                </span>
+                <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">
+                  Show Less
+                </span>
+                {!loading && (
+                  <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <Separator className="flex-1" />
+          </div>
+        )}
+      </Collapsible>
+    </div>
   );
 }
