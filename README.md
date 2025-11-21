@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.5 : Searching the Randomizer Tools release
 - v1.2.4 : Word Randomizer release
 - v1.2.3 : Pair Randomizer release
 - v1.2.2 : Seating Chart Randomizer release
@@ -29,7 +30,6 @@
 - Number Randomizer ✅
 - Sequence Shuffler ✅
 - Pair Randomizer ✅
-- Word Randomizer ✅
 - Password Generator ✅
 - Date Randomizer ✅
 - Team Shuffler ✅
@@ -58,7 +58,7 @@
 - Plant ✅
 - Animalia
 - Object / Things Randomizer
-- Random word by language
+- Random word by language ✅ (english only for now)
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
 - Movie Randomizer
@@ -85,13 +85,14 @@
 - Make randomize duration into global state ✅
 - Play music when click randomize (play randomization animation) ✅
 - User can rearrange the menu / tools to satisfy their needs ✅
-- Add survey whats new feature to catch user needs
+- Add survey whats new feature to catch user needs ✅
 - Add API to support another developer to generate randomize (PRO)
 - Add Running news after title and subtitle, to aware user for new feature or news
 - User can save and share the result (PRO)
 - Mobile support
 - Confetti after suffling / randomization done
 - Sitemap to Crawling Index from Search Engine ✅
+- Searching the Randomizer Tools ✅
 
 ### Thanks to :
 
@@ -104,6 +105,7 @@
 - Giphy → [giphy.com](https://giphy.com)
 - Music Brainz → [musicbrainz.com](https://musicbrainz.com)
 - API Radio Browser [radio-browser.info](https://de1.api.radio-browser.info)
+- Wikipedia [wikipedia.com](https://en.wikipedia.org/)
 - Random Word API → [random-word-api.vercel.app](https://random-word-api.vercel.app)
 - Dictionary API → [dictionaryapi.dev](https://dictionaryapi.dev)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)

@@ -26,9 +26,20 @@ export function ToolNavigation() {
   const { menuOrder, loading } = useMenuOrder();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isClosing) {
+      const timer = setTimeout(() => {
+        setIsSearchFocused(false);
+        setIsClosing(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isClosing]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -37,8 +48,8 @@ export function ToolNavigation() {
         !searchContainerRef.current.contains(event.target as Node)
       ) {
         // Only unfocus if the search query is empty
-        if (!searchQuery) {
-          setIsSearchFocused(false);
+        if (!searchQuery && isSearchFocused) {
+          setIsClosing(true);
         }
       }
     }
@@ -46,7 +57,7 @@ export function ToolNavigation() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [searchQuery]);
+  }, [searchQuery, isSearchFocused]);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -81,8 +92,10 @@ export function ToolNavigation() {
         <div
           ref={searchContainerRef}
           className={cn(
-            "relative flex items-center transition-all duration-300 ease-in-out",
-            isSearchFocused ? "w-full" : "w-10 sm:w-auto md:w-1/3 justify-end",
+            "relative flex items-center transition-all duration-300 ease-in-out overflow-hidden",
+            isSearchFocused && !isClosing
+              ? "w-full"
+              : "w-10 md:w-1/4 justify-end",
           )}
         >
           {isSearchFocused ? (
@@ -95,9 +108,9 @@ export function ToolNavigation() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => {
-                  if (!searchQuery) setIsSearchFocused(false);
+                  if (!searchQuery) setIsClosing(true);
                 }}
-                className="pl-10 text-sm w-full"
+                className="pl-10 text-xs w-full"
               />
               <Button
                 variant="ghost"
@@ -105,7 +118,7 @@ export function ToolNavigation() {
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
                 onClick={() => {
                   setSearchQuery("");
-                  setIsSearchFocused(false);
+                  setIsClosing(true);
                   searchInputRef.current?.blur();
                 }}
               >
@@ -131,7 +144,7 @@ export function ToolNavigation() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                 <Input
                   placeholder="Search..."
-                  className="pl-10 text-sm w-full"
+                  className="pl-10 text-xs w-full"
                   readOnly
                 />
               </div>
