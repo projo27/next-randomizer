@@ -194,7 +194,7 @@ export function ToolNavigation() {
               <Button variant="ghost" className="h-8 group text-xs">
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
-                  Show More
+                  Show More Tools
                 </span>
                 <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">
                   Show Less

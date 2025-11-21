@@ -268,3 +268,21 @@ export async function recordUserVote(
     console.error("Error recording user vote:", error);
   }
 }
+
+/**
+ * Saves the user's email to Firestore.
+ * @param userId The ID of the user.
+ * @param email The email of the user.
+ */
+export async function saveUserEmail(
+  userId: string,
+  email: string,
+): Promise<void> {
+  if (!userId || !email) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { email }, { merge: true });
+  } catch (error) {
+    console.error("Error saving user email:", error);
+  }
+}

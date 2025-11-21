@@ -16,7 +16,7 @@ import {
   signOut as firebaseSignOut,
 } from "@/lib/firebase-auth";
 import { auth } from "@/lib/firebase-config";
-import { getThemePreference } from "@/services/user-preferences";
+import { getThemePreference, saveUserEmail } from "@/services/user-preferences";
 import type { AuthContextType, AuthUser, FirebaseUser } from "@/types/auth";
 
 // --- Dummy User for Development ---
@@ -71,6 +71,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (savedTheme) {
           setTheme(savedTheme);
         }
+        if (authUser.email) {
+          await saveUserEmail(authUser.uid, authUser.email);
+        }
       } else {
         setTheme("system");
       }
@@ -105,14 +108,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loading,
     signInWithGoogle: isDevelopment
       ? async () => {
-          console.log("DEV MODE: signInWithGoogle is disabled.");
-          return dummyUser;
-        }
+        console.log("DEV MODE: signInWithGoogle is disabled.");
+        return dummyUser;
+      }
       : firebaseSignInWithGoogle,
     signOut: isDevelopment
       ? async () => {
-          console.log("DEV MODE: signOut is disabled.");
-        }
+        console.log("DEV MODE: signOut is disabled.");
+      }
       : firebaseSignOut,
   };
 

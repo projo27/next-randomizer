@@ -121,7 +121,7 @@ export function MenuOrderSettings() {
                   <Separator className="w-full" />
                   <div className="absolute px-4 bg-card text-sm text-muted-foreground flex items-center gap-2">
                     <ArrowDown className="h-4 w-4" />
-                    Hidden in "Show More"
+                    Hidden in "Show More Tools"
                   </div>
                 </div>
               )}

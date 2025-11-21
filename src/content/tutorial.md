@@ -49,7 +49,7 @@ Once logged in, you can access the settings page from the user dropdown menu (cl
 
 -   **Animation Duration**: Control how long randomization animations (like dice rolls or spinners) last.
 -   **Play Sounds**: Enable or disable the sound effects that play during randomization.
--   **Tools Order**: This is a powerful feature! You can drag and drop the tools to rearrange them in the main navigation bar. This lets you put your most-used tools first for quick access. The divider shows where the "Show More" button will appear.
+-   **Tools Order**: This is a powerful feature! You can drag and drop the tools to rearrange them in the main navigation bar. This lets you put your most-used tools first for quick access. The divider shows where the "Show More Tools" button will appear.
 
 ---
 
