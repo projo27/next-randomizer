@@ -1,7 +1,6 @@
-// src/components/word-randomizer.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -11,32 +10,90 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { Wand2, Copy, Check } from 'lucide-react';
+import { Wand2, Copy, Check, Volume2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Skeleton } from './ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
-import { getRandomWord, PartOfSpeech } from '@/app/actions/word-randomizer-action';
-import { PARTS_OF_SPEECH } from '@/lib/word-data';
+import { getRandomDictionaryWord, DictionaryEntry } from '@/app/actions/word-randomizer-action';
+import { Badge } from './ui/badge';
+import { Separator } from './ui/separator';
+
+function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: { 
+    entry: DictionaryEntry;
+    onCopy: () => void;
+    isCopied: boolean;
+    onPlayAudio: (audioUrl: string) => void;
+}) {
+    const mainPhonetic = entry.phonetics.find(p => p.text && p.audio);
+    const audioUrl = mainPhonetic?.audio;
+
+    return (
+        <div className="w-full animate-fade-in space-y-6 p-4 rounded-lg bg-card/50 border">
+            <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                    <h3 className="text-4xl font-bold capitalize text-primary">{entry.word}</h3>
+                    {mainPhonetic?.text && (
+                        <p className="text-muted-foreground">{mainPhonetic.text}</p>
+                    )}
+                </div>
+                <div className="flex items-center gap-2">
+                    {audioUrl && (
+                        <Button variant="outline" size="icon" onClick={() => onPlayAudio(audioUrl)}>
+                            <Volume2 className="h-5 w-5" />
+                        </Button>
+                    )}
+                    <Button variant="ghost" size="icon" onClick={onCopy}>
+                        {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+                    </Button>
+                </div>
+            </div>
+
+            <Separator />
+            
+            <div className="space-y-4">
+                {entry.meanings.map((meaning, index) => (
+                    <div key={index} className="space-y-2">
+                        <Badge variant="secondary" className="capitalize">{meaning.partOfSpeech}</Badge>
+                        <ul className="list-decimal list-inside space-y-3 pl-2">
+                            {meaning.definitions.slice(0, 3).map((def, defIndex) => (
+                                <li key={defIndex}>
+                                    <p>{def.definition}</p>
+                                    {def.example && (
+                                        <p className="text-sm text-muted-foreground italic pl-4 mt-1">
+                                            "{def.example}"
+                                        </p>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 
 export default function WordRandomizer() {
-  const [partOfSpeech, setPartOfSpeech] = useState<PartOfSpeech>('all');
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<DictionaryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
-  const [isRateLimited, triggerRateLimit] = useRateLimiter(1000);
+  const [isRateLimited, triggerRateLimit] = useRateLimiter(2000);
   const { user } = useAuth();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  useEffect(() => {
+    audioRef.current = new Audio();
+    return () => {
+        audioRef.current?.pause();
+        audioRef.current = null;
+    }
+  }, []);
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_word_randomizer', user_email: user?.email ?? 'guest' });
@@ -45,12 +102,13 @@ export default function WordRandomizer() {
     triggerRateLimit();
     setIsLoading(true);
     setError(null);
+    setResult(null);
 
     try {
-      const word = await getRandomWord(partOfSpeech);
-      setResult(word);
+      const wordData = await getRandomDictionaryWord();
+      setResult(wordData);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Could not fetch a word. Please try again.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -59,72 +117,50 @@ export default function WordRandomizer() {
 
   const handleCopy = () => {
     if (!result) return;
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(result.word);
     setIsCopied(true);
     toast({
       title: 'Copied!',
-      description: 'Random word copied to clipboard.',
+      description: `The word "${result.word}" has been copied to your clipboard.`,
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
+  
+  const handlePlayAudio = (audioUrl: string) => {
+      if (audioRef.current) {
+          audioRef.current.src = audioUrl;
+          audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+      }
+  }
 
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
-        <CardTitle>Random Word Generator</CardTitle>
+        <CardTitle>Random Dictionary Word</CardTitle>
         <CardDescription>
-          Generate a random English word, with an option to filter by its part of speech.
+          Generate a random English word and discover its definition, pronunciation, and usage.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="part-of-speech">Part of Speech</Label>
-          <Select
-            value={partOfSpeech}
-            onValueChange={(value) => setPartOfSpeech(value as PartOfSpeech)}
-            disabled={isLoading || isRateLimited}
-          >
-            <SelectTrigger id="part-of-speech">
-              <SelectValue placeholder="Select a type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types (Random)</SelectItem>
-              {PARTS_OF_SPEECH.map((pos) => (
-                <SelectItem key={pos} value={pos} className="capitalize">
-                  {pos}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="min-h-[150px] flex items-center justify-center bg-muted/50 rounded-lg p-4 relative">
-          {isLoading ? (
-            <p className="text-3xl font-bold animate-pulse text-muted-foreground">Generating...</p>
-          ) : result ? (
-            <>
-              <p className="text-5xl font-bold text-accent animate-fade-in">{result}</p>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCopy}
-                className="absolute top-2 right-2"
-              >
-                {isCopied ? (
-                  <Check className="h-5 w-5 text-green-500" />
-                ) : (
-                  <Copy className="h-5 w-5" />
-                )}
-              </Button>
-            </>
-          ) : (
-            <p className="text-muted-foreground">Your random word will appear here.</p>
-          )}
-        </div>
-
-        {error && (
+      <CardContent className="min-h-[300px] flex items-center justify-center">
+        {isLoading && (
+            <div className="w-full space-y-4 p-4">
+                <Skeleton className="h-10 w-1/3" />
+                <Skeleton className="h-4 w-1/4" />
+                <Separator className="my-4" />
+                <Skeleton className="h-6 w-1/5 mb-2" />
+                <Skeleton className="h-5 w-full" />
+                <Skeleton className="h-5 w-5/6" />
+            </div>
+        )}
+        {!isLoading && result && (
+            <WordDisplay entry={result} onCopy={handleCopy} isCopied={isCopied} onPlayAudio={handlePlayAudio} />
+        )}
+        {!isLoading && !result && !error && (
+            <p className="text-muted-foreground text-center">Click the button to generate a random word from the dictionary.</p>
+        )}
+         {error && (
           <Alert variant="destructive">
-            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>Oops! An Error Occurred</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -136,7 +172,7 @@ export default function WordRandomizer() {
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
         >
           <Wand2 className="mr-2 h-4 w-4" />
-          {isLoading ? 'Generating...' : isRateLimited ? 'Please wait...' : 'Randomize Word'}
+          {isLoading ? 'Generating...' : isRateLimited ? 'Please wait...' : 'Get Random Word'}
         </Button>
       </CardFooter>
     </Card>
