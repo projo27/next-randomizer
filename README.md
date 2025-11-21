@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.4 : Word Randomizer release
 - v1.2.3 : Pair Randomizer release
 - v1.2.2 : Seating Chart Randomizer release
 - v1.2.1 : Historical Event Randomizer release
@@ -28,6 +29,7 @@
 - Number Randomizer ✅
 - Sequence Shuffler ✅
 - Pair Randomizer ✅
+- Word Randomizer ✅
 - Password Generator ✅
 - Date Randomizer ✅
 - Team Shuffler ✅
@@ -102,6 +104,8 @@
 - Giphy → [giphy.com](https://giphy.com)
 - Music Brainz → [musicbrainz.com](https://musicbrainz.com)
 - API Radio Browser [radio-browser.info](https://de1.api.radio-browser.info)
+- Random Word API → [random-word-api.vercel.app](https://random-word-api.vercel.app)
+- Dictionary API → [dictionaryapi.dev](https://dictionaryapi.dev)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
 ---
@@ -124,3 +128,4 @@ To ensure all features of the application work correctly, you must enable the fo
 -   **YouTube Data API v3**: For the YouTube Randomizer.
 -   **Maps Embed API**: For the Google Maps Place Randomizer.
 -   **Giphy API**: For the Meme Randomizer.
+
