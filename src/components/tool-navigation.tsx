@@ -2,7 +2,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { TabsList } from "@/components/ui/tabs";
 import { useMenuOrder } from "@/context/MenuOrderContext";
 import { MenuTriggerItem } from "./menu-trigger-item";
@@ -15,6 +15,7 @@ import { Button } from "./ui/button";
 import { ChevronDown, Loader2, Search, X } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
+import { cn } from "@/lib/utils";
 
 export function ToolNavigation() {
   const router = useRouter();
@@ -25,6 +26,24 @@ export function ToolNavigation() {
   const { menuOrder, loading } = useMenuOrder();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchFocused(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -35,43 +54,94 @@ export function ToolNavigation() {
     [pathname, router, searchParams],
   );
 
+  const handleSearchIconClick = () => {
+    setIsSearchFocused(true);
+    setTimeout(() => searchInputRef.current?.focus(), 100);
+  };
+
   const lowercasedQuery = searchQuery.toLowerCase();
-  
+
   const hasSearchResultsInHidden = useMemo(
     () =>
       lowercasedQuery.length > 0 &&
       menuOrder.hidden.some((item) =>
-        item.text.toLowerCase().includes(lowercasedQuery)
+        item.text.toLowerCase().includes(lowercasedQuery),
       ),
-    [menuOrder.hidden, lowercasedQuery]
+    [menuOrder.hidden, lowercasedQuery],
   );
-  
+
   const showCollapsible = menuOrder.hidden.length > 0 && searchQuery === "";
 
   return (
     <div className="w-full mb-4">
-      <div className="relative mb-2 max-w-sm mx-auto">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder="Search for a tool..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
-        {searchQuery && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-            onClick={() => setSearchQuery("")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+      <div className="flex justify-end w-full mb-2">
+        <div
+          ref={searchContainerRef}
+          className={cn(
+            "relative flex items-center transition-all duration-300 ease-in-out",
+            isSearchFocused
+              ? "w-full"
+              : "w-10 sm:w-auto md:w-1/3 justify-end",
+          )}
+        >
+          {isSearchFocused ? (
+            <>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search for a tool..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => {
+                  if (!searchQuery) setIsSearchFocused(false);
+                }}
+                className="pl-10 text-sm w-full"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                onClick={() => {
+                  setSearchQuery("");
+                  setIsSearchFocused(false);
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSearchIconClick}
+              className="md:hidden"
+            >
+              <Search className="h-5 w-5 text-muted-foreground" />
+            </Button>
+          )}
+           <div
+            className={cn(
+                "relative hidden md:flex items-center w-full",
+                isSearchFocused && "hidden"
+            )}
+           >
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+                <Input
+                    ref={isSearchFocused ? null : searchInputRef}
+                    type="text"
+                    placeholder="Search..."
+                    onFocus={() => setIsSearchFocused(true)}
+                    className="pl-10 text-sm w-full"
+                    readOnly
+                />
+           </div>
+        </div>
       </div>
-
-      <Collapsible open={isCollapsibleOpen || hasSearchResultsInHidden} onOpenChange={setIsCollapsibleOpen}>
+      <Collapsible
+        open={isCollapsibleOpen || hasSearchResultsInHidden}
+        onOpenChange={setIsCollapsibleOpen}
+      >
         <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
           {menuOrder.visible.map((item) => (
             <MenuTriggerItem
@@ -79,7 +149,11 @@ export function ToolNavigation() {
               item={item}
               isActive={activeTab === item.value}
               onClick={() => handleTabChange(item.value)}
-              isHighlighted={lowercasedQuery ? item.text.toLowerCase().includes(lowercasedQuery) : false}
+              isHighlighted={
+                lowercasedQuery
+                  ? item.text.toLowerCase().includes(lowercasedQuery)
+                  : false
+              }
             />
           ))}
           <CollapsibleContent className="contents">
@@ -89,7 +163,11 @@ export function ToolNavigation() {
                 item={item}
                 isActive={activeTab === item.value}
                 onClick={() => handleTabChange(item.value)}
-                isHighlighted={lowercasedQuery ? item.text.toLowerCase().includes(lowercasedQuery) : false}
+                isHighlighted={
+                  lowercasedQuery
+                    ? item.text.toLowerCase().includes(lowercasedQuery)
+                    : false
+                }
               />
             ))}
           </CollapsibleContent>
