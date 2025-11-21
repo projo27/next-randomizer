@@ -36,14 +36,17 @@ export function ToolNavigation() {
         searchContainerRef.current &&
         !searchContainerRef.current.contains(event.target as Node)
       ) {
-        setIsSearchFocused(false);
+        // Only unfocus if the search query is empty
+        if (!searchQuery) {
+          setIsSearchFocused(false);
+        }
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [searchQuery]);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -79,9 +82,7 @@ export function ToolNavigation() {
           ref={searchContainerRef}
           className={cn(
             "relative flex items-center transition-all duration-300 ease-in-out",
-            isSearchFocused
-              ? "w-full"
-              : "w-10 sm:w-auto md:w-1/3 justify-end",
+            isSearchFocused ? "w-full" : "w-10 sm:w-auto md:w-1/3 justify-end",
           )}
         >
           {isSearchFocused ? (
@@ -105,37 +106,37 @@ export function ToolNavigation() {
                 onClick={() => {
                   setSearchQuery("");
                   setIsSearchFocused(false);
+                  searchInputRef.current?.blur();
                 }}
               >
                 <X className="h-4 w-4" />
               </Button>
             </>
           ) : (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleSearchIconClick}
-              className="md:hidden"
-            >
-              <Search className="h-5 w-5 text-muted-foreground" />
-            </Button>
-          )}
-           <div
-            className={cn(
-                "relative hidden md:flex items-center w-full",
-                isSearchFocused && "hidden"
-            )}
-           >
+            <>
+              {/* Icon button for mobile */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleSearchIconClick}
+                className="md:hidden"
+              >
+                <Search className="h-5 w-5 text-muted-foreground" />
+              </Button>
+              {/* Readonly input for desktop */}
+              <div
+                className="relative hidden md:flex items-center w-full cursor-text"
+                onClick={handleSearchIconClick}
+              >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
                 <Input
-                    ref={isSearchFocused ? null : searchInputRef}
-                    type="text"
-                    placeholder="Search..."
-                    onFocus={() => setIsSearchFocused(true)}
-                    className="pl-10 text-sm w-full"
-                    readOnly
+                  placeholder="Search..."
+                  className="pl-10 text-sm w-full"
+                  readOnly
                 />
-           </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <Collapsible
