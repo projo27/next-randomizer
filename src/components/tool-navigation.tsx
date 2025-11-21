@@ -1,9 +1,9 @@
+
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { TabsList } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useMenuOrder } from "@/context/MenuOrderContext";
 import { MenuTriggerItem } from "./menu-trigger-item";
 import {
@@ -12,9 +12,9 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, Search, X } from "lucide-react";
 import { Separator } from "./ui/separator";
-import { MenuItemData } from "@/lib/menu-data";
+import { Input } from "./ui/input";
 
 export function ToolNavigation() {
   const router = useRouter();
@@ -23,6 +23,8 @@ export function ToolNavigation() {
   const activeTab = searchParams.get("tab") || "list";
 
   const { menuOrder, loading } = useMenuOrder();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
   const handleTabChange = useCallback(
     (value: string) => {
@@ -33,21 +35,51 @@ export function ToolNavigation() {
     [pathname, router, searchParams],
   );
 
-  // Removed blocking skeleton loader to show default content immediately
+  const filteredVisible = useMemo(
+    () =>
+      menuOrder.visible.filter((item) =>
+        item.text.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [menuOrder.visible, searchQuery],
+  );
+
+  const filteredHidden = useMemo(
+    () =>
+      menuOrder.hidden.filter((item) =>
+        item.text.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
+    [menuOrder.hidden, searchQuery],
+  );
+  
+  const hasSearchResultsInHidden = searchQuery.length > 0 && filteredHidden.length > 0;
+  const showCollapsible = menuOrder.hidden.length > 0 && searchQuery === "";
 
   return (
-    <Collapsible className="w-full">
-      <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
-        {menuOrder.visible.map((item: any) => (
-          <MenuTriggerItem
-            key={item.value}
-            item={item}
-            isActive={activeTab === item.value}
-            onClick={() => handleTabChange(item.value)}
-          />
-        ))}
-        <CollapsibleContent className="contents">
-          {menuOrder.hidden.map((item: any) => (
+    <div className="w-full mb-4">
+      <div className="relative mb-2 max-w-sm mx-auto">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search for a tool..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+        />
+        {searchQuery && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+            onClick={() => setSearchQuery("")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
+      <Collapsible open={isCollapsibleOpen || hasSearchResultsInHidden} onOpenChange={setIsCollapsibleOpen}>
+        <TabsList className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
+          {filteredVisible.map((item) => (
             <MenuTriggerItem
               key={item.value}
               item={item}
@@ -55,30 +87,40 @@ export function ToolNavigation() {
               onClick={() => handleTabChange(item.value)}
             />
           ))}
-        </CollapsibleContent>
-      </TabsList>
+          <CollapsibleContent className="contents">
+            {filteredHidden.map((item) => (
+              <MenuTriggerItem
+                key={item.value}
+                item={item}
+                isActive={activeTab === item.value}
+                onClick={() => handleTabChange(item.value)}
+              />
+            ))}
+          </CollapsibleContent>
+        </TabsList>
 
-      {menuOrder.hidden.length > 0 && (
-        <div className="relative flex items-center justify-center mt-1 mb-4">
-          <Separator className="flex-1" />
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="ghost"
-              className="h-8 group text-xs"
-            >
-              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} 
-              <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
-                Show More
-              </span>
-              <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">
-                Show Less
-              </span>
-              {!loading && <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />}
-            </Button>
-          </CollapsibleTrigger>
-          <Separator className="flex-1" />
-        </div>
-      )}
-    </Collapsible>
+        {showCollapsible && (
+          <div className="relative flex items-center justify-center mt-1 mb-4">
+            <Separator className="flex-1" />
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="h-8 group text-xs">
+                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
+                  Show More
+                </span>
+                <span className="group-data-[state=open]:block group-data-[state=closed]:hidden">
+                  Show Less
+                </span>
+                {!loading && (
+                  <ChevronDown className="h-4 w-4 ml-2 transition-transform group-data-[state=open]:rotate-180" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <Separator className="flex-1" />
+          </div>
+        )}
+      </Collapsible>
+    </div>
   );
 }
+
