@@ -352,7 +352,7 @@ export const triggerList = [
   // },
   {
     value: "image",
-    text: "Image",
+    text: "Local Image",
     hidden: false,
     icon: <ImageIcon className="h-5 w-5" />,
     content: <ImageRandomizer />,
