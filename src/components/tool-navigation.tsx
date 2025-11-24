@@ -12,10 +12,12 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
-import { ChevronDown, Loader2, Search, X } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown, LucideListOrdered, Loader2, Search, X } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export function ToolNavigation() {
   const router = useRouter();
@@ -88,13 +90,13 @@ export function ToolNavigation() {
 
   return (
     <div className="w-full mb-4">
-      <div className="flex justify-end w-full mb-2">
+      <div className="flex justify-end w-full mb-2 gap-2">
         <div
           ref={searchContainerRef}
           className={cn(
             "relative flex items-center transition-all duration-300 ease-in-out overflow-hidden",
             isSearchFocused && !isClosing
-              ? "w-full"
+              ? "flex-1"
               : "w-10 md:w-1/4 justify-end",
           )}
         >
@@ -151,6 +153,33 @@ export function ToolNavigation() {
             </>
           )}
         </div>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                asChild
+                className={cn(
+                  "transition-all duration-300 ease-in-out",
+                  isSearchFocused && !isClosing
+                    ? "w-0 p-0 overflow-hidden opacity-0 border-0"
+                    : "w-10 opacity-100",
+                )}
+              >
+                <Link href="/setting#tools-order">
+                  <LucideListOrdered className="h-5 w-5 text-muted-foreground" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit Tools Order</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        
       </div>
       <Collapsible
         open={isCollapsibleOpen || hasSearchResultsInHidden}

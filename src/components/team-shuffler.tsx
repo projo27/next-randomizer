@@ -371,7 +371,7 @@ export default function TeamShuffler() {
                 ))}
               </div>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleAddParticipant}
                 disabled={isShuffling}

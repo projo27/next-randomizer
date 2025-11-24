@@ -103,11 +103,11 @@ export default function SeatingChartRandomizer() {
       setIsRandomizing(false);
     }
   };
-  
+
   const handleCopyResult = () => {
     if (!seatingChart) return;
     const resultString = seatingChart
-      .map((row, rIndex) => 
+      .map((row, rIndex) =>
         `Row ${rIndex + 1}: ` + row.map((seat, cIndex) => `Seat ${cIndex + 1}: ${seat}`).join(', ')
       )
       .join('\n');
@@ -131,90 +131,90 @@ export default function SeatingChartRandomizer() {
           Randomly assign participants to seats in a grid layout.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-           <PresetManager
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="col-span-2">
+          <PresetManager
             toolId="seating_chart"
             currentParams={getCurrentParams()}
             onLoadPreset={handleLoadPreset}
           />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="columns">Columns</Label>
-              <Input
-                id="columns"
-                type="number"
-                min="1"
-                value={cols}
-                onChange={(e) => setCols(e.target.value)}
-                disabled={isRandomizing}
-              />
-            </div>
-            <div className="grid w-full items-center gap-1.5">
-              <Label htmlFor="rows">Rows</Label>
-              <Input
-                id="rows"
-                type="number"
-                min="1"
-                value={rows}
-                onChange={(e) => setRows(e.target.value)}
-                disabled={isRandomizing}
-              />
-            </div>
-          </div>
-          <div className="text-sm text-muted-foreground text-center">
-            Total Seats: {isNaN(numSeats) ? 0 : numSeats}
-          </div>
-
+        </div>
+        <div className="grid grid-cols-[2fr_2fr_1fr] gap-4 col-span-2">
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="participants">Participants ({numParticipants})</Label>
-            <Textarea
-              id="participants"
-              placeholder="Enter one name per line"
-              rows={10}
-              value={participantsText}
-              onChange={(e) => setParticipantsText(e.target.value)}
+            <Label htmlFor="columns">Columns</Label>
+            <Input
+              id="columns"
+              type="number"
+              min="1"
+              value={cols}
+              onChange={(e) => setCols(e.target.value)}
               disabled={isRandomizing}
             />
           </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="rows">Rows</Label>
+            <Input
+              id="rows"
+              type="number"
+              min="1"
+              value={rows}
+              onChange={(e) => setRows(e.target.value)}
+              disabled={isRandomizing}
+            />
+          </div>
+          <div className="text-sm text-muted-foreground text-center my-auto">
+            Total Seats: {isNaN(numSeats) ? 0 : numSeats}
+          </div>
+        </div>
+        <div className="space-y-4 col-span-2 md:col-span-1">
+          <Label htmlFor="participants">Participants ({numParticipants})</Label>
+          <Textarea
+            id="participants"
+            placeholder="Enter one name per line"
+            rows={10}
+            value={participantsText}
+            onChange={(e) => setParticipantsText(e.target.value)}
+            disabled={isRandomizing}
+            className="mt-2 min-h-[300px]"
+          />
         </div>
 
-        <div className="space-y-4">
-            <Label>Seating Chart Result</Label>
-             {error && (
-                <Alert variant="destructive">
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                </Alert>
+        <div className="space-y-4 col-span-2 md:col-span-1">
+          <Label>Seating Chart Result</Label>
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <div className="relative p-4 border rounded-lg min-h-[300px] bg-muted/50">
+            {seatingChart && !isRandomizing && (
+              <div className="absolute top-2 right-2">
+                <Button variant="ghost" size="icon" onClick={handleCopyResult}>
+                  {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+                </Button>
+              </div>
             )}
-            <div className="relative p-4 border rounded-lg min-h-[300px] bg-muted/50">
-                {seatingChart && !isRandomizing && (
-                    <div className="absolute top-2 right-2">
-                        <Button variant="ghost" size="icon" onClick={handleCopyResult}>
-                        {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                        </Button>
-                    </div>
-                )}
-                {isRandomizing ? (
-                    <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-                        {Array.from({ length: Math.min(numSeats, 20) }).map((_, i) => (
-                            <Skeleton key={i} className="h-12 w-full" />
-                        ))}
-                    </div>
-                ) : seatingChart ? (
-                    <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-                        {seatingChart.flat().map((seat, index) => (
-                            <div key={index} className={`flex items-center justify-center h-12 p-1 rounded-md text-xs text-center font-semibold ${seat === 'Empty' ? 'bg-background/50 text-muted-foreground/30 italic' : 'bg-primary/20 text-muted-foreground'}`}>
-                                {seat}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center h-full">
-                        <p className="text-muted-foreground">Your seating chart will appear here.</p>
-                    </div>
-                )}
-            </div>
+            {isRandomizing ? (
+              <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+                {Array.from({ length: Math.min(numSeats, 20) }).map((_, i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : seatingChart ? (
+              <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+                {seatingChart.flat().map((seat, index) => (
+                  <div key={index} className={`flex items-center justify-center h-12 p-1 rounded-md text-xs text-center font-semibold ${seat === 'Empty' ? 'bg-background/50 text-muted-foreground/30 italic' : 'bg-primary/20 text-muted-foreground'}`}>
+                    {seat}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-muted-foreground">Your seating chart will appear here.</p>
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
       <CardFooter>

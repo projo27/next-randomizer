@@ -31,11 +31,11 @@ interface SettingsContextType {
 
 const defaultContextValue: SettingsContextType = {
   animationDuration: 5,
-  setAnimationDuration: () => {},
+  setAnimationDuration: () => { },
   playSounds: true,
-  setPlaySounds: () => {},
+  setPlaySounds: () => { },
   visibleToolCount: 10,
-  setVisibleToolCount: () => {},
+  setVisibleToolCount: () => { },
   loading: true,
 };
 

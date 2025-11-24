@@ -35,6 +35,9 @@ const initialItems: Item[] = [
   { id: "2", value: "Participant 2" },
   { id: "3", value: "Participant 3" },
   { id: "4", value: "Participant 4" },
+  { id: "5", value: "Participant 5" },
+  { id: "6", value: "Participant 6" },
+  { id: "7", value: "Participant 7" },
 ];
 
 function AnimatedResultList({
@@ -219,13 +222,13 @@ export default function SequenceRandomizer() {
           Enter a list of items to shuffle their order.
         </CardDescription>
       </CardHeader>
-      <CardContent  className="space-y-4">
-         <PresetManager
+      <CardContent className="space-y-4">
+        <PresetManager
           toolId="sequence"
           currentParams={getCurrentParams()}
           onLoadPreset={handleLoadPreset}
         />
-        
+
         <div className="flex items-center space-x-2">
           <Switch
             id="input-mode-seq"
@@ -285,7 +288,7 @@ export default function SequenceRandomizer() {
                 ))}
               </div>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleAddItem}
                 disabled={isShuffling}

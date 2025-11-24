@@ -322,7 +322,7 @@ export default function ListRandomizer() {
                 ))}
               </div>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={handleAddItem}
                 disabled={isShuffling}
@@ -334,7 +334,7 @@ export default function ListRandomizer() {
           )}
         </div>
 
-        <div className="grid w-full max-w-1/2 items-center gap-1.5">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="num-items">Number of Items to Pick</Label>
           <Input
             id="num-items"

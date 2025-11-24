@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LockKeyhole } from "lucide-react";
+import { LockKeyhole, RotateCcw } from "lucide-react";
 import { useSettings } from "@/context/SettingsContext";
 import { useAuth } from "@/context/AuthContext";
 import { MenuOrderSettings } from "@/components/settings/menu-order-settings";
@@ -35,7 +35,7 @@ function SettingsPageContent() {
     loading: settingsLoading,
   } = useSettings();
   const { user, loading: authLoading } = useAuth();
-  const { menuOrder } = useMenuOrder();
+  const { menuOrder, resetMenuOrder } = useMenuOrder();
 
   const isLoading = authLoading || settingsLoading;
 
@@ -147,9 +147,15 @@ function SettingsPageContent() {
 
         {/* <Separator /> */}
 
-        <div className="space-y-4">
+        <div className="space-y-4" id="tools-order">
           <div className="space-y-1">
-            <Label className="text-base">Tools Order</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-base">Tools Order</Label>
+              <Button variant="ghost" size="sm" onClick={resetMenuOrder}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reset to Default
+              </Button>
+            </div>
             <p className="text-sm text-muted-foreground">
               Drag and drop to reorder the tools. The divider shows where the
               "Show More" button will appear.

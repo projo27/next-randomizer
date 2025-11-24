@@ -1,14 +1,13 @@
 // src/components/settings/menu-order-settings.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import {
   DndContext,
   closestCenter,
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-  PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -115,9 +114,9 @@ export function MenuOrderSettings() {
       >
         <div className="p-2 border rounded-lg space-y-2">
           {allSortableItems.map((item, index) => (
-            <>
+            <Fragment key={item.value}>
               {index === visibleToolCount && (
-                <div key={index} className="relative flex items-center justify-center my-4">
+                <div className="relative flex items-center justify-center my-4">
                   <Separator className="w-full" />
                   <div className="absolute px-4 bg-card text-sm text-muted-foreground flex items-center gap-2">
                     <ArrowDown className="h-4 w-4" />
@@ -125,8 +124,8 @@ export function MenuOrderSettings() {
                   </div>
                 </div>
               )}
-              <SortableMenuItem key={item.value} item={item} />
-            </>
+              <SortableMenuItem item={item} />
+            </Fragment>
           ))}
         </div>
       </SortableContext>
