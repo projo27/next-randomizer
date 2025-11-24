@@ -81,12 +81,12 @@ export default function UnsplashImageRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid w-full max-w-sm items-center gap-1.5">
+        <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="search-query">Search Query (e.g., "nature", "city")</Label>
           <Input
             id="search-query"
             type="text"
-            placeholder="Default: wallpaper"
+            placeholder="eg. wallpaper"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             disabled={isLoading || isRateLimited}

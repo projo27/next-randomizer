@@ -13,7 +13,7 @@
 - v1.2.1 : Historical Event Randomizer release
 - v1.2.0 : Book Randomizer (powered by OpenLibrary API) release
 - v1.1.9 : Science Fact Randomizer (powered by AI) release
-- v1.1.8 : Today's Activity Randomizer release
+- v1.1.8 : Today's Activity Randomizer releasep
 - v1.1.7 : Plant Randomizer release
 - v1.1.6 : Radio Channel Randomizer release
 - v1.1.5 : Truth or Dare Randomizer release
