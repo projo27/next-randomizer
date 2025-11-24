@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.7 : Unsplash Image Randomizer release
 - v1.2.6 : Poetry Randomizer release
 - v1.2.5 : Searching the Randomizer Tools release
 - v1.2.4 : Word Randomizer release
@@ -57,7 +58,7 @@
 - Random Quote ✅
 - Random name generator
 - Plant ✅
-- Animalia
+- Animalia 
 - Object / Things Randomizer
 - Random word by language ✅ (english only for now)
 - Random Country with flag ✅
@@ -76,6 +77,7 @@
 - Football Club Randomizer ✅
 - Riddle Randomizer
 - Random Gift ✅
+- Unsplash Image Randomizer ✅
 
 ## Development Roadmap :
 
