@@ -133,6 +133,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.worldwildlife.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'files.worldwildlife.org',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { dev, isServer }) => {

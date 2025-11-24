@@ -58,7 +58,7 @@
 - Random Quote ✅
 - Random name generator
 - Plant ✅
-- Animalia 
+- Animalia ✅
 - Object / Things Randomizer
 - Random word by language ✅ (english only for now)
 - Random Country with flag ✅

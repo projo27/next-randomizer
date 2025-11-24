@@ -38,6 +38,7 @@ import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
 import PairRandomizer from "@/components/pair-randomizer";
 import WordRandomizer from "@/components/word-randomizer";
 import PoetryRandomizer from "@/components/poetry-randomizer";
+import AnimalRandomizer from "@/components/animal-randomizer";
 import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
 
 import {
@@ -81,6 +82,7 @@ import {
   FileText,
   Feather,
   Cat,
+  PawPrint,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -245,6 +247,14 @@ export const triggerList = [
     hidden: false,
     icon: <Feather className="h-5 w-5" />,
     content: <PoetryRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'animal',
+    text: 'Animal',
+    hidden: false,
+    icon: <PawPrint className="h-5 w-5" />,
+    content: <AnimalRandomizer />,
     contentGuard: false,
   },
   {
