@@ -38,6 +38,7 @@ import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
 import PairRandomizer from "@/components/pair-randomizer";
 import WordRandomizer from "@/components/word-randomizer";
 import PoetryRandomizer from "@/components/poetry-randomizer";
+import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
 
 import {
   ListTodo,
@@ -79,6 +80,7 @@ import {
   Combine,
   FileText,
   Feather,
+  Cat,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -352,11 +354,19 @@ export const triggerList = [
   // },
   {
     value: "image",
-    text: "Image",
+    text: "Image Slideshow",
     hidden: false,
     icon: <ImageIcon className="h-5 w-5" />,
     content: <ImageRandomizer />,
     contentGuard: false,
+  },
+  {
+    value: "unsplash",
+    text: "Unsplash Image",
+    hidden: false,
+    icon: <ImageIcon className="h-5 w-5" />,
+    content: <UnsplashImageRandomizer />,
+    contentGuard: true,
   },
   {
     value: "youtube",
