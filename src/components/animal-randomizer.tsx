@@ -31,7 +31,7 @@ export default function AnimalRandomizer() {
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_animal_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
-    
+
     triggerRateLimit();
     setIsLoading(true);
     setError(null);
@@ -53,7 +53,7 @@ export default function AnimalRandomizer() {
       <CardHeader>
         <CardTitle>Wildlife Animal Randomizer</CardTitle>
         <CardDescription>
-          Discover a random animal from the World Wildlife Fund species list.
+          Discover a random animal from the World Wildlife Fund species list. <i>Powered by World Wildlife Fund</i>
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[400px] flex flex-col items-center justify-center">
@@ -61,42 +61,42 @@ export default function AnimalRandomizer() {
           <div className="w-full space-y-4">
             <Skeleton className="h-64 w-full rounded-lg" />
             <div className="space-y-2 pt-4">
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-4 w-1/4" />
-                <Skeleton className="h-12 w-full mt-4" />
+              <Skeleton className="h-8 w-1/2" />
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-12 w-full mt-4" />
             </div>
           </div>
         )}
         {!isLoading && result && (
           <div className="w-full animate-fade-in space-y-4">
-            <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg">
-               <Image
-                    src={result.imageUrl}
-                    alt={result.name}
-                    fill
-                    className="object-cover"
-                    unoptimized // External images might not be optimizable
-                />
+            <div className="relative w-full aspect-[3/1] rounded-lg overflow-hidden border-2 border-primary/20 shadow-lg">
+              <Image
+                src={result.imageUrl}
+                alt={result.name}
+                fill
+                className="object-cover"
+                unoptimized // External images might not be optimizable
+              />
             </div>
-            <div className="space-y-4 text-center">
-                <h3 className="text-3xl font-bold text-primary">{result.name}</h3>
-                <p className="text-sm text-muted-foreground italic">{result.scientificName}</p>
-                {result.status && <Badge variant="destructive">{result.status}</Badge>}
-                <p className="text-card-foreground/90 pt-2 text-left">
-                  {result.description}
-                </p>
-                <Button asChild variant="link">
-                    <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
-                        Read more on WWF <ExternalLink className="ml-2 h-4 w-4"/>
-                    </Link>
-                </Button>
+            <div className="space-y-4">
+              <h3 className="text-3xl font-bold text-primary">{result.name}</h3>
+              <p className="text-sm text-muted-foreground italic">{result.scientificName}</p>
+              {result.status && <Badge variant="destructive">{result.status}</Badge>}
+              <p className="text-card-foreground/90 pt-2 text-left">
+                {result.description}
+              </p>
+              <Button asChild>
+                <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
+                  Read more on WWF <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
         )}
         {!isLoading && !result && !error && (
           <div className="text-center text-muted-foreground p-4">
-              <PawPrint className="h-16 w-16 mx-auto mb-4" />
-              <p>Click the button to discover a random animal.</p>
+            <PawPrint className="h-16 w-16 mx-auto mb-4" />
+            <p>Click the button to discover a random animal.</p>
           </div>
         )}
         {error && (

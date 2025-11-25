@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.8 : Animal Randomizer release
 - v1.2.7 : Unsplash Image Randomizer release
 - v1.2.6 : Poetry Randomizer release
 - v1.2.5 : Searching the Randomizer Tools release
@@ -96,6 +97,7 @@
 - Confetti after suffling / randomization done
 - Sitemap to Crawling Index from Search Engine ✅
 - Searching the Randomizer Tools ✅
+- User can save the preset ✅
 
 ### Thanks to :
 
@@ -112,6 +114,7 @@
 - Random Word API → [random-word-api.vercel.app](https://random-word-api.vercel.app)
 - Dictionary API → [dictionaryapi.dev](https://dictionaryapi.dev)
 - Poetry DB → [poetrydb.org](https://poetrydb.org)
+- World Wildlife Fund → [worldwildlife.org](https://worldwildlife.org)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
 ---
