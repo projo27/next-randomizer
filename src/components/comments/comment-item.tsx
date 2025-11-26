@@ -1,11 +1,11 @@
-// src/components/feedback/feedback-item.tsx
+// src/components/comments/comment-item.tsx
 "use client";
 
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import type { Feedback, FeedbackReply, FeedbackReplyData } from "@/types/feedback";
-import { addReply, toggleEmojiReaction } from "@/services/feedback-service";
+import type { Comment, CommentReply, CommentReplyData } from "@/types/comment";
+import { addReply, toggleCommentReaction } from "@/services/comment-service";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,40 +17,39 @@ import { useToast } from "@/hooks/use-toast";
 
 const EMOJI_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
-type FeedbackItemProps = {
-  feedback: Feedback;
+type CommentItemProps = {
+  comment: Comment;
   isReply?: boolean;
-  onReplyAdded?: (feedbackId: string, newReply: FeedbackReply) => void;
+  onReplyAdded?: (commentId: string, newReply: CommentReply) => void;
 };
 
-export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: FeedbackItemProps) {
+export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentItemProps) {
   const { user } = useAuth();
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyComment, setReplyComment] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
-  const [optimisticReactions, setOptimisticReactions] = useState(feedback.reactions || {});
+  const [optimisticReactions, setOptimisticReactions] = useState(comment.reactions || {});
 
   const { toast } = useToast();
 
   const handleReplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !replyComment.trim() || isReply) return; // Can't reply to a reply
+    if (!user || !replyComment.trim() || isReply) return;
 
     setIsSubmittingReply(true);
     try {
-      const replyData: Omit<FeedbackReplyData, "createdAt" | "reactions"> = {
+      const replyData: Omit<CommentReplyData, "createdAt" | "reactions"> = {
         userId: user.uid,
         userName: user.displayName || "Anonymous",
         userPhotoURL: user.photoURL || null,
         comment: replyComment,
       };
       
-      const newReplyId = await addReply(feedback.id, replyData);
+      const newReplyId = await addReply(comment.id, replyData);
 
-       // Optimistic UI update
-      if (onReplyAdded) {
-         onReplyAdded(feedback.id, {
-            id: newReplyId, // temp id
+       if (onReplyAdded) {
+         onReplyAdded(comment.id, {
+            id: newReplyId,
             ...replyData,
             reactions: {},
             createdAt: { toDate: () => new Date() } as any,
@@ -70,7 +69,6 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
   const handleEmojiClick = async (emoji: string) => {
     if (!user || isReply) return;
 
-    // Optimistic update
     setOptimisticReactions(prevReactions => {
         const newReactions = JSON.parse(JSON.stringify(prevReactions));
         const reactionData = newReactions[emoji] || { count: 0, users: [] };
@@ -93,31 +91,29 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
     });
 
     try {
-      await toggleEmojiReaction(feedback.id, user.uid, emoji);
+      await toggleCommentReaction(comment.id, user.uid, emoji);
     } catch (error) {
       console.error("Error reacting:", error);
       toast({ variant: "destructive", title: "Error", description: "Could not add reaction. Reverting." });
-      // Revert optimistic update on error
-      setOptimisticReactions(feedback.reactions);
+      setOptimisticReactions(comment.reactions);
     }
   };
 
-  const timeAgo = feedback.createdAt?.toDate ? formatDistanceToNow(feedback.createdAt.toDate(), { addSuffix: true }) : 'just now';
+  const timeAgo = comment.createdAt?.toDate ? formatDistanceToNow(comment.createdAt.toDate(), { addSuffix: true }) : 'just now';
 
   return (
     <div className={cn("flex space-x-4", isReply && "ml-8 mt-4")}>
       <Avatar>
-        <AvatarImage src={feedback.userPhotoURL || undefined} alt={feedback.userName} />
-        <AvatarFallback>{feedback.userName.charAt(0).toUpperCase()}</AvatarFallback>
+        <AvatarImage src={comment.userPhotoURL || undefined} alt={comment.userName} />
+        <AvatarFallback>{comment.userName.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="font-semibold">{feedback.userName}</p>
+          <p className="font-semibold">{comment.userName}</p>
           <p className="text-xs text-muted-foreground">{timeAgo}</p>
         </div>
-        <p className="text-sm">{feedback.comment}</p>
+        <p className="text-sm">{comment.comment}</p>
         
-        {/* Actions and Reactions */}
         <div className="flex items-center gap-4 text-muted-foreground">
           {!isReply && (
             <>
@@ -150,12 +146,11 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
 
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowReplyForm(!showReplyForm)} disabled={!user}>
                 <MessageSquare className="h-4 w-4" />
-                <span className="text-xs ml-1">{feedback.replyCount || 0}</span>
+                <span className="text-xs ml-1">{comment.replyCount || 0}</span>
               </Button>
             </>
           )}
 
-          {/* Display Reactions */}
           <div className="flex gap-2 items-center">
             {Object.entries(optimisticReactions || {}).map(([emoji, data]) => (
                 data.count > 0 && (
@@ -168,11 +163,10 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
           </div>
         </div>
 
-        {/* Reply Form */}
         {showReplyForm && !isReply && (
             <form onSubmit={handleReplySubmit} className="space-y-2 pt-2">
                 <Textarea 
-                    placeholder={`Reply to ${feedback.userName}...`}
+                    placeholder={`Reply to ${comment.userName}...`}
                     value={replyComment}
                     onChange={(e) => setReplyComment(e.target.value)}
                     rows={2}
@@ -187,11 +181,10 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
             </form>
         )}
 
-        {/* Display Replies */}
-        {feedback.replies && feedback.replies.length > 0 && (
+        {comment.replies && comment.replies.length > 0 && (
             <div className="pt-4 border-l-2 border-muted pl-4 space-y-4">
-                {feedback.replies.map(reply => (
-                    <FeedbackItem key={reply.id} feedback={reply as unknown as Feedback} isReply={true} />
+                {comment.replies.map(reply => (
+                    <CommentItem key={reply.id} comment={reply as unknown as Comment} isReply={true} />
                 ))}
             </div>
         )}

@@ -9,7 +9,7 @@ import TabContentGuard from './ui/tab-content-guard';
 
 interface HomePageClientProps {
   activeTab: string;
-  children: React.ReactNode;
+  children: React.ReactNode; // This will receive the server components
 }
 
 export function HomePageClient({ activeTab, children }: HomePageClientProps) {
@@ -27,7 +27,7 @@ export function HomePageClient({ activeTab, children }: HomePageClientProps) {
     <Tabs value={activeTab} className="w-full">
       <ToolNavigation />
 
-      {/* Tabs Content */}
+      {/* Tabs Content for tools */}
       {triggerList.map(item => (
         <TabsContent key={item.value} value={item.value} forceMount>
           {item.contentGuard ? (
@@ -38,7 +38,7 @@ export function HomePageClient({ activeTab, children }: HomePageClientProps) {
         </TabsContent>
       ))}
 
-      {/* This is where the FeedbackSection Server Component will be rendered */}
+      {/* This is where the FeedbackSection/CommentSection Server Component will be rendered */}
       {children}
     </Tabs>
   );

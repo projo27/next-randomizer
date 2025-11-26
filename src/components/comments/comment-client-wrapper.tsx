@@ -1,33 +1,33 @@
-// src/components/feedback/feedback-client-wrapper.tsx
+// src/components/comments/comment-client-wrapper.tsx
 "use client";
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { addFeedback } from "@/services/feedback-service";
-import type { Feedback } from "@/types/feedback";
+import { addComment } from "@/services/comment-service";
+import type { Comment } from "@/types/comment";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { FeedbackItem } from "./feedback-item";
+import { CommentItem } from "./comment-item";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 
-type FeedbackClientWrapperProps = {
+type CommentClientWrapperProps = {
   toolId: string;
-  initialFeedback: Feedback[];
+  initialComments: Comment[];
 };
 
 /**
- * Handles all client-side logic for the feedback section,
+ * Handles all client-side logic for the comment section,
  * including form submission and state management.
  */
-export function FeedbackClientWrapper({
+export function CommentClientWrapper({
   toolId,
-  initialFeedback,
-}: FeedbackClientWrapperProps) {
+  initialComments,
+}: CommentClientWrapperProps) {
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
-  const [feedbackList, setFeedbackList] = useState<Feedback[]>(initialFeedback);
+  const [commentList, setCommentList] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -38,52 +38,49 @@ export function FeedbackClientWrapper({
 
     setIsSubmitting(true);
     try {
-      const feedbackData = {
+      const commentData = {
         toolId,
         userId: user.uid,
         userName: user.displayName || "Anonymous",
         userPhotoURL: user.photoURL || null,
         comment: newComment,
-        rating: null, // Deprecated, but keep for structure
       };
-      // This will add the doc to Firestore. We will then optimistically update the UI.
-      const newFeedbackId = await addFeedback(feedbackData);
       
-      // Optimistic UI update
-      const optimisticNewFeedback: Feedback = {
-        id: newFeedbackId, // temporary ID, will be replaced on refresh
-        ...feedbackData,
+      const newCommentId = await addComment(commentData);
+      
+      const optimisticNewComment: Comment = {
+        id: newCommentId,
+        ...commentData,
         reactions: {},
         replyCount: 0,
         createdAt: {
-          // Fake timestamp for optimistic update
           toDate: () => new Date(),
         } as any,
       };
 
-      setFeedbackList([optimisticNewFeedback, ...feedbackList]);
+      setCommentList([optimisticNewComment, ...commentList]);
       setNewComment("");
       
       toast({
-        title: "Feedback Submitted",
+        title: "Comment Posted",
         description: "Thank you for your thoughts!",
       });
 
     } catch (error) {
-      console.error("Error submitting feedback:", error);
+      console.error("Error submitting comment:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to submit feedback. Please try again.",
+        description: "Failed to post comment. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const onReplyAdded = (feedbackId: string, newReply: any) => {
-    setFeedbackList(prevList => prevList.map(fb => {
-        if (fb.id === feedbackId) {
+  const onReplyAdded = (commentId: string, newReply: any) => {
+    setCommentList(prevList => prevList.map(fb => {
+        if (fb.id === commentId) {
             return {
                 ...fb,
                 replies: [...(fb.replies || []), newReply],
@@ -111,7 +108,7 @@ export function FeedbackClientWrapper({
           />
           <div className="flex justify-end items-center">
             <Button type="submit" disabled={!newComment.trim() || isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Post Comment"}
+              {isSubmitting ? "Posting..." : "Post Comment"}
             </Button>
           </div>
         </form>
@@ -122,16 +119,16 @@ export function FeedbackClientWrapper({
             <Button variant="link" onClick={signInWithGoogle} className="p-0 h-auto">
               Sign in
             </Button>{" "}
-            to leave feedback, reply, and react to comments.
+            to leave comments, reply, and react.
           </AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-6">
-        {feedbackList.map((feedback) => (
-          <FeedbackItem key={feedback.id} feedback={feedback} onReplyAdded={onReplyAdded} />
+        {commentList.map((comment) => (
+          <CommentItem key={comment.id} comment={comment} onReplyAdded={onReplyAdded} />
         ))}
-        {feedbackList.length === 0 && !authLoading && (
+        {commentList.length === 0 && !authLoading && (
             <p className="text-center text-muted-foreground py-8">Be the first to leave a comment!</p>
         )}
       </div>

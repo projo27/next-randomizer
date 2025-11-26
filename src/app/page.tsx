@@ -1,13 +1,11 @@
 // src/app/page.tsx
 
 import { Suspense } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Header } from '@/components/header';
-import { ToolNavigation } from '@/components/tool-navigation';
-import { triggerList } from '@/lib/menu-data';
-import { FeedbackSection } from '@/components/feedback/feedback-section';
 import { HomePageClient } from '@/components/home-page-client';
+import { CommentSection } from '@/components/comments/comment-section';
+import { ToolReactionSection } from '@/components/tool-reactions/tool-reaction-section';
 
 function HomePageFallback() {
   return (
@@ -32,11 +30,12 @@ export default async function Home({
       <main className="w-full max-w-6xl mx-auto mt-6">
         <Suspense fallback={<HomePageFallback />}>
           <HomePageClient activeTab={activeTab}>
-            <div></div>
+            {/* The children prop is now used for server-rendered content below the client component */}
+            <div className="mt-8 space-y-12">
+              <ToolReactionSection toolId={activeTab} />
+              <CommentSection toolId={activeTab} />
+            </div>
           </HomePageClient>
-          <div className="mt-8">
-            <FeedbackSection toolId={activeTab} />
-          </div>
         </Suspense>
       </main>
     </div>
