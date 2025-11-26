@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -33,13 +34,13 @@ type Item = {
 };
 
 const initialItems: Item[] = [
-  "Apple",
-  "Banana",
-  "Orange",
-  "Grape",
-  "Stawberry",
-  "Mango",
-  "Kiwi",
+  { id: "1", value: "Apple" },
+  { id: "2", value: "Banana" },
+  { id: "3", value: "Orange" },
+  { id: "4", value: "Grape" },
+  { id: "5", value: "Strawberry" },
+  { id: "6", value: "Mango" },
+  { id: "7", value: "Kiwi" },
 ];
 
 function ResultDisplay({
