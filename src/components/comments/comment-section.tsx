@@ -20,10 +20,10 @@ export async function CommentSection({ toolId }: CommentSectionProps) {
   // Serialize the timestamps to plain strings before passing to client component
   const serializableComments = initialComments.map(comment => ({
     ...comment,
-    createdAt: comment.createdAt.toDate().toISOString(),
+    createdAt: typeof comment.createdAt === 'string' ? comment.createdAt : comment.createdAt.toDate().toISOString(),
     replies: (comment.replies || []).map(reply => ({
-        ...reply,
-        createdAt: reply.createdAt.toDate().toISOString(),
+      ...reply,
+      createdAt: typeof reply.createdAt === 'string' ? reply.createdAt : reply.createdAt.toDate().toISOString(),
     })),
   }));
 
