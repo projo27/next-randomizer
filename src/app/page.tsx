@@ -32,10 +32,11 @@ export default async function Home({
       <main className="w-full max-w-6xl mx-auto mt-6">
         <Suspense fallback={<HomePageFallback />}>
           <HomePageClient activeTab={activeTab}>
-            <div className="mt-8">
-              <FeedbackSection toolId={activeTab} />
-            </div>
+            <div></div>
           </HomePageClient>
+          <div className="mt-8">
+            <FeedbackSection toolId={activeTab} />
+          </div>
         </Suspense>
       </main>
     </div>

@@ -8,11 +8,9 @@ import type { Feedback } from "@/types/feedback";
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { FeedbackItem } from "./feedback-item";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 type FeedbackClientWrapperProps = {
@@ -31,7 +29,6 @@ export function FeedbackClientWrapper({
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [feedbackList, setFeedbackList] = useState<Feedback[]>(initialFeedback);
   const [newComment, setNewComment] = useState("");
-  const [rating, setRating] = useState<"like" | "dislike" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -47,7 +44,7 @@ export function FeedbackClientWrapper({
         userName: user.displayName || "Anonymous",
         userPhotoURL: user.photoURL || null,
         comment: newComment,
-        rating,
+        rating: null, // Deprecated, but keep for structure
       };
       // This will add the doc to Firestore. We will then optimistically update the UI.
       const newFeedbackId = await addFeedback(feedbackData);
@@ -66,7 +63,6 @@ export function FeedbackClientWrapper({
 
       setFeedbackList([optimisticNewFeedback, ...feedbackList]);
       setNewComment("");
-      setRating(null);
       
       toast({
         title: "Feedback Submitted",
@@ -113,27 +109,7 @@ export function FeedbackClientWrapper({
             rows={3}
             disabled={isSubmitting}
           />
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant={rating === "like" ? "default" : "outline"}
-                size="icon"
-                onClick={() => setRating(rating === "like" ? null : "like")}
-                disabled={isSubmitting}
-              >
-                <ThumbsUp className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant={rating === "dislike" ? "destructive" : "outline"}
-                size="icon"
-                onClick={() => setRating(rating === "dislike" ? null : "dislike")}
-                disabled={isSubmitting}
-              >
-                <ThumbsDown className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="flex justify-end items-center">
             <Button type="submit" disabled={!newComment.trim() || isSubmitting}>
               {isSubmitting ? "Submitting..." : "Post Comment"}
             </Button>

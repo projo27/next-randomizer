@@ -4,13 +4,13 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import type { Feedback, FeedbackReply } from "@/types/feedback";
+import type { Feedback, FeedbackReply, FeedbackReplyData } from "@/types/feedback";
 import { addReply, toggleEmojiReaction } from "@/services/feedback-service";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ThumbsUp, ThumbsDown, Smile, MessageSquare, CornerDownRight } from "lucide-react";
+import { Smile, MessageSquare } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +28,8 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyComment, setReplyComment] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [optimisticReactions, setOptimisticReactions] = useState(feedback.reactions || {});
+
   const { toast } = useToast();
 
   const handleReplySubmit = async (e: React.FormEvent) => {
@@ -36,7 +38,7 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
 
     setIsSubmittingReply(true);
     try {
-      const replyData = {
+      const replyData: Omit<FeedbackReplyData, "createdAt" | "reactions"> = {
         userId: user.uid,
         userName: user.displayName || "Anonymous",
         userPhotoURL: user.photoURL || null,
@@ -50,6 +52,7 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
          onReplyAdded(feedback.id, {
             id: newReplyId, // temp id
             ...replyData,
+            reactions: {},
             createdAt: { toDate: () => new Date() } as any,
          });
       }
@@ -66,16 +69,36 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
 
   const handleEmojiClick = async (emoji: string) => {
     if (!user || isReply) return;
+
+    // Optimistic update
+    setOptimisticReactions(prevReactions => {
+        const newReactions = JSON.parse(JSON.stringify(prevReactions));
+        const reactionData = newReactions[emoji] || { count: 0, users: [] };
+        const userIndex = reactionData.users.indexOf(user.uid);
+
+        if (userIndex > -1) {
+            reactionData.count--;
+            reactionData.users.splice(userIndex, 1);
+        } else {
+            reactionData.count++;
+            reactionData.users.push(user.uid);
+        }
+
+        if (reactionData.count === 0) {
+            delete newReactions[emoji];
+        } else {
+            newReactions[emoji] = reactionData;
+        }
+        return newReactions;
+    });
+
     try {
-        // This action should trigger a re-fetch or an optimistic update in the parent.
-        // For simplicity here, we'll just call the server action. A full implementation
-        // would require more complex state management (e.g., Zustand or Redux).
       await toggleEmojiReaction(feedback.id, user.uid, emoji);
-      // To see the update, a re-fetch is needed. A proper app would handle this.
-      toast({ title: "Reaction updated!", description: "Your reaction has been recorded." });
     } catch (error) {
       console.error("Error reacting:", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not add reaction." });
+      toast({ variant: "destructive", title: "Error", description: "Could not add reaction. Reverting." });
+      // Revert optimistic update on error
+      setOptimisticReactions(feedback.reactions);
     }
   };
 
@@ -96,14 +119,11 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
         
         {/* Actions and Reactions */}
         <div className="flex items-center gap-4 text-muted-foreground">
-          {feedback.rating === "like" && <ThumbsUp className="h-4 w-4 text-green-500" />}
-          {feedback.rating === "dislike" && <ThumbsDown className="h-4 w-4 text-red-500" />}
-
           {!isReply && (
             <>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" disabled={!user}>
                     <Smile className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
@@ -114,7 +134,10 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
                         key={emoji}
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-lg"
+                        className={cn(
+                            "h-8 w-8 text-lg",
+                             optimisticReactions[emoji]?.users.includes(user?.uid || '') && "bg-accent"
+                        )}
                         onClick={() => handleEmojiClick(emoji)}
                         disabled={!user}
                       >
@@ -127,15 +150,16 @@ export function FeedbackItem({ feedback, isReply = false, onReplyAdded }: Feedba
 
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowReplyForm(!showReplyForm)} disabled={!user}>
                 <MessageSquare className="h-4 w-4" />
+                <span className="text-xs ml-1">{feedback.replyCount || 0}</span>
               </Button>
             </>
           )}
 
           {/* Display Reactions */}
           <div className="flex gap-2 items-center">
-            {Object.entries(feedback.reactions || {}).map(([emoji, data]) => (
+            {Object.entries(optimisticReactions || {}).map(([emoji, data]) => (
                 data.count > 0 && (
-                    <div key={emoji} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-xs">
+                    <div key={emoji} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-xs cursor-pointer" onClick={() => handleEmojiClick(emoji)}>
                         <span>{emoji}</span>
                         <span>{data.count}</span>
                     </div>

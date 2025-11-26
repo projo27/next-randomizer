@@ -12,6 +12,7 @@ import {
   runTransaction,
   Timestamp,
   collectionGroup,
+  updateDoc,
 } from "firebase/firestore";
 import type {
   Feedback,
@@ -29,13 +30,15 @@ const FEEDBACK_COLLECTION = "feedback";
 export async function addFeedback(
   feedbackData: Omit<FeedbackData, "createdAt" | "reactions" | "replyCount">
 ): Promise<string> {
-  const newFeedback: FeedbackData = {
+  const newFeedback: Omit<FeedbackData, "createdAt"> = {
     ...feedbackData,
     reactions: {},
     replyCount: 0,
-    createdAt: serverTimestamp() as Timestamp,
   };
-  const docRef = await addDoc(collection(db, FEEDBACK_COLLECTION), newFeedback);
+  const docRef = await addDoc(collection(db, FEEDBACK_COLLECTION), {
+    ...newFeedback,
+    createdAt: serverTimestamp(),
+  });
   return docRef.id;
 }
 
@@ -44,21 +47,29 @@ export async function addFeedback(
  */
 export async function addReply(
   feedbackId: string,
-  replyData: Omit<FeedbackReplyData, "createdAt">
+  replyData: Omit<FeedbackReplyData, "createdAt" | "reactions">
 ): Promise<string> {
   const feedbackDocRef = doc(db, FEEDBACK_COLLECTION, feedbackId);
   const repliesColRef = collection(feedbackDocRef, "replies");
 
-  const newReply: FeedbackReplyData = {
+  const newReply: Omit<FeedbackReplyData, "createdAt"> = {
     ...replyData,
-    createdAt: serverTimestamp() as Timestamp,
+    reactions: {},
   };
 
-  const docRef = await addDoc(repliesColRef, newReply);
+  const docRef = await addDoc(repliesColRef, {
+    ...newReply,
+    createdAt: serverTimestamp(),
+  });
 
   // Increment reply count in a transaction
   await runTransaction(db, async (transaction) => {
-    transaction.update(feedbackDocRef, { replyCount: (await transaction.get(feedbackDocRef)).data()?.replyCount + 1 || 1 });
+    const feedbackDoc = await transaction.get(feedbackDocRef);
+    if (!feedbackDoc.exists()) {
+      throw "Document does not exist!";
+    }
+    const newReplyCount = (feedbackDoc.data().replyCount || 0) + 1;
+    transaction.update(feedbackDocRef, { replyCount: newReplyCount });
   });
 
   return docRef.id;
@@ -94,6 +105,9 @@ export async function getFeedbackForTool(toolId: string): Promise<Feedback[]> {
 
 /**
  * Toggles an emoji reaction for a user on a specific feedback document.
+ * @param feedbackId The ID of the feedback document.
+ * @param userId The ID of the user reacting.
+ * @param emoji The emoji string.
  */
 export async function toggleEmojiReaction(
   feedbackId: string,
@@ -110,23 +124,27 @@ export async function toggleEmojiReaction(
 
     const data = feedbackDoc.data();
     const reactions: FeedbackReaction = data.reactions || {};
-    const emojiData = reactions[emoji] || { count: 0, users: [] };
+    
+    // Initialize emoji data if it doesn't exist
+    if (!reactions[emoji]) {
+      reactions[emoji] = { count: 0, users: [] };
+    }
+    
+    const userIndex = reactions[emoji].users.indexOf(userId);
 
-    const userIndex = emojiData.users.indexOf(userId);
     if (userIndex > -1) {
       // User has already reacted with this emoji, so remove their reaction
-      emojiData.count -= 1;
-      emojiData.users.splice(userIndex, 1);
+      reactions[emoji].count -= 1;
+      reactions[emoji].users.splice(userIndex, 1);
     } else {
       // User has not reacted, add their reaction
-      emojiData.count += 1;
-      emojiData.users.push(userId);
+      reactions[emoji].count += 1;
+      reactions[emoji].users.push(userId);
     }
 
-    if (emojiData.count > 0) {
-      reactions[emoji] = emojiData;
-    } else {
-      delete reactions[emoji]; // Clean up if no one has reacted with this emoji
+    // Clean up if no one has reacted with this emoji
+    if (reactions[emoji].count === 0) {
+      delete reactions[emoji];
     }
 
     transaction.update(feedbackDocRef, { reactions });

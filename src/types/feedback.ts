@@ -20,7 +20,7 @@ export interface FeedbackData {
   userName: string;
   userPhotoURL: string | null;
   comment: string;
-  rating: "like" | "dislike" | null;
+  rating: "like" | "dislike" | null; // This will be deprecated but kept for compatibility
   reactions: FeedbackReaction;
   replyCount: number;
   createdAt: Timestamp;
@@ -43,6 +43,7 @@ export interface FeedbackReplyData {
   userPhotoURL: string | null;
   comment: string;
   createdAt: Timestamp;
+  reactions: FeedbackReaction; // Add reactions to replies as well
 }
 
 /**

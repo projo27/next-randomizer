@@ -1,4 +1,5 @@
 // src/components/feedback/feedback-section.tsx
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { getFeedbackForTool } from "@/services/feedback-service";
 import { FeedbackClientWrapper } from "./feedback-client-wrapper";
 
@@ -15,12 +16,16 @@ export async function FeedbackSection({ toolId }: FeedbackSectionProps) {
   const initialFeedback = await getFeedbackForTool(toolId);
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-12">
-      <h2 className="text-2xl font-bold mb-4">Feedback & Comments</h2>
-      <FeedbackClientWrapper
-        toolId={toolId}
-        initialFeedback={initialFeedback}
-      />
-    </div>
+    <Card className="w-full mt-12">
+      <CardHeader>
+        <CardTitle>Feedback & Comments</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <FeedbackClientWrapper
+          toolId={toolId}
+          initialFeedback={initialFeedback}
+        />
+      </CardContent>
+    </Card>
   );
 }
