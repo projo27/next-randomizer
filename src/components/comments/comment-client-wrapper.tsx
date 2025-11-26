@@ -1,3 +1,4 @@
+
 // src/components/comments/comment-client-wrapper.tsx
 "use client";
 
@@ -53,9 +54,7 @@ export function CommentClientWrapper({
         ...commentData,
         reactions: {},
         replyCount: 0,
-        createdAt: {
-          toDate: () => new Date(),
-        } as any,
+        createdAt: new Date().toISOString() as any, // Use ISO string for client-side optimistic update
       };
 
       setCommentList([optimisticNewComment, ...commentList]);

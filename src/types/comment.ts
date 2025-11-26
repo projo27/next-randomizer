@@ -1,3 +1,4 @@
+
 // src/types/comment.ts
 import type { Timestamp } from "firebase/firestore";
 
@@ -13,6 +14,8 @@ export type ReactionMap = {
 
 /**
  * Represents the data stored for a single comment document.
+ * The `createdAt` is a Timestamp on the server, but will be serialized
+ * to a string when passed to a client component.
  */
 export interface CommentData {
   toolId: string;
@@ -22,7 +25,7 @@ export interface CommentData {
   comment: string;
   reactions: ReactionMap;
   replyCount: number;
-  createdAt: Timestamp;
+  createdAt: Timestamp | string;
 }
 
 /**
@@ -41,7 +44,7 @@ export interface CommentReplyData {
   userName: string;
   userPhotoURL: string | null;
   comment: string;
-  createdAt: Timestamp;
+  createdAt: Timestamp | string;
   reactions: ReactionMap;
 }
 

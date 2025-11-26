@@ -1,3 +1,4 @@
+
 // src/components/comments/comment-item.tsx
 "use client";
 
@@ -52,7 +53,7 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
           id: newReplyId,
           ...replyData,
           reactions: {},
-          createdAt: { toDate: () => new Date() } as any,
+          createdAt: new Date().toISOString() as any,
         });
       }
 
@@ -99,7 +100,7 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
     }
   };
 
-  const timeAgo = comment.createdAt?.toDate ? formatDistanceToNow(comment.createdAt.toDate(), { addSuffix: true }) : 'just now';
+  const timeAgo = comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt as any), { addSuffix: true }) : 'just now';
 
   return (
     <div className={cn("flex space-x-4", isReply && "ml-8 mt-4")}>
