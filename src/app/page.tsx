@@ -8,7 +8,7 @@ import { Header } from "@/components/header";
 import TabContentGuard from "@/components/ui/tab-content-guard";
 import { ToolNavigation } from "@/components/tool-navigation";
 import { triggerList } from "@/lib/menu-data";
-
+import { FeedbackSection } from "@/components/feedback/feedback-section";
 
 function HomePageContent() {
   const searchParams = useSearchParams();
@@ -38,7 +38,10 @@ function HomePageContent() {
           )}
         </TabsContent>
       ))}
-      
+
+      <div className="mt-8">
+        <FeedbackSection toolId={activeTab} />
+      </div>
     </Tabs>
   );
 }
@@ -46,11 +49,6 @@ function HomePageContent() {
 function HomePageFallback() {
   return (
     <div className="w-full space-y-4">
-      {/* <div className="flex flex-wrap items-center justify-center w-full h-auto gap-2 py-2">
-            {[...Array(15)].map((_, i) => (
-                <Skeleton key={i} className="h-10 w-24 rounded-md" />
-            ))}
-      </div> */}
       <Skeleton className="h-64 w-full" />
     </div>
   );

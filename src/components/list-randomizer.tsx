@@ -26,7 +26,6 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { PresetManager } from "./preset-manager";
 import type { ListPresetParams } from "@/types/presets";
-import { FeedbackSection } from "./feedback/feedback-section";
 
 type Item = {
   id: string;
@@ -251,134 +250,129 @@ export default function ListRandomizer() {
   };
 
   return (
-    <>
-      <Card className="w-full shadow-lg border-none">
-        <CardHeader>
-          <CardTitle>List Randomizer</CardTitle>
-          <CardDescription>
-            Enter your choices below, one per line. We'll pick one or more for
-            you!
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <PresetManager 
-            toolId="list"
-            currentParams={getCurrentParams()}
-            onLoadPreset={handleLoadPreset}
+    <Card className="w-full shadow-lg border-none">
+      <CardHeader>
+        <CardTitle>List Randomizer</CardTitle>
+        <CardDescription>
+          Enter your choices below, one per line. We'll pick one or more for
+          you!
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <PresetManager 
+          toolId="list"
+          currentParams={getCurrentParams()}
+          onLoadPreset={handleLoadPreset}
+        />
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="input-mode"
+            checked={inputMode === "textarea"}
+            onCheckedChange={handleInputModeChange}
           />
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="input-mode"
-              checked={inputMode === "textarea"}
-              onCheckedChange={handleInputModeChange}
-            />
-            <Label htmlFor="input-mode">Use Text Area Input</Label>
+          <Label htmlFor="input-mode">Use Text Area Input</Label>
+        </div>
+
+        <div className="grid w-full items-center gap-1.5">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="participants">List of Items</Label>
+            <span className="text-xs text-muted-foreground">
+              {
+                (inputMode === "panel"
+                  ? items.filter((i) => i.value.trim())
+                  : itemsText.split("\n").filter(Boolean)
+                ).length
+              }{" "}
+              item(s)
+            </span>
           </div>
 
-          <div className="grid w-full items-center gap-1.5">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="participants">List of Items</Label>
-              <span className="text-xs text-muted-foreground">
-                {
-                  (inputMode === "panel"
-                    ? items.filter((i) => i.value.trim())
-                    : itemsText.split("\n").filter(Boolean)
-                  ).length
-                }{" "}
-                item(s)
-              </span>
-            </div>
-
-            {inputMode === "textarea" ? (
-              <Textarea
-                id="participants-text"
-                placeholder={initialItems.map((i) => i.value).join("\n")}
-                rows={8}
-                value={itemsText}
-                onChange={(e) => setItemsText(e.target.value)}
-                className="resize-none mt-1"
-                disabled={isShuffling}
-              />
-            ) : (
-              <div className="mt-1 space-y-2">
-                <div className="space-y-2 p-4 border rounded-md max-h-96 overflow-y-auto">
-                  {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <Input
-                        placeholder="Enter an item"
-                        value={item.value}
-                        onChange={(e) =>
-                          handleItemChange(item.id, e.target.value)
-                        }
-                        className="flex-grow"
-                        disabled={isShuffling}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveItem(item.id)}
-                        disabled={isShuffling}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleAddItem}
-                  disabled={isShuffling}
-                  className="w-full"
-                >
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Item
-                </Button>
+          {inputMode === "textarea" ? (
+            <Textarea
+              id="participants-text"
+              placeholder={initialItems.map((i) => i.value).join("\n")}
+              rows={8}
+              value={itemsText}
+              onChange={(e) => setItemsText(e.target.value)}
+              className="resize-none mt-1"
+              disabled={isShuffling}
+            />
+          ) : (
+            <div className="mt-1 space-y-2">
+              <div className="space-y-2 p-4 border rounded-md max-h-96 overflow-y-auto">
+                {items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Enter an item"
+                      value={item.value}
+                      onChange={(e) =>
+                        handleItemChange(item.id, e.target.value)
+                      }
+                      className="flex-grow"
+                      disabled={isShuffling}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={isShuffling}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="num-items">Number of Items to Pick</Label>
-            <Input
-              id="num-items"
-              type="number"
-              min="1"
-              value={count}
-              onChange={(e) => setCount(e.target.value)}
-            />
-          </div>
-
-          <ResultDisplay
-            isShuffling={isShuffling}
-            result={result}
-            onCopy={handleCopyResult}
-            isCopied={isResultCopied}
-          />
-
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleAddItem}
+                disabled={isShuffling}
+                className="w-full"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+              </Button>
+            </div>
           )}
-        </CardContent>
-        <CardFooter className="flex flex-col">
-          <Button
-            onClick={handleRandomize}
-            disabled={isRateLimited || isShuffling}
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-          >
-            <Wand2 className="mr-2 h-4 w-4" />
-            {isShuffling
-              ? "Picking..."
-              : isRateLimited
-                ? "Please wait..."
-                : "Randomize!"}
-          </Button>
-        </CardFooter>
-      </Card>
-      <div className="mt-8">
-        <FeedbackSection toolId="list" />
-      </div>
-    </>
+        </div>
+
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="num-items">Number of Items to Pick</Label>
+          <Input
+            id="num-items"
+            type="number"
+            min="1"
+            value={count}
+            onChange={(e) => setCount(e.target.value)}
+          />
+        </div>
+
+        <ResultDisplay
+          isShuffling={isShuffling}
+          result={result}
+          onCopy={handleCopyResult}
+          isCopied={isResultCopied}
+        />
+
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+      </CardContent>
+      <CardFooter className="flex flex-col">
+        <Button
+          onClick={handleRandomize}
+          disabled={isRateLimited || isShuffling}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
+          <Wand2 className="mr-2 h-4 w-4" />
+          {isShuffling
+            ? "Picking..."
+            : isRateLimited
+              ? "Please wait..."
+              : "Randomize!"}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
