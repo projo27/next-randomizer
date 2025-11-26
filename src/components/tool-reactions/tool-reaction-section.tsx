@@ -14,17 +14,12 @@ export async function ToolReactionSection({ toolId }: ToolReactionSectionProps) 
   const initialReactions = await getReactionsForTool(toolId);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Tool Feedback</CardTitle>
-        <CardDescription>How do you feel about this tool? Let us know with a reaction!</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ReactionClientWrapper
-          toolId={toolId}
-          initialReactions={initialReactions}
-        />
-      </CardContent>
-    </Card>
+    <div className="w-full space-y-2">
+      <p className="text-muted-foreground ml-2">How do you feel about this tool? Let us know with a reaction!</p>
+      <ReactionClientWrapper
+        toolId={toolId}
+        initialReactions={initialReactions}
+      />
+    </div>
   );
 }

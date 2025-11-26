@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-const EMOJI_REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡"];
+const EMOJI_REACTIONS = ["❤️", "😂", "😮", "😢", "🤬", "🤡", "🙈"];
 
 type CommentItemProps = {
   comment: Comment;
@@ -44,23 +44,23 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
         userPhotoURL: user.photoURL || null,
         comment: replyComment,
       };
-      
+
       const newReplyId = await addReply(comment.id, replyData);
 
-       if (onReplyAdded) {
-         onReplyAdded(comment.id, {
-            id: newReplyId,
-            ...replyData,
-            reactions: {},
-            createdAt: { toDate: () => new Date() } as any,
-         });
+      if (onReplyAdded) {
+        onReplyAdded(comment.id, {
+          id: newReplyId,
+          ...replyData,
+          reactions: {},
+          createdAt: { toDate: () => new Date() } as any,
+        });
       }
-      
+
       setReplyComment("");
       setShowReplyForm(false);
     } catch (error) {
       console.error("Error submitting reply:", error);
-       toast({ variant: "destructive", title: "Error", description: "Failed to post reply." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to post reply." });
     } finally {
       setIsSubmittingReply(false);
     }
@@ -70,24 +70,24 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
     if (!user || isReply) return;
 
     setOptimisticReactions(prevReactions => {
-        const newReactions = JSON.parse(JSON.stringify(prevReactions));
-        const reactionData = newReactions[emoji] || { count: 0, users: [] };
-        const userIndex = reactionData.users.indexOf(user.uid);
+      const newReactions = JSON.parse(JSON.stringify(prevReactions));
+      const reactionData = newReactions[emoji] || { count: 0, users: [] };
+      const userIndex = reactionData.users.indexOf(user.uid);
 
-        if (userIndex > -1) {
-            reactionData.count--;
-            reactionData.users.splice(userIndex, 1);
-        } else {
-            reactionData.count++;
-            reactionData.users.push(user.uid);
-        }
+      if (userIndex > -1) {
+        reactionData.count--;
+        reactionData.users.splice(userIndex, 1);
+      } else {
+        reactionData.count++;
+        reactionData.users.push(user.uid);
+      }
 
-        if (reactionData.count === 0) {
-            delete newReactions[emoji];
-        } else {
-            newReactions[emoji] = reactionData;
-        }
-        return newReactions;
+      if (reactionData.count === 0) {
+        delete newReactions[emoji];
+      } else {
+        newReactions[emoji] = reactionData;
+      }
+      return newReactions;
     });
 
     try {
@@ -103,7 +103,7 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
 
   return (
     <div className={cn("flex space-x-4", isReply && "ml-8 mt-4")}>
-      <Avatar>
+      <Avatar className="[&&&]:rounded-lg border-1" >
         <AvatarImage src={comment.userPhotoURL || undefined} alt={comment.userName} />
         <AvatarFallback>{comment.userName.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
@@ -113,7 +113,7 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
           <p className="text-xs text-muted-foreground">{timeAgo}</p>
         </div>
         <p className="text-sm">{comment.comment}</p>
-        
+
         <div className="flex items-center gap-4 text-muted-foreground">
           {!isReply && (
             <>
@@ -123,16 +123,16 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
                     <Smile className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-1">
-                  <div className="flex gap-1">
+                <PopoverContent className="max-w-md p-1">
+                  <div className="flex flex-wrap gap-4">
                     {EMOJI_REACTIONS.map((emoji) => (
                       <Button
                         key={emoji}
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            "h-8 w-8 text-lg",
-                             optimisticReactions[emoji]?.users.includes(user?.uid || '') && "bg-accent"
+                          "h-10 w-10 text-2xl",
+                          optimisticReactions[emoji]?.users.includes(user?.uid || '') && "bg-accent"
                         )}
                         onClick={() => handleEmojiClick(emoji)}
                         disabled={!user}
@@ -144,7 +144,7 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
                 </PopoverContent>
               </Popover>
 
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowReplyForm(!showReplyForm)} disabled={!user}>
+              <Button variant="ghost" size="icon" className="h-7 w-auto px-2" onClick={() => setShowReplyForm(!showReplyForm)} disabled={!user}>
                 <MessageSquare className="h-4 w-4" />
                 <span className="text-xs ml-1">{comment.replyCount || 0}</span>
               </Button>
@@ -153,40 +153,40 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
 
           <div className="flex gap-2 items-center">
             {Object.entries(optimisticReactions || {}).map(([emoji, data]) => (
-                data.count > 0 && (
-                    <div key={emoji} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-xs cursor-pointer" onClick={() => handleEmojiClick(emoji)}>
-                        <span>{emoji}</span>
-                        <span>{data.count}</span>
-                    </div>
-                )
+              data.count > 0 && (
+                <div key={emoji} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full text-xs cursor-pointer" onClick={() => handleEmojiClick(emoji)}>
+                  <span>{emoji}</span>
+                  <span>{data.count}</span>
+                </div>
+              )
             ))}
           </div>
         </div>
 
         {showReplyForm && !isReply && (
-            <form onSubmit={handleReplySubmit} className="space-y-2 pt-2">
-                <Textarea 
-                    placeholder={`Reply to ${comment.userName}...`}
-                    value={replyComment}
-                    onChange={(e) => setReplyComment(e.target.value)}
-                    rows={2}
-                    disabled={isSubmittingReply}
-                />
-                <div className="flex justify-end gap-2">
-                    <Button type="button" variant="ghost" size="sm" onClick={() => setShowReplyForm(false)}>Cancel</Button>
-                    <Button type="submit" size="sm" disabled={!replyComment.trim() || isSubmittingReply}>
-                        {isSubmittingReply ? "Replying..." : "Reply"}
-                    </Button>
-                </div>
-            </form>
+          <form onSubmit={handleReplySubmit} className="space-y-2 pt-2">
+            <Textarea
+              placeholder={`Reply to ${comment.userName}...`}
+              value={replyComment}
+              onChange={(e) => setReplyComment(e.target.value)}
+              rows={2}
+              disabled={isSubmittingReply}
+            />
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="ghost" size="sm" onClick={() => setShowReplyForm(false)}>Cancel</Button>
+              <Button type="submit" size="sm" disabled={!replyComment.trim() || isSubmittingReply}>
+                {isSubmittingReply ? "Replying..." : "Reply"}
+              </Button>
+            </div>
+          </form>
         )}
 
         {comment.replies && comment.replies.length > 0 && (
-            <div className="pt-4 border-l-2 border-muted pl-4 space-y-4">
-                {comment.replies.map(reply => (
-                    <CommentItem key={reply.id} comment={reply as unknown as Comment} isReply={true} />
-                ))}
-            </div>
+          <div className="pt-4 border-l-2 border-muted pl-4 space-y-4">
+            {comment.replies.map(reply => (
+              <CommentItem key={reply.id} comment={reply as unknown as Comment} isReply={true} />
+            ))}
+          </div>
         )}
       </div>
     </div>

@@ -16,16 +16,12 @@ export async function CommentSection({ toolId }: CommentSectionProps) {
   const initialComments = await getCommentsForTool(toolId);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Comments & Discussion</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <CommentClientWrapper
-          toolId={toolId}
-          initialComments={initialComments}
-        />
-      </CardContent>
-    </Card>
+    <div className="w-full space-y-2">
+      <p className="text-muted-foreground ml-2">Comments & Discussion</p>
+      <CommentClientWrapper
+        toolId={toolId}
+        initialComments={initialComments}
+      />
+    </div>
   );
 }

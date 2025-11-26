@@ -86,24 +86,24 @@ export function ReactionClientWrapper({
         const userHasReacted = user && reactionData?.users.includes(user.uid);
 
         return (
-          <Button
+          <div
             key={emoji}
-            variant="outline"
+            // variant="outline"
             onClick={() => handleEmojiClick(emoji)}
             className={cn(
-                "flex items-center gap-2 transition-all",
-                userHasReacted && "bg-accent text-accent-foreground border-accent-foreground/50",
-                !user && "cursor-not-allowed"
+              "flex flex-col sm:flex-row items-center gap-2 transition-all cursor-pointer border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2",
+              userHasReacted && "bg-accent text-accent-foreground border-accent-foreground/50",
+              !user && "cursor-not-allowed disabled"
             )}
-            disabled={!user}
+          // disabled={!user}
           >
             <span className="text-xl">{emoji}</span>
             <span className="font-bold">{count}</span>
-          </Button>
+          </div>
         );
       })}
-       {!user && (
-         <Alert variant="default" className="border-dashed">
+      {!user && (
+        <Alert variant="default" className="border-dashed">
           <AlertDescription className="text-sm">
             <Button variant="link" onClick={signInWithGoogle} className="p-0 h-auto">
               Sign in
