@@ -40,7 +40,9 @@ function HomePageContent() {
       ))}
 
       <div className="mt-8">
-        <FeedbackSection toolId={activeTab} />
+        <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+          <FeedbackSection toolId={activeTab} />
+        </Suspense>
       </div>
     </Tabs>
   );
