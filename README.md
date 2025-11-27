@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.2.9 : Use can add reaction and comment or feedback on tools
 - v1.2.8 : Animal Randomizer release
 - v1.2.7 : Unsplash Image Randomizer release
 - v1.2.6 : Poetry Randomizer release
@@ -98,6 +99,7 @@
 - Sitemap to Crawling Index from Search Engine ✅
 - Searching the Randomizer Tools ✅
 - User can save the preset ✅
+- User can add reaction and comment on tools
 
 ### Thanks to :
 
