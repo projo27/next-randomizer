@@ -46,9 +46,9 @@ export function CommentClientWrapper({
         userPhotoURL: user.photoURL || null,
         comment: newComment,
       };
-      
+
       const newCommentId = await addComment(commentData);
-      
+
       const optimisticNewComment: Comment = {
         id: newCommentId,
         ...commentData,
@@ -59,7 +59,7 @@ export function CommentClientWrapper({
 
       setCommentList([optimisticNewComment, ...commentList]);
       setNewComment("");
-      
+
       toast({
         title: "Comment Posted",
         description: "Thank you for your thoughts!",
@@ -79,24 +79,22 @@ export function CommentClientWrapper({
 
   const onReplyAdded = (commentId: string, newReply: any) => {
     setCommentList(prevList => prevList.map(fb => {
-        if (fb.id === commentId) {
-            return {
-                ...fb,
-                replies: [...(fb.replies || []), newReply],
-                replyCount: (fb.replyCount || 0) + 1
-            };
-        }
-        return fb;
+      if (fb.id === commentId) {
+        return {
+          ...fb,
+          replies: [...(fb.replies || []), newReply],
+          replyCount: (fb.replyCount || 0) + 1
+        };
+      }
+      return fb;
     }));
   };
-  
-  if (authLoading) {
-    return <Skeleton className="w-full h-48" />;
-  }
 
   return (
     <div className="space-y-6">
-      {user ? (
+      {authLoading ? (
+        <Skeleton className="w-full h-32" />
+      ) : user ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <Textarea
             placeholder="Share your thoughts, suggestions, or issues..."
@@ -117,7 +115,7 @@ export function CommentClientWrapper({
           <AlertDescription>
             <Button variant="link" onClick={signInWithGoogle} className="p-0 h-auto">
               Sign in
-            </Button>{" "}
+            </Button>
             to leave comments, reply, and react.
           </AlertDescription>
         </Alert>
@@ -128,7 +126,7 @@ export function CommentClientWrapper({
           <CommentItem key={comment.id} comment={comment} onReplyAdded={onReplyAdded} />
         ))}
         {commentList.length === 0 && !authLoading && (
-            <p className="text-center text-muted-foreground py-8">Be the first to leave a comment!</p>
+          <p className="text-center text-muted-foreground py-8">Be the first to leave a comment!</p>
         )}
       </div>
     </div>

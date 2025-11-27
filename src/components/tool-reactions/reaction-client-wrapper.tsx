@@ -29,9 +29,10 @@ export function ReactionClientWrapper({
   const handleEmojiClick = async (emoji: string) => {
     if (!user) {
       toast({
-        variant: "destructive",
+        variant: "default",
         title: "Login Required",
-        description: "You must be signed in to react.",
+        description: "Let's Sign in to react.",
+        duration: 2000,
       });
       return;
     }
@@ -102,7 +103,7 @@ export function ReactionClientWrapper({
           </div>
         );
       })}
-      {!user && (
+      {/* {!user && (
         <Alert variant="default" className="border-dashed">
           <AlertDescription className="text-sm">
             <Button variant="link" onClick={signInWithGoogle} className="p-0 h-auto">
@@ -111,7 +112,7 @@ export function ReactionClientWrapper({
             to add your reaction.
           </AlertDescription>
         </Alert>
-      )}
+      )} */}
     </div>
   );
 }
