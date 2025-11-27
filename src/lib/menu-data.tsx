@@ -40,6 +40,7 @@ import WordRandomizer from "@/components/word-randomizer";
 import PoetryRandomizer from "@/components/poetry-randomizer";
 import AnimalRandomizer from "@/components/animal-randomizer";
 import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
+import ArtRandomizer from "@/components/art-randomizer";
 
 import {
   ListTodo,
@@ -223,6 +224,14 @@ export const triggerList = [
     hidden: false,
     icon: <Palette className="h-5 w-5" />,
     content: <ColorPaletteGenerator />,
+    contentGuard: false,
+  },
+  {
+    value: 'art',
+    text: 'Art',
+    hidden: false,
+    icon: <Palette className="h-5 w-5" />,
+    content: <ArtRandomizer />,
     contentGuard: false,
   },
   {
