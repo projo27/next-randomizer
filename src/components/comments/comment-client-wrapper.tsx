@@ -2,9 +2,10 @@
 // src/components/comments/comment-client-wrapper.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { addComment } from "@/services/comment-service";
+import { fetchComments } from "@/app/actions/comment-actions";
 import type { Comment } from "@/types/comment";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,13 @@ import { CommentItem } from "./comment-item";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type CommentClientWrapperProps = {
   toolId: string;
@@ -31,7 +39,25 @@ export function CommentClientWrapper({
   const [commentList, setCommentList] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sortBy, setSortBy] = useState<"newest" | "best">("newest");
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadComments = async () => {
+      setIsLoadingComments(true);
+      try {
+        const comments = await fetchComments(toolId, sortBy);
+        setCommentList(comments);
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      } finally {
+        setIsLoadingComments(false);
+      }
+    };
+
+    loadComments();
+  }, [toolId, sortBy]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +79,7 @@ export function CommentClientWrapper({
         id: newCommentId,
         ...commentData,
         reactions: {},
+        reactionCount: 0,
         replyCount: 0,
         createdAt: new Date().toISOString() as any, // Use ISO string for client-side optimistic update
       };
@@ -122,11 +149,36 @@ export function CommentClientWrapper({
       )}
 
       <div className="space-y-6">
-        {commentList.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} onReplyAdded={onReplyAdded} />
-        ))}
-        {commentList.length === 0 && !authLoading && (
-          <p className="text-center text-muted-foreground py-8">Be the first to leave a comment!</p>
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Comments ({commentList.length})</h3>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => setSortBy(value as "newest" | "best")}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Last Comment</SelectItem>
+              <SelectItem value="best">Best Comment</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {isLoadingComments ? (
+          <div className="space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        ) : (
+          <>
+            {commentList.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} onReplyAdded={onReplyAdded} />
+            ))}
+            {commentList.length === 0 && !authLoading && (
+              <p className="text-center text-muted-foreground py-8">Be the first to leave a comment!</p>
+            )}
+          </>
         )}
       </div>
     </div>

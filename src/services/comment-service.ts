@@ -28,11 +28,13 @@ const COMMENTS_COLLECTION = "comments";
  * Adds a new comment document to Firestore.
  */
 export async function addComment(
-  commentData: Omit<CommentData, "createdAt" | "reactions" | "replyCount">
+  commentData: Omit<CommentData, "createdAt" | "reactions" | "replyCount" | "reactionCount">
 ): Promise<string> {
   const newComment: Omit<CommentData, "createdAt"> = {
     ...commentData,
+    ...commentData,
     reactions: {},
+    reactionCount: 0,
     replyCount: 0,
   };
   const docRef = await addDoc(collection(db, COMMENTS_COLLECTION), {
@@ -79,11 +81,15 @@ export async function addReply(
 /**
  * Fetches all comments and their replies for a specific tool.
  */
-export async function getCommentsForTool(toolId: string): Promise<Comment[]> {
+export async function getCommentsForTool(
+  toolId: string,
+  sortBy: "newest" | "best" = "newest"
+): Promise<Comment[]> {
+  const sortField = sortBy === "best" ? "reactionCount" : "createdAt";
   const commentsQuery = query(
     collection(db, COMMENTS_COLLECTION),
     where("toolId", "==", toolId),
-    orderBy("createdAt", "desc")
+    orderBy(sortField, "desc")
   );
 
   const commentsSnapshot = await getDocs(commentsQuery);
@@ -143,6 +149,11 @@ export async function toggleCommentReaction(
       delete reactions[emoji];
     }
 
-    transaction.update(commentDocRef, { reactions });
+    const totalReactions = Object.values(reactions).reduce(
+      (sum, r) => sum + r.count,
+      0
+    );
+
+    transaction.update(commentDocRef, { reactions, reactionCount: totalReactions });
   });
 }

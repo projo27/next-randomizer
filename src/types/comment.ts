@@ -24,6 +24,7 @@ export interface CommentData {
   userPhotoURL: string | null;
   comment: string;
   reactions: ReactionMap;
+  reactionCount: number;
   replyCount: number;
   createdAt: Timestamp | string;
 }
