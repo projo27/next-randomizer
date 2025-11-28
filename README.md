@@ -129,6 +129,8 @@ Step by step to running on your own host :
 2.  Enable the required APIs in your Google Cloud Console.
 3.  docker run Dockerfile
 
+5.  how to debug (https://github.com/Microsoft/vscode-recipes/tree/master/Next-js)
+
 ### Required APIs
 
 To ensure all features of the application work correctly, you must enable the following APIs in the Google Cloud Console for your Firebase project:

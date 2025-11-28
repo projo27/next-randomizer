@@ -229,7 +229,7 @@ export const triggerList = [
   {
     value: 'art',
     text: 'Art',
-    hidden: false,
+    hidden: true,
     icon: <Palette className="h-5 w-5" />,
     content: <ArtRandomizer />,
     contentGuard: false,

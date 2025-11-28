@@ -18,29 +18,21 @@ import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomArt, ArtworkResult } from '@/app/actions/art-randomizer-action';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 function ArtworkDetail({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | undefined | null }) {
-    if (!value) return null;
-    return (
-        <div className="flex items-start gap-3">
-            <div className="text-accent">{icon}</div>
-            <div>
-                <p className="text-sm text-muted-foreground">{label}</p>
-                <p className="font-semibold">{value}</p>
-            </div>
-        </div>
-    );
+  if (!value) return null;
+  return (
+    <div className="flex items-start gap-3">
+      <div className="text-accent">{icon}</div>
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="font-semibold">{value}</p>
+      </div>
+    </div>
+  );
 }
 
 export default function ArtRandomizer() {
@@ -91,48 +83,36 @@ export default function ArtRandomizer() {
         )}
         {!isLoading && result && (
           <div className="w-full animate-fade-in space-y-4">
-            <Carousel className="w-full max-w-2xl mx-auto">
-              <CarouselContent>
-                {result.image_ids.map((id, index) => (
-                  <CarouselItem key={index}>
-                    <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-muted">
-                      <Image
-                        src={`${result.image_config.iiif_url}/${id}/full/843,/0/default.jpg`}
-                        alt={`${result.title} - view ${index + 1}`}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {result.image_ids.length > 1 && (
-                <>
-                  <CarouselPrevious className="absolute left-[-50px] top-1/2 -translate-y-1/2" />
-                  <CarouselNext className="absolute right-[-50px] top-1/2 -translate-y-1/2" />
-                </>
-              )}
-            </Carousel>
-            
+            <div className="relative aspect-video w-full rounded-lg overflow-hidden border bg-muted">
+              <Image
+                src={`/api/image-proxy?url=${encodeURIComponent(`${result.image_config?.iiif_url}/${result.image_id}/full/843,/0/default.jpg`)}`}
+                alt={`${result.title}`}
+                fill
+                className="object-contain"
+                unoptimized={true}
+              />
+              {/* <img src={`${result.image_config?.iiif_url}/${result.image_id}/full/843,/0/default.jpg`} alt="" className="object-contain w-full h-full" /> */}
+            </div>
+
             <div className="space-y-4 pt-4 text-center">
               <h3 className="text-2xl font-bold text-primary">{result.title}</h3>
               <Separator />
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-left pt-2">
-                 <ArtworkDetail icon={<User />} label="Artist" value={result.artist_display} />
-                 <ArtworkDetail icon={<Calendar />} label="Date" value={result.date_display} />
-                 <ArtworkDetail icon={<Type />} label="Artwork Type" value={result.artwork_type_title} />
+                <ArtworkDetail icon={<User />} label="Artist" value={result.artist_display} />
+                <ArtworkDetail icon={<Calendar />} label="Date" value={result.date_display} />
+                <ArtworkDetail icon={<Type />} label="Artwork Type" value={result.artwork_type_title} />
               </div>
-               {result.description && (
-                  <div className="text-left pt-4">
-                     <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <Info className="h-5 w-5 text-accent" />
-                        About this Artwork
-                    </h4>
-                    <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.description}</ReactMarkdown>
-                    </div>
+              {result.description && (
+                <div className="text-left pt-4">
+                  <h4 className="font-semibold flex items-center gap-2 mb-2">
+                    <Info className="h-5 w-5 text-accent" />
+                    About this Artwork
+                  </h4>
+                  <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.description}</ReactMarkdown>
                   </div>
-               )}
+                </div>
+              )}
             </div>
           </div>
         )}

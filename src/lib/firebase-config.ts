@@ -5,6 +5,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
   initializeFirestore,
+  memoryLocalCache,
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -23,9 +24,12 @@ const firebaseConfig = {
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager(),
-  }),
+  localCache:
+    typeof window !== "undefined"
+      ? persistentLocalCache({
+          tabManager: persistentMultipleTabManager(),
+        })
+      : memoryLocalCache(),
 });
 // const db = getFirestore(app);
 

@@ -36,10 +36,11 @@ function ToolReactionAndCommentSection({ toolId }: { toolId: string }) {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const activeTab =
-    typeof searchParams.tab === 'string' ? searchParams.tab : 'list';
+    typeof resolvedSearchParams.tab === 'string' ? resolvedSearchParams.tab : 'list';
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
