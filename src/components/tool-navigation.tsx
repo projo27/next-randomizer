@@ -13,7 +13,7 @@ import {
 } from "./ui/collapsible";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { ChevronDown, LucideListOrdered, Loader2, Search, X } from "lucide-react";
+import { ChevronDown, LucideListOrdered, LoaderCircle, Search, X } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -179,7 +179,7 @@ export function ToolNavigation() {
           </Tooltip>
         </TooltipProvider>
 
-        
+
       </div>
       <Collapsible
         open={isCollapsibleOpen || hasSearchResultsInHidden}
@@ -221,7 +221,7 @@ export function ToolNavigation() {
             <Separator className="flex-1" />
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="h-8 group text-xs">
-                {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {loading && <LoaderCircle className="h-4 w-4 mr-2 animate-spin" />}
                 <span className="group-data-[state=closed]:block group-data-[state=open]:hidden">
                   Show More Tools
                 </span>

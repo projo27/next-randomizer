@@ -25,7 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
-import { getRandomGift, GiftResult } from '@/app/actions/gift-randomizer-action';
+import { getRandomGift, getRandomGiftFromSupabase, GiftResult } from '@/app/actions/gift-randomizer-action';
 import { GIFTS_LIST } from '@/lib/gift-data';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
@@ -42,25 +42,9 @@ const RECIPIENTS = [
   'Others'
 ];
 
-const OCCASIONS = [
-  'anniversary', 'valentine', 'birthday', 'thank_you', 'christmas', 'home', 
-  'romantic', 'luxury', 'memory', 'fashion', 'reading', 'monthly', 'surprise', 
-  'comfort', 'practical', 'activity', 'fun', 'art', 'casual', 'health', 'tech', 
-  'new_year', 'spa', 'relaxation', 'unique', 'summer', 'winter', 'random', 
-  'grooming', 'outdoor', 'adventure', 'gaming', 'sport', 'everyday', 'nostalgia', 
-  'coffee', 'travel', 'funny', 'automotive', 'work', 'organization', 'music', 
-  'entertainment', 'sentimental', 'school', 'aesthetic', 'team_building', 'eco_friendly', 
-  'inspiration', 'Baby Shower', 'Newborn Arrival', 'Memory Gift', 'Practical Gift', 
-  'Postpartum Support', 'Self-care', 'New Mom Gift', 'Family Gift', 'Safety Gift', 
-  'Tech Gift', 'Nursery Decor', 'Sleep Gift', 'Travel Gift', 'Care Gift', 
-  'Photography Gift', 'Comfort Gift', 'Gift of Love', 'Appreciation', 
-  'Memorial', 'Housewarming', 'Wellness Gift', 'Sustainability', 'Fitness Gift', 
-  'Brain Teaser', 'Postpartum Care'
-];
 
-// Get unique values and sort them
 const uniqueRecipients = ['all', ...RECIPIENTS];
-const uniqueOccasions = ['all', ...Array.from(new Set(OCCASIONS))].sort();
+
 
 export default function GiftRandomizer() {
   const [recipient, setRecipient] = useState('all');
@@ -72,7 +56,23 @@ export default function GiftRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
-  
+
+  const uniqueOccasions = useMemo(() => {
+    const relevantGifts = recipient === 'all'
+      ? GIFTS_LIST
+      : GIFTS_LIST.filter(g => g.for === recipient);
+
+    const tags = new Set<string>();
+    relevantGifts.forEach(gift => {
+      gift.tags.forEach(tag => tags.add(tag));
+    });
+
+    // console.log(recipient, "\n", relevantGifts, "\n", tags);
+
+    return ['all', ...Array.from(tags).sort()];
+  }, [recipient]);
+
+
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_gift_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
@@ -83,7 +83,7 @@ export default function GiftRandomizer() {
     setIsCopied(false);
 
     try {
-      const giftResult = await getRandomGift(recipient, occasion);
+      const giftResult = await getRandomGiftFromSupabase(recipient, occasion);
       if (giftResult) {
         setResult(giftResult);
       } else {
@@ -96,7 +96,7 @@ export default function GiftRandomizer() {
       setIsLoading(false);
     }
   };
-  
+
   const handleCopy = () => {
     if (!result) return;
     navigator.clipboard.writeText(result.item);
@@ -122,7 +122,10 @@ export default function GiftRandomizer() {
             <Label htmlFor="recipient">For Whom?</Label>
             <Select
               value={recipient}
-              onValueChange={setRecipient}
+              onValueChange={(val) => {
+                setRecipient(val);
+                setOccasion('all');
+              }}
               disabled={isLoading || isRateLimited}
             >
               <SelectTrigger id="recipient">
@@ -175,7 +178,7 @@ export default function GiftRandomizer() {
                   <span key={tag} className="text-sm bg-muted text-muted-foreground px-2 py-1 rounded-full">{tag.replace(/_/g, ' ')}</span>
                 ))}
               </div>
-              <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden border-2 border-accent shadow-lg">
+              <div className="relative w-full max-w-md mx-auto aspect-video rounded-lg overflow-hidden shadow-lg">
                 <Image
                   src={result.imageUrl}
                   alt={result.item}
@@ -183,7 +186,7 @@ export default function GiftRandomizer() {
                   className="object-cover"
                 />
               </div>
-              
+
               {result.amazonSearchUrl && (
                 <Button asChild>
                   <Link href={result.amazonSearchUrl} target="_blank" rel="noopener noreferrer sponsored">
