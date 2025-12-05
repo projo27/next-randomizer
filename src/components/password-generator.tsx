@@ -43,7 +43,7 @@ export default function PasswordGenerator() {
     setIncludeNumbers(p.includeNumbers);
     setIncludeSymbols(p.includeSymbols);
     setIncludeUppercase(p.includeUppercase);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
 

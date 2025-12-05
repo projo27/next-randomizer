@@ -67,7 +67,7 @@ export default function LotteryGenerator() {
     const p = params as LotteryPresetParams;
     setLength(p.length);
     setIncludeLetters(p.includeLetters);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
 

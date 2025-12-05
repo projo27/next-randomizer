@@ -124,7 +124,7 @@ export default function NumberRandomizer() {
     setMin(p.min);
     setMax(p.max);
     setCount(p.count);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
   const handleRandomize = async () => {

@@ -4,11 +4,18 @@
  * Base structure for any preset.
  */
 export type Preset<T> = {
-  id: string; // Firestore document ID
+  id: string;
   name: string;
   toolId: string;
   parameters: T;
-  createdAt: any; // Firestore Timestamp
+  createdAt: string | Date;
+  isPublic?: boolean;
+  userId?: string;
+  userEmail?: string;
+  userDisplayName?: string;
+  userAvatarUrl?: string;
+  reactionCounts?: Record<string, number>;
+  userReaction?: string | null;
 };
 
 /**

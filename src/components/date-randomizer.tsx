@@ -149,7 +149,7 @@ export default function DateRandomizer() {
     setEndTime(p.endTime);
     setIs24Hour(p.is24Hour);
     setDateFormat(p.dateFormat);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
 

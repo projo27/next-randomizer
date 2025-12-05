@@ -59,7 +59,7 @@ export default function SeatingChartRandomizer() {
     setRows(p.rows);
     setCols(p.cols);
     setParticipantsText(p.participants);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
   const handleRandomize = async () => {

@@ -145,7 +145,7 @@ export default function ListRandomizer() {
     
     const lines = p.items.split("\n").map(l => l.trim()).filter(Boolean);
     setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
   const handleInputModeChange = (checked: boolean) => {

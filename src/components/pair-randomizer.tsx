@@ -58,7 +58,7 @@ export default function PairRandomizer() {
     const p = params as PairPresetParams;
     setListA(p.listA);
     setListB(p.listB);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
   const handleRandomize = async () => {

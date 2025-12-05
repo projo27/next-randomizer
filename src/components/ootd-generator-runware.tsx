@@ -164,7 +164,7 @@ export default function OotdGeneratorRunware() {
     setSeason(p.season);
     setHeight(p.height);
     setWeight(p.weight);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
 

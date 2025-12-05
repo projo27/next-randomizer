@@ -113,7 +113,7 @@ export default function Spinner() {
   const handleLoadPreset = (params: any) => {
     const p = params as SpinnerPresetParams;
     setItemsText(p.items);
-    toast({ title: "Preset Loaded", description: "Your settings have been restored." });
+    // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
   };
 
   const data = useMemo(() => {
