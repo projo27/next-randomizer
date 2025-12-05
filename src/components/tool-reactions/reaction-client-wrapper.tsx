@@ -1,7 +1,7 @@
 // src/components/tool-reactions/reaction-client-wrapper.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toggleToolReaction } from "@/services/tool-reaction-service";
 import type { ReactionMap } from "@/types/comment";
@@ -25,6 +25,10 @@ export function ReactionClientWrapper({
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
   const [reactions, setReactions] = useState(initialReactions);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setReactions(initialReactions);
+  }, [initialReactions, toolId]);
 
   const handleEmojiClick = async (emoji: string) => {
     if (!user) {

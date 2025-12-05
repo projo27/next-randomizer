@@ -1,5 +1,4 @@
 // src/components/tool-reactions/tool-reaction-section.tsx
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { getReactionsForTool } from "@/services/tool-reaction-service";
 import { ReactionClientWrapper } from "./reaction-client-wrapper";
 
