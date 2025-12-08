@@ -41,6 +41,7 @@ import PoetryRandomizer from "@/components/poetry-randomizer";
 import AnimalRandomizer from "@/components/animal-randomizer";
 import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
 import ArtRandomizer from "@/components/art-randomizer";
+import DataObjectRandomizer from "@/components/data-object-randomizer";
 
 import {
   ListTodo,
@@ -84,6 +85,7 @@ import {
   Feather,
   Cat,
   PawPrint,
+  Database,
 } from "lucide-react";
 import SongRandomizer from "@/components/song-randomizer";
 
@@ -224,6 +226,14 @@ export const triggerList = [
     hidden: false,
     icon: <Palette className="h-5 w-5" />,
     content: <ColorPaletteGenerator />,
+    contentGuard: false,
+  },
+  {
+    value: "data-object",
+    text: "Data Object",
+    hidden: false,
+    icon: <Database className="h-5 w-5" />,
+    content: <DataObjectRandomizer />,
     contentGuard: false,
   },
   {
