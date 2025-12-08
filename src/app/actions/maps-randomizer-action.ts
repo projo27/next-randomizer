@@ -41,10 +41,13 @@ export async function getTrulyRandomPlace(): Promise<LatLng> {
     }
     const html = await response.text();
     const $ = cheerio.load(html);
-
+    
     // Find the coordinates text and split it
-    const coordsText = $('#random_point dd').first().text();
+    // const coordsText = $('#random_point dd').first().text();
+    const coordsText = $('body > div > div > div:nth-child(3) > div > div:nth-child(1) > div.flex.flex-col.justify-center.text-lg').first().text();
     const [latStr, lngStr] = coordsText.split(',');
+
+    // console.info(coordsText, latStr, lngStr);
 
     const lat = parseFloat(latStr);
     const lng = parseFloat(lngStr);

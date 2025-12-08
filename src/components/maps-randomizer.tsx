@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Map, Wand2, Satellite, PersonStanding } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
-import { getRandomPlace, getTrulyRandomPlace,  LatLng } from "@/app/actions/maps-randomizer-action";
+import { getRandomPlace, getTrulyRandomPlace, LatLng } from "@/app/actions/maps-randomizer-action";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { useAuth } from "@/context/AuthContext";
@@ -95,18 +95,18 @@ export default function MapsRandomizer() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
+
         <div className="flex items-center justify-center space-x-2">
-            <Satellite className="h-5 w-5"/>
-            <Label htmlFor="view-mode-switch">Satellite View</Label>
-            <Switch
-                id="view-mode-switch"
-                checked={viewMode === 'streetview'}
-                onCheckedChange={(checked) => setViewMode(checked ? 'streetview' : 'satellite')}
-                disabled={isLoading || isRateLimited}
-            />
-            <Label htmlFor="view-mode-switch">Street View</Label>
-            <PersonStanding className="h-5 w-5"/>
+          <Satellite className="h-5 w-5" />
+          <Label htmlFor="view-mode-switch">Satellite View</Label>
+          <Switch
+            id="view-mode-switch"
+            checked={viewMode === 'streetview'}
+            onCheckedChange={(checked) => setViewMode(checked ? 'streetview' : 'satellite')}
+            disabled={isLoading || isRateLimited}
+          />
+          <Label htmlFor="view-mode-switch">Street View</Label>
+          <PersonStanding className="h-5 w-5" />
         </div>
 
         <div className="aspect-video w-full bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
@@ -125,7 +125,7 @@ export default function MapsRandomizer() {
           {!isLoading && !mapUrl && (
             <div className="text-center text-muted-foreground p-4">
               <Map className="h-12 w-12 mx-auto mb-4" />
-              <p>Your random destination will appear here.</p>
+              <p>Your random destination will appear here. <i>supported by https://www.randomcoords.com/</i></p>
             </div>
           )}
         </div>
@@ -140,8 +140,8 @@ export default function MapsRandomizer() {
           {isLoading
             ? "Finding a place..."
             : isRateLimited
-            ? "Please wait..."
-            : "Randomize Place"}
+              ? "Please wait..."
+              : "Randomize Place"}
         </Button>
       </CardFooter>
     </Card>
