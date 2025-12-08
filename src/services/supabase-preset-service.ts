@@ -203,7 +203,7 @@ export async function togglePresetReaction(
     p_reaction: reaction,
   });
 
-  console.log(userId, presetId, reaction);
+  // console.log(userId, presetId, reaction);
 
   if (error) {
     console.error("Error toggling reaction:", error);

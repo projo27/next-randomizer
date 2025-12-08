@@ -114,7 +114,7 @@ export async function getRandomGift(
 
   const randomIndex = Math.floor(Math.random() * filteredGifts.length);
   const selectedGift = filteredGifts[randomIndex];
-  console.log(selectedGift.item, selectedGift.item.replace(" ", "+"));
+  // console.log(selectedGift.item, selectedGift.item.replace(" ", "+"));
 
   const imageUrl = await getImageUrl(selectedGift.item);
   const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(selectedGift.item.replaceAll(" ", "+"))}&ref=randomizerfun-20`;

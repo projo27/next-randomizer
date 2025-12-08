@@ -132,7 +132,7 @@ The outfit items is: "${items.join("\n")}"
 The photo must be shot from a distance or an angle where the person's face is blured, 
 The background should fit with the person and clothes selected.`;
 // The background should be a clean, minimalist studio setting to keep focus on the clothes.`;
-    console.log(prompt);
+    // console.log(prompt);
 
     // googleai/imagen-4.0-fast-generate-001
     // imagen-3.0-generate-002

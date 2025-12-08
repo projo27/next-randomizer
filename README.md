@@ -99,7 +99,8 @@
 - Sitemap to Crawling Index from Search Engine ✅
 - Searching the Randomizer Tools ✅
 - User can save the preset ✅
-- User can add reaction and comment on tools
+- User can share their preset to public or make it private ✅
+- User can add reaction and comment on tools ✅
 
 ### Thanks to :
 

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     // Basic validation to prevent open proxy abuse
     const targetUrl = new URL(url);
-    console.log(`[Proxy] Fetching: ${url}, Hostname: ${targetUrl.hostname}`);
+    // console.log(`[Proxy] Fetching: ${url}, Hostname: ${targetUrl.hostname}`);
     
     if (!targetUrl.hostname.endsWith('artic.edu')) {
         console.warn(`[Proxy] Blocked hostname: ${targetUrl.hostname}`);

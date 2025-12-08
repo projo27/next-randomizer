@@ -89,7 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     // --- DEVELOPMENT MODE: Use Dummy User ---
     if (isDevelopment) {
-      console.log("DEV MODE: Using dummy user.");
+      // console.log("DEV MODE: Using dummy user.");
       // Use a timeout to simulate async loading
       const timer = setTimeout(() => {
         handleUserAuth(dummyUser);
@@ -108,13 +108,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     loading,
     signInWithGoogle: isDevelopment
       ? async () => {
-        console.log("DEV MODE: signInWithGoogle is disabled.");
+        // console.log("DEV MODE: signInWithGoogle is disabled.");
         return dummyUser;
       }
       : firebaseSignInWithGoogle,
     signOut: isDevelopment
       ? async () => {
-        console.log("DEV MODE: signOut is disabled.");
+        // console.log("DEV MODE: signOut is disabled.");
       }
       : firebaseSignOut,
   };

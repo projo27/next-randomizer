@@ -52,7 +52,7 @@ async function fetchFromTrefle<T>(
     }
 
     const data = await response.json();
-    console.log(url, data);
+    // console.log(url, data);
     const validation = schema.safeParse(data);
     if (!validation.success) {
       console.error('Trefle API Zod validation error:', validation.error.issues);
@@ -76,7 +76,7 @@ export async function getRandomPlantFromTrefle(): Promise<TreflePlant | null> {
   // Max page number for common plants is ~6800. Let's use a safe lower number.
   const randomPage = Math.floor(Math.random() * TREFLE_LAST_PAGE) + 1;
   const plantListResponse = await fetchFromTrefle(`plants?page=${randomPage}`, PlantListSchema);
-  console.log(plantListResponse);
+  // console.log(plantListResponse);
 
   if (!plantListResponse || plantListResponse.data.length === 0) {
     return null;

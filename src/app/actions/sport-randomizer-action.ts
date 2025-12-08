@@ -43,7 +43,7 @@ export interface FootballerResult extends Player {
 
 // Helper to fetch data and handle errors
 async function fetchData(url: string) {
-  console.log(url);
+//   console.log(url);
   if (!API_KEY) {
     throw new Error('TheSportsDB API Key is not configured. Please set THESPORTSDB_API_KEY in your environment variables.');
   }
