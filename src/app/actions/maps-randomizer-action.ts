@@ -1,6 +1,9 @@
+
 'use server';
 
 import { STREETVIEW_LOCATIONS } from '@/lib/streetview-locations-server';
+import * as cheerio from 'cheerio';
+
 
 export type LatLng = {
   lat: number;
@@ -23,22 +26,31 @@ export async function getRandomPlace(): Promise<LatLng> {
 }
 
 /**
- * Fetches a truly random geographical coordinate from the randomcoords.com API.
+ * Fetches a truly random geographical coordinate by scraping randomcoords.com.
  * @returns {Promise<LatLng>} A promise that resolves to an object with lat and lng.
  */
 export async function getTrulyRandomPlace(): Promise<LatLng> {
   try {
-    const response = await fetch('https://www.randomcoords.com/json');
+    const response = await fetch('https://randomcoords.com/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch from randomcoords.com: ${response.statusText}`);
     }
-    const data = await response.json();
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-    const lat = parseFloat(data.lat);
-    const lng = parseFloat(data.lng);
+    // Find the coordinates text and split it
+    const coordsText = $('#random_point dd').first().text();
+    const [latStr, lngStr] = coordsText.split(',');
+
+    const lat = parseFloat(latStr);
+    const lng = parseFloat(lngStr);
 
     if (isNaN(lat) || isNaN(lng)) {
-      throw new Error('Invalid coordinate format received from API.');
+      throw new Error('Invalid coordinate format received from website.');
     }
 
     return { lat, lng };
