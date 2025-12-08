@@ -42,52 +42,12 @@ import AnimalRandomizer from "@/components/animal-randomizer";
 import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
 import ArtRandomizer from "@/components/art-randomizer";
 import DataObjectRandomizer from "@/components/data-object-randomizer";
+import SongRandomizer from "@/components/song-randomizer";
 
 import {
-  ListTodo,
-  Shuffle,
-  Lock,
-  Newspaper,
-  Dices,
-  ListOrdered,
-  Users,
-  CalendarDays,
-  CircleDollarSign,
-  Disc,
-  Spade,
-  Ticket,
-  Smile,
-  Compass,
-  Palette,
-  Binary,
-  Image as ImageIcon,
-  Shirt,
-  Plane,
-  Youtube,
-  Hand,
-  Sheet,
-  Quote,
-  Flag,
-  Gift,
-  Map,
-  Laugh,
-  Music,
-  FlameKindling,
-  Radio,
-  Sprout,
-  ClipboardCheck,
-  FlaskConical,
-  BookOpen,
-  Landmark,
-  Armchair,
-  Combine,
-  FileText,
-  Feather,
-  Cat,
-  PawPrint,
-  Database,
+  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database,
 } from "lucide-react";
-import SongRandomizer from "@/components/song-randomizer";
+
 
 export type MenuItemData = typeof triggerList[0];
 
@@ -269,14 +229,6 @@ export const triggerList = [
     contentGuard: false,
   },
   {
-    value: 'animal',
-    text: 'Animal',
-    hidden: false,
-    icon: <PawPrint className="h-5 w-5" />,
-    content: <AnimalRandomizer />,
-    contentGuard: false,
-  },
-  {
     value: "quote",
     text: "Quote",
     hidden: false,
@@ -306,6 +258,14 @@ export const triggerList = [
     hidden: false,
     icon: <Sprout className="h-5 w-5" />,
     content: <PlantRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'animal',
+    text: 'Animal',
+    hidden: false,
+    icon: <PawPrint className="h-5 w-5" />,
+    content: <AnimalRandomizer />,
     contentGuard: false,
   },
   {
