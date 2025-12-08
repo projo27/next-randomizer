@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Map, Wand2, Satellite, PersonStanding } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
-import { getRandomPlace, ,  LatLng } from "@/app/actions/maps-randomizer-action";
+import { getRandomPlace, getTrulyRandomPlace,  LatLng } from "@/app/actions/maps-randomizer-action";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { useAuth } from "@/context/AuthContext";
