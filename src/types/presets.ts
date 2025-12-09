@@ -89,6 +89,12 @@ export type OotdPresetParams = {
   weight: string;
 };
 
+export type DataObjectPresetParams = {
+  data: string; // JSON string
+  count: string;
+  columns?: any[]; // Optional column definitions
+};
+
 // Union type for any possible preset parameters
 export type AnyPresetParams =
   | ListPresetParams
@@ -101,7 +107,8 @@ export type AnyPresetParams =
   | SeatingChartPresetParams
   | SpinnerPresetParams
   | LotteryPresetParams
-  | OotdPresetParams;
+  | OotdPresetParams
+  | DataObjectPresetParams;
 
 // Generic preset type for use in components
 export type ToolPreset = Preset<AnyPresetParams>;

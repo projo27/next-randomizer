@@ -194,7 +194,7 @@ export const triggerList = [
     hidden: false,
     icon: <Database className="h-5 w-5" />,
     content: <DataObjectRandomizer />,
-    contentGuard: false,
+    contentGuard: true,
   },
   {
     value: 'art',
