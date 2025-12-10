@@ -32,8 +32,8 @@ function SettingsPageContent() {
     setPlaySounds,
     visibleToolCount,
     setVisibleToolCount,
-    confettiEnabled,
-    setConfettiEnabled,
+    confettiConfig,
+    setConfettiConfig,
     loading: settingsLoading,
   } = useSettings();
   const { user, loading: authLoading } = useAuth();
@@ -135,10 +135,66 @@ function SettingsPageContent() {
           </div>
           <Switch
             id="confetti-enabled"
-            checked={confettiEnabled}
-            onCheckedChange={setConfettiEnabled}
+            checked={confettiConfig.enabled}
+            onCheckedChange={(checked) =>
+              setConfettiConfig({ ...confettiConfig, enabled: checked })
+            }
           />
         </div>
+
+        {confettiConfig.enabled && (
+          <div className="space-y-6 pt-4 border-t">
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="particle-count" className="text-base">
+                  Particle Count
+                </Label>
+                <span className="font-mono font-bold text-2xl dark:text-primary">
+                  {confettiConfig.particleCount}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Number of confetti particles to throw.
+              </p>
+              <Slider
+                id="particle-count"
+                min={20}
+                max={500}
+                step={10}
+                value={[confettiConfig.particleCount]}
+                onValueChange={(value) =>
+                  setConfettiConfig({ ...confettiConfig, particleCount: value[0] })
+                }
+                className="[&&&]:pt-4"
+              />
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="confetti-spread" className="text-base">
+                  Spread
+                </Label>
+                <span className="font-mono font-bold text-2xl dark:text-primary">
+                  {confettiConfig.spread}°
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                How wide the confetti spreads.
+              </p>
+              <Slider
+                id="confetti-spread"
+                min={20}
+                max={180}
+                step={5}
+                value={[confettiConfig.spread]}
+                onValueChange={(value) =>
+                  setConfettiConfig({ ...confettiConfig, spread: value[0] })
+                }
+                className="[&&&]:pt-4"
+              />
+            </div>
+          </div>
+        )}
 
         <Separator />
 

@@ -1,6 +1,6 @@
 
 "use client";
-import confetti from "canvas-confetti";
+import { threwConfetti } from "@/lib/confetti";
 
 import { useState, useEffect } from "react";
 import {
@@ -122,9 +122,9 @@ export default function ListRandomizer() {
   const [isResultCopied, setIsResultCopied] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration, confettiEnabled } = useSettings();
+  const { toast } = useToast();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -219,11 +219,10 @@ export default function ListRandomizer() {
       setTimeout(() => {
         setResult(serverResult);
         setIsShuffling(false);
-        if (confettiEnabled) {
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
           });
         }
       }, animationDuration * 1000);

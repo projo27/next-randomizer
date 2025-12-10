@@ -16,9 +16,10 @@ import {
   savePlaySounds,
   getVisibleToolCount,
   saveVisibleToolCount,
-  getConfettiEnabled,
-  saveConfettiEnabled,
+  getConfettiConfiguration,
+  saveConfettiConfiguration,
 } from "@/services/user-preferences";
+import { ConfettiConfiguration } from "@/types/confetti";
 import { useDebounce } from "@/hooks/use-debounce";
 
 interface SettingsContextType {
@@ -28,8 +29,8 @@ interface SettingsContextType {
   setPlaySounds: (play: boolean) => void;
   visibleToolCount: number;
   setVisibleToolCount: (count: number) => void;
-  confettiEnabled: boolean;
-  setConfettiEnabled: (enabled: boolean) => void;
+  confettiConfig: ConfettiConfiguration;
+  setConfettiConfig: (config: ConfettiConfiguration) => void;
   loading: boolean;
 }
 
@@ -40,8 +41,12 @@ const defaultContextValue: SettingsContextType = {
   setPlaySounds: () => { },
   visibleToolCount: 10,
   setVisibleToolCount: () => { },
-  confettiEnabled: true,
-  setConfettiEnabled: () => { },
+  confettiConfig: {
+    enabled: true,
+    particleCount: 100,
+    spread: 70,
+  },
+  setConfettiConfig: () => { },
   loading: true,
 };
 
@@ -60,15 +65,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [visibleToolCount, setVisibleToolCount] = useState(
     defaultContextValue.visibleToolCount,
   );
-  const [confettiEnabled, setConfettiEnabled] = useState(
-    defaultContextValue.confettiEnabled,
+  const [confettiConfig, setConfettiConfig] = useState<ConfettiConfiguration>(
+    defaultContextValue.confettiConfig,
   );
   const [loading, setLoading] = useState(true);
 
   const debouncedDuration = useDebounce(animationDuration, 500);
   const debouncedPlaySounds = useDebounce(playSounds, 500);
   const debouncedVisibleToolCount = useDebounce(visibleToolCount, 500);
-  const debouncedConfettiEnabled = useDebounce(confettiEnabled, 500);
+  const debouncedConfettiConfig = useDebounce(confettiConfig, 500);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -78,12 +83,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
           savedDuration,
           savedPlaySounds,
           savedVisibleToolCount,
-          savedConfettiEnabled,
+          savedConfettiConfig,
         ] = await Promise.all([
           getAnimationDuration(user.uid),
           getPlaySounds(user.uid),
           getVisibleToolCount(user.uid),
-          getConfettiEnabled(user.uid),
+          getConfettiConfiguration(user.uid),
         ]);
 
         setAnimationDuration(
@@ -93,14 +98,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setVisibleToolCount(
           savedVisibleToolCount ?? defaultContextValue.visibleToolCount,
         );
-        setConfettiEnabled(savedConfettiEnabled ?? defaultContextValue.confettiEnabled);
+        setConfettiConfig(savedConfettiConfig ?? defaultContextValue.confettiConfig);
         setLoading(false);
       } else {
         // Reset to default when user logs out
         setAnimationDuration(defaultContextValue.animationDuration);
         setPlaySounds(defaultContextValue.playSounds);
         setVisibleToolCount(defaultContextValue.visibleToolCount);
-        setConfettiEnabled(defaultContextValue.confettiEnabled);
+        setConfettiConfig(defaultContextValue.confettiConfig);
         setLoading(false);
       }
     }
@@ -130,9 +135,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user && !loading) {
-      saveConfettiEnabled(user.uid, debouncedConfettiEnabled);
+      saveConfettiConfiguration(user.uid, debouncedConfettiConfig);
     }
-  }, [debouncedConfettiEnabled, user, loading]);
+  }, [debouncedConfettiConfig, user, loading]);
 
   const value = {
     animationDuration,
@@ -141,8 +146,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setPlaySounds,
     visibleToolCount,
     setVisibleToolCount,
-    confettiEnabled,
-    setConfettiEnabled,
+    confettiConfig,
+    setConfettiConfig,
     loading: authLoading || loading,
   };
 
