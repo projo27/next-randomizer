@@ -16,6 +16,8 @@ import {
   savePlaySounds,
   getVisibleToolCount,
   saveVisibleToolCount,
+  getConfettiEnabled,
+  saveConfettiEnabled,
 } from "@/services/user-preferences";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -26,6 +28,8 @@ interface SettingsContextType {
   setPlaySounds: (play: boolean) => void;
   visibleToolCount: number;
   setVisibleToolCount: (count: number) => void;
+  confettiEnabled: boolean;
+  setConfettiEnabled: (enabled: boolean) => void;
   loading: boolean;
 }
 
@@ -36,6 +40,8 @@ const defaultContextValue: SettingsContextType = {
   setPlaySounds: () => { },
   visibleToolCount: 10,
   setVisibleToolCount: () => { },
+  confettiEnabled: true,
+  setConfettiEnabled: () => { },
   loading: true,
 };
 
@@ -54,11 +60,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [visibleToolCount, setVisibleToolCount] = useState(
     defaultContextValue.visibleToolCount,
   );
+  const [confettiEnabled, setConfettiEnabled] = useState(
+    defaultContextValue.confettiEnabled,
+  );
   const [loading, setLoading] = useState(true);
 
   const debouncedDuration = useDebounce(animationDuration, 500);
   const debouncedPlaySounds = useDebounce(playSounds, 500);
   const debouncedVisibleToolCount = useDebounce(visibleToolCount, 500);
+  const debouncedConfettiEnabled = useDebounce(confettiEnabled, 500);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -68,10 +78,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
           savedDuration,
           savedPlaySounds,
           savedVisibleToolCount,
+          savedConfettiEnabled,
         ] = await Promise.all([
           getAnimationDuration(user.uid),
           getPlaySounds(user.uid),
           getVisibleToolCount(user.uid),
+          getConfettiEnabled(user.uid),
         ]);
 
         setAnimationDuration(
@@ -81,12 +93,14 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setVisibleToolCount(
           savedVisibleToolCount ?? defaultContextValue.visibleToolCount,
         );
+        setConfettiEnabled(savedConfettiEnabled ?? defaultContextValue.confettiEnabled);
         setLoading(false);
       } else {
         // Reset to default when user logs out
         setAnimationDuration(defaultContextValue.animationDuration);
         setPlaySounds(defaultContextValue.playSounds);
         setVisibleToolCount(defaultContextValue.visibleToolCount);
+        setConfettiEnabled(defaultContextValue.confettiEnabled);
         setLoading(false);
       }
     }
@@ -114,6 +128,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     }
   }, [debouncedVisibleToolCount, user, loading]);
 
+  useEffect(() => {
+    if (user && !loading) {
+      saveConfettiEnabled(user.uid, debouncedConfettiEnabled);
+    }
+  }, [debouncedConfettiEnabled, user, loading]);
+
   const value = {
     animationDuration,
     setAnimationDuration,
@@ -121,6 +141,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setPlaySounds,
     visibleToolCount,
     setVisibleToolCount,
+    confettiEnabled,
+    setConfettiEnabled,
     loading: authLoading || loading,
   };
 

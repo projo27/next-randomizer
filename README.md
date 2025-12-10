@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.3.0 : Added confetti animation on results (toggleable in settings)
 - v1.2.9 : Use can add reaction and comment or feedback on tools
 - v1.2.8 : Animal Randomizer release
 - v1.2.7 : Unsplash Image Randomizer release
@@ -95,7 +96,7 @@
 - Add Running news after title and subtitle, to aware user for new feature or news
 - User can save and share the result (PRO)
 - Mobile support
-- Confetti after suffling / randomization done
+- Confetti after suffling / randomization done ✅
 - Sitemap to Crawling Index from Search Engine ✅
 - Searching the Randomizer Tools ✅
 - User can save the preset ✅

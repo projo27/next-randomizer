@@ -1,5 +1,6 @@
 
 "use client";
+import confetti from "canvas-confetti";
 
 import { useState, useEffect } from "react";
 import {
@@ -123,7 +124,7 @@ export default function ListRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiEnabled } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -142,7 +143,7 @@ export default function ListRandomizer() {
     const p = params as ListPresetParams;
     setItemsText(p.items);
     setCount(p.count);
-    
+
     const lines = p.items.split("\n").map(l => l.trim()).filter(Boolean);
     setItems(lines.map((line, index) => ({ id: `${Date.now()}-${index}`, value: line })));
     // toast({ title: "Preset Loaded", description: "Your settings have been restored." });
@@ -218,6 +219,13 @@ export default function ListRandomizer() {
       setTimeout(() => {
         setResult(serverResult);
         setIsShuffling(false);
+        if (confettiEnabled) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);
@@ -259,7 +267,7 @@ export default function ListRandomizer() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <PresetManager 
+        <PresetManager
           toolId="list"
           currentParams={getCurrentParams()}
           onLoadPreset={handleLoadPreset}

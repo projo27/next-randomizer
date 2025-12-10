@@ -286,3 +286,44 @@ export async function saveUserEmail(
     console.error("Error saving user email:", error);
   }
 }
+
+/**
+ * Saves the user's confetti enabled preference to Firestore.
+ * @param userId The ID of the user.
+ * @param enabled Boolean indicating if confetti should be enabled.
+ */
+export async function saveConfettiEnabled(
+  userId: string,
+  enabled: boolean,
+): Promise<void> {
+  if (!userId) return;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    await setDoc(userPrefRef, { confettiEnabled: enabled }, { merge: true });
+  } catch (error) {
+    console.error("Error saving confetti preference:", error);
+  }
+}
+
+/**
+ * Retrieves the user's confetti enabled preference from Firestore.
+ * @param userId The ID of the user.
+ * @returns The saved preference (boolean) or null if not set.
+ */
+export async function getConfettiEnabled(
+  userId: string,
+): Promise<boolean | null> {
+  if (!userId) return null;
+  try {
+    const userPrefRef = doc(db, USER_PREFERENCE_COLLECTION, userId);
+    const docSnap = await getDoc(userPrefRef);
+    const data = docSnap.data();
+    if (docSnap.exists() && data?.confettiEnabled !== undefined) {
+      return data.confettiEnabled;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting confetti preference:", error);
+    return null;
+  }
+}

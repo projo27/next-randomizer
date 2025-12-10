@@ -89,7 +89,7 @@ const DARES = [
   "Balance a spoon on your nose for 10 seconds.",
   "Howl like a wolf at the moon (or ceiling).",
   "Make up a short story about the person to your left.",
-- "Go to a neighbor's house and ask for a cup of sugar.",
+  "Go to a neighbor's house and ask for a cup of sugar.",
   "Let the group create a short, silly dance for you to perform.",
   "Serenade the person to your right.",
   "Try to do a magic trick.",

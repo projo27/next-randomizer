@@ -32,6 +32,8 @@ function SettingsPageContent() {
     setPlaySounds,
     visibleToolCount,
     setVisibleToolCount,
+    confettiEnabled,
+    setConfettiEnabled,
     loading: settingsLoading,
   } = useSettings();
   const { user, loading: authLoading } = useAuth();
@@ -117,6 +119,24 @@ function SettingsPageContent() {
             id="play-sounds"
             checked={playSounds}
             onCheckedChange={setPlaySounds}
+          />
+        </div>
+
+        <Separator />
+
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <Label htmlFor="confetti-enabled" className="text-base">
+              Confetti Effects
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Enable confetti animation when a result is picked.
+            </p>
+          </div>
+          <Switch
+            id="confetti-enabled"
+            checked={confettiEnabled}
+            onCheckedChange={setConfettiEnabled}
           />
         </div>
 
