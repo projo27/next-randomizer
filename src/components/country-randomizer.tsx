@@ -24,6 +24,7 @@ import {
   CountryResult,
 } from "@/app/actions/country-randomizer-action";
 import { useSettings } from "@/context/SettingsContext";
+import { threwConfetti } from "@/lib/confetti";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
@@ -36,7 +37,7 @@ export default function CountryRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -71,6 +72,12 @@ export default function CountryRandomizer() {
       setTimeout(() => {
         setResults(newResults);
         setIsRandomizing(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);
@@ -121,14 +128,14 @@ export default function CountryRandomizer() {
 
         <div className="relative">
           {(isRandomizing || results.length > 0) && (
-             <div className="absolute top-2 right-2">
-                <Button variant="ghost" size="icon" onClick={handleCopy} disabled={isRandomizing}>
-                    {isCopied ? (
-                    <Check className="h-5 w-5 text-green-500" />
-                    ) : (
-                    <Copy className="h-5 w-5" />
-                    )}
-                </Button>
+            <div className="absolute top-2 right-2">
+              <Button variant="ghost" size="icon" onClick={handleCopy} disabled={isRandomizing}>
+                {isCopied ? (
+                  <Check className="h-5 w-5 text-green-500" />
+                ) : (
+                  <Copy className="h-5 w-5" />
+                )}
+              </Button>
             </div>
           )}
           <div className="flex flex-wrap justify-center gap-4 min-h-[200px] p-4 bg-muted/50 rounded-lg">
@@ -157,9 +164,9 @@ export default function CountryRandomizer() {
                 </div>
               ))}
             {!isRandomizing && results.length === 0 && (
-                <div className="col-span-full flex items-center justify-center">
-                     <p className="text-muted-foreground">Countries will appear here.</p>
-                </div>
+              <div className="col-span-full flex items-center justify-center">
+                <p className="text-muted-foreground">Countries will appear here.</p>
+              </div>
             )}
           </div>
         </div>

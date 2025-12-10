@@ -25,6 +25,8 @@ import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { generatePalettes as generatePalettesAction } from "@/app/actions/color-palette-action";
 import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { threwConfetti } from "@/lib/confetti";
+import { useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 
@@ -56,8 +58,9 @@ export default function ColorPaletteGenerator() {
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
+  const isFirstRun = useRef(true);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -90,6 +93,14 @@ export default function ColorPaletteGenerator() {
       setTimeout(() => {
         setPalettes(allNewPalettes);
         setIsGenerating(false);
+        if (isFirstRun.current) {
+          isFirstRun.current = false;
+        } else if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e) {
       console.error(e);

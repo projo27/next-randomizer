@@ -27,6 +27,8 @@ import {
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
+import { useSettings } from "@/context/SettingsContext";
 
 interface Recommendation {
   country: string;
@@ -44,6 +46,7 @@ export default function TravelRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -85,6 +88,12 @@ export default function TravelRandomizer() {
         description: result.description,
         imageUrl: result.imageUrl,
       });
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err) {
       console.error("Failed to get travel recommendation:", err);
       setError(

@@ -23,6 +23,7 @@ import { sendGTMEvent } from "@next/third-parties/google";
 import { useAuth } from "@/context/AuthContext";
 import { PresetManager } from "./preset-manager";
 import type { NumberPresetParams } from "@/types/presets";
+import { threwConfetti } from "@/lib/confetti";
 
 
 function ResultDisplay({
@@ -103,10 +104,10 @@ export default function NumberRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { toast } = useToast();
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
-    const { user } = useAuth();
-  
+  const { user } = useAuth();
+
   useEffect(() => {
     if (!isRandomizing) {
       stopAudio();
@@ -166,6 +167,12 @@ export default function NumberRandomizer() {
       setTimeout(() => {
         setResult(serverResult);
         setIsRandomizing(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);

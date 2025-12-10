@@ -30,6 +30,8 @@ import { GIFTS_LIST } from '@/lib/gift-data';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import Link from 'next/link';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from "@/context/SettingsContext";
 
 const RECIPIENTS = [
   'Wife',
@@ -56,6 +58,7 @@ export default function GiftRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const uniqueOccasions = useMemo(() => {
     const relevantGifts = recipient === 'all'
@@ -86,6 +89,12 @@ export default function GiftRandomizer() {
       const giftResult = await getRandomGiftFromSupabase(recipient, occasion);
       if (giftResult) {
         setResult(giftResult);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       } else {
         setError("No gifts found for the selected criteria. Try a broader search!");
       }

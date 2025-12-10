@@ -23,6 +23,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
 
 export default function CardDeckRandomizer() {
   const [includeJokers, setIncludeJokers] = useState(false);
@@ -33,7 +34,7 @@ export default function CardDeckRandomizer() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -74,6 +75,12 @@ export default function CardDeckRandomizer() {
       setTimeout(() => {
         setDrawnCards(newDrawnCards);
         setIsDrawing(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);

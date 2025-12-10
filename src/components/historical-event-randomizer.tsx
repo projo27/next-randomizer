@@ -21,6 +21,8 @@ import { getTodaysHistoricalEvent } from '@/app/actions/historical-event-action'
 import type { HistoricalEvent } from '@/app/actions/historical-event-action';
 import { Badge } from './ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function HistoricalEventRandomizer() {
   const [result, setResult] = useState<HistoricalEvent | null>(null);
@@ -30,11 +32,12 @@ export default function HistoricalEventRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_historical_event', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
-    
+
     triggerRateLimit();
     setIsLoading(true);
     setError(null);
@@ -44,6 +47,12 @@ export default function HistoricalEventRandomizer() {
     try {
       const eventResult = await getTodaysHistoricalEvent();
       setResult(eventResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
@@ -79,8 +88,8 @@ export default function HistoricalEventRandomizer() {
             <Skeleton className="h-8 w-full mt-2" />
             <Skeleton className="h-8 w-5/6" />
             <div className="flex gap-2 pt-2">
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-32" />
             </div>
           </div>
         )}
@@ -94,28 +103,28 @@ export default function HistoricalEventRandomizer() {
               {result.description}
             </p>
             {result.links && result.links.length > 0 && (
-                 <div className="flex flex-wrap gap-2 pt-2">
-                    {result.links.map((link, index) => (
-                        <Button key={index} asChild variant="outline" size="sm">
-                            <Link href={link.url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="mr-2 h-4 w-4" />
-                                {link.title}
-                            </Link>
-                        </Button>
-                    ))}
-                 </div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {result.links.map((link, index) => (
+                  <Button key={index} asChild variant="outline" size="sm">
+                    <Link href={link.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {link.title}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
             )}
             <div className="absolute -top-2 right-0">
-                <Button variant="ghost" size="icon" onClick={handleCopy}>
+              <Button variant="ghost" size="icon" onClick={handleCopy}>
                 {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                </Button>
+              </Button>
             </div>
           </div>
         )}
         {!isLoading && !result && !error && (
           <div className="text-center text-muted-foreground p-4">
-              <Landmark className="h-16 w-16 mx-auto mb-4" />
-              <p>Click the button to find out what happened on this day in history.</p>
+            <Landmark className="h-16 w-16 mx-auto mb-4" />
+            <p>Click the button to find out what happened on this day in history.</p>
           </div>
         )}
         {error && (

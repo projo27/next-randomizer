@@ -22,6 +22,8 @@ import {
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function QuoteRandomizer() {
   const [result, setResult] = useState<QuoteResult | null>(null);
@@ -31,6 +33,7 @@ export default function QuoteRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -47,6 +50,12 @@ export default function QuoteRandomizer() {
     try {
       const quoteResult = await getRandomQuote();
       setResult(quoteResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
@@ -136,8 +145,8 @@ export default function QuoteRandomizer() {
           {isLoading
             ? 'Finding a quote...'
             : isRateLimited
-            ? 'Please wait...'
-            : 'Randomize Quote'}
+              ? 'Please wait...'
+              : 'Randomize Quote'}
         </Button>
       </CardFooter>
     </Card>

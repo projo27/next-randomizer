@@ -28,6 +28,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
 
 const EMOJI_CATEGORIES = {
   "Smileys & Emotion": [
@@ -1167,7 +1168,7 @@ export default function EmojiGenerator() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
@@ -1213,6 +1214,12 @@ export default function EmojiGenerator() {
           clearInterval(animationIntervalRef.current);
         setResult(finalResult);
         setIsGenerating(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);

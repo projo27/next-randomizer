@@ -19,6 +19,8 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { generateScienceFact, ScienceFactOutput } from '@/ai/flows/science-fact-flow';
 import { Badge } from './ui/badge';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function ScienceFactRandomizer() {
   const [result, setResult] = useState<ScienceFactOutput | null>(null);
@@ -26,6 +28,7 @@ export default function ScienceFactRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -41,6 +44,12 @@ export default function ScienceFactRandomizer() {
     try {
       const factResult = await generateScienceFact();
       setResult(factResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
@@ -63,35 +72,35 @@ export default function ScienceFactRandomizer() {
             <Skeleton className="h-8 w-full" />
             <Skeleton className="h-8 w-5/6" />
             <div className="pt-6 space-y-3">
-                <Skeleton className="h-6 w-1/4" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-6 w-1/4" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
           </div>
         )}
         {!isLoading && result && (
           <div className="w-full animate-fade-in space-y-6 p-4 rounded-lg bg-card/50 border">
-             <blockquote className="border-l-4 border-accent pl-4">
+            <blockquote className="border-l-4 border-accent pl-4">
               <p className="text-xl md:text-2xl font-semibold italic">"{result.fact}"</p>
             </blockquote>
             <div className='space-y-3'>
-                <h4 className='font-semibold'>Learn More:</h4>
-                <div className='flex flex-col sm:flex-row gap-2'>
-                    <Button asChild variant="outline" className="w-full sm:w-auto">
-                        <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
-                            <LinkIcon className="mr-2 h-4 w-4" />
-                            Read Source Article
-                        </Link>
-                    </Button>
-                    {result.youtubeUrl && (
-                        <Button asChild variant="outline" className="w-full sm:w-auto">
-                            <Link href={result.youtubeUrl} target="_blank" rel="noopener noreferrer">
-                                <Youtube className="mr-2 h-4 w-4" />
-                                Watch on YouTube
-                            </Link>
-                        </Button>
-                    )}
-                </div>
+              <h4 className='font-semibold'>Learn More:</h4>
+              <div className='flex flex-col sm:flex-row gap-2'>
+                <Button asChild variant="outline" className="w-full sm:w-auto">
+                  <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Read Source Article
+                  </Link>
+                </Button>
+                {result.youtubeUrl && (
+                  <Button asChild variant="outline" className="w-full sm:w-auto">
+                    <Link href={result.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                      <Youtube className="mr-2 h-4 w-4" />
+                      Watch on YouTube
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         )}

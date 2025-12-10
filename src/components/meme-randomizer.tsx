@@ -22,6 +22,8 @@ import {
   getRandomMeme,
   MemeResult,
 } from '@/app/actions/meme-randomizer-action';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function MemeRandomizer() {
   const [result, setResult] = useState<MemeResult | null>(null);
@@ -29,6 +31,7 @@ export default function MemeRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(2000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -43,6 +46,12 @@ export default function MemeRandomizer() {
     try {
       const memeResult = await getRandomMeme();
       setResult(memeResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);
@@ -80,11 +89,11 @@ export default function MemeRandomizer() {
                 unoptimized // Gifs can be large, unoptimized is better here
               />
             </div>
-             <Button asChild variant="link">
-                <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
-                    View on Giphy <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
-             </Button>
+            <Button asChild variant="link">
+              <Link href={result.sourceUrl} target="_blank" rel="noopener noreferrer">
+                View on Giphy <ExternalLink className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         )}
         {!isLoading && !result && !error && (
@@ -109,8 +118,8 @@ export default function MemeRandomizer() {
           {isLoading
             ? 'Finding Meme...'
             : isRateLimited
-            ? 'Please wait...'
-            : 'Randomize Meme'}
+              ? 'Please wait...'
+              : 'Randomize Meme'}
         </Button>
       </CardFooter>
     </Card>

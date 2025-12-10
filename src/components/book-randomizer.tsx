@@ -28,6 +28,8 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomBook } from '@/app/actions/book-randomizer-action';
 import type { BookResult } from '@/types/book-result';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 const GENRES = [
   { value: 'all', label: 'All Genres (Random)' },
@@ -52,6 +54,7 @@ export default function BookRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_book_randomizer', user_email: user?.email ?? 'guest' });
@@ -65,6 +68,12 @@ export default function BookRandomizer() {
       const bookResult = await getRandomBook(genre);
       if (bookResult) {
         setResult(bookResult);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       } else {
         setError('Could not find a book for this criteria. Please try again or select other options.');
       }
@@ -98,7 +107,7 @@ export default function BookRandomizer() {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="min-h-[400px] flex items-center justify-center">
           {isLoading && (
             <div className="w-full grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4">
@@ -111,10 +120,10 @@ export default function BookRandomizer() {
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-5/6" />
                 </div>
-                 <div className="grid grid-cols-2 gap-4 pt-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                 </div>
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
               </div>
             </div>
           )}
@@ -129,10 +138,10 @@ export default function BookRandomizer() {
                   <Users className="h-4 w-4" /> {result.author}
                 </p>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-card-foreground/80 mb-4">
-                  {result.publishDate && <p className="flex items-center gap-2"><Calendar className="h-4 w-4 text-accent"/> {result.publishDate}</p>}
-                  {result.publisher && <p className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent"/> {result.publisher}</p>}
-                  {result.pageCount && <p className="flex items-center gap-2"><FileText className="h-4 w-4 text-accent"/> {result.pageCount} pages</p>}
-                  {result.isbn && <p className="flex items-center gap-2"><Barcode className="h-4 w-4 text-accent"/> ISBN: {result.isbn}</p>}
+                  {result.publishDate && <p className="flex items-center gap-2"><Calendar className="h-4 w-4 text-accent" /> {result.publishDate}</p>}
+                  {result.publisher && <p className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent" /> {result.publisher}</p>}
+                  {result.pageCount && <p className="flex items-center gap-2"><FileText className="h-4 w-4 text-accent" /> {result.pageCount} pages</p>}
+                  {result.isbn && <p className="flex items-center gap-2"><Barcode className="h-4 w-4 text-accent" /> ISBN: {result.isbn}</p>}
                 </div>
                 <p className="text-sm text-card-foreground/80 line-clamp-6 flex-grow">
                   {result.description || 'No description available.'}

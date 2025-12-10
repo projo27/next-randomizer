@@ -21,6 +21,8 @@ import { getRandomArt, ArtworkResult } from '@/app/actions/art-randomizer-action
 import { Separator } from './ui/separator';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 function ArtworkDetail({ icon, label, value }: { icon: React.ReactNode, label: string, value: string | undefined | null }) {
   if (!value) return null;
@@ -41,6 +43,7 @@ export default function ArtRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_art_randomizer', user_email: user?.email ?? 'guest' });
@@ -54,6 +57,12 @@ export default function ArtRandomizer() {
     try {
       const artResult = await getRandomArt();
       setResult(artResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred. Please try again.');
       console.error(err);

@@ -27,6 +27,8 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomMusic, MusicResult } from '@/app/actions/music-randomizer-action';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 import { Label } from './ui/label';
 
 function SpotifyIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -124,6 +126,7 @@ export default function SongRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({
@@ -142,6 +145,12 @@ export default function SongRandomizer() {
         setError("Could not find any songs. The MusicBrainz API might be busy. Please try again in a moment.");
       }
       setResults(musicResults);
+      if (musicResults.length > 0 && confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
       console.error(err);

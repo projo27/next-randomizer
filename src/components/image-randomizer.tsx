@@ -19,6 +19,8 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { threwConfetti } from "@/lib/confetti";
+import { useSettings } from "@/context/SettingsContext";
 
 // Fisher-Yates shuffle
 function shuffleArray<T>(array: T[]): T[] {
@@ -43,6 +45,7 @@ export default function ImageRandomizer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const slideshowRef = useRef<HTMLDivElement>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
+  const { confettiConfig } = useSettings();
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -91,11 +94,11 @@ export default function ImageRandomizer() {
       const validImageFiles = files.filter(file => imageMimeTypes.includes(file.type));
 
       if (validImageFiles.length !== files.length) {
-          setError("Some selected files were not valid image types and have been ignored.");
+        setError("Some selected files were not valid image types and have been ignored.");
       }
       if (validImageFiles.length === 0) {
-          setError("No valid image files selected.");
-          return;
+        setError("No valid image files selected.");
+        return;
       }
 
       const shuffledFiles = shuffleArray(validImageFiles);
@@ -106,12 +109,18 @@ export default function ImageRandomizer() {
       const newImageUrls = shuffledFiles.map(file => URL.createObjectURL(file));
       setImageUrls(newImageUrls);
       setCurrentIndex(0);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     }
   };
 
   const handlePlayPause = () => {
     if (imageUrls.length < 2) {
-      toast({ title: "Not enough images", description: "Please select at least 2 images to start the slideshow.", variant: "destructive"});
+      toast({ title: "Not enough images", description: "Please select at least 2 images to start the slideshow.", variant: "destructive" });
       return;
     }
     triggerRateLimit();
@@ -119,11 +128,11 @@ export default function ImageRandomizer() {
   };
 
   const handleStop = () => {
-      setIsPlaying(false);
-      setCurrentIndex(0);
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+    setIsPlaying(false);
+    setCurrentIndex(0);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
   }
 
   const handleUploadClick = () => {
@@ -134,13 +143,13 @@ export default function ImageRandomizer() {
     if (!slideshowRef.current) return;
 
     if (!document.fullscreenElement) {
-        slideshowRef.current.requestFullscreen().catch(err => {
-            alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-        });
+      slideshowRef.current.requestFullscreen().catch(err => {
+        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        }
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
     }
   };
 
@@ -154,36 +163,36 @@ export default function ImageRandomizer() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex w-full items-end gap-2">
-                <Input
-                    ref={fileInputRef}
-                    id="image-files"
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                />
-                <Button onClick={handleUploadClick} variant="outline" className="w-full" disabled={isRateLimited}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Select Images ({imageFiles.length})
-                </Button>
-            </div>
-            <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="duration">Slideshow Duration (seconds)</Label>
-                <Input
-                    id="duration"
-                    type="number"
-                    min="1"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    disabled={isPlaying || isRateLimited}
-                />
-            </div>
+          <div className="flex w-full items-end gap-2">
+            <Input
+              ref={fileInputRef}
+              id="image-files"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <Button onClick={handleUploadClick} variant="outline" className="w-full" disabled={isRateLimited}>
+              <Upload className="mr-2 h-4 w-4" />
+              Select Images ({imageFiles.length})
+            </Button>
+          </div>
+          <div className="grid w-full items-center gap-1.5">
+            <Label htmlFor="duration">Slideshow Duration (seconds)</Label>
+            <Input
+              id="duration"
+              type="number"
+              min="1"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              disabled={isPlaying || isRateLimited}
+            />
+          </div>
         </div>
 
-        <div 
-          ref={slideshowRef} 
+        <div
+          ref={slideshowRef}
           className={cn(
             "relative w-full aspect-video bg-muted/50 rounded-lg flex items-center justify-center overflow-hidden",
             "group", // Add group for button visibility
@@ -202,23 +211,23 @@ export default function ImageRandomizer() {
           ) : (
             <p className="text-muted-foreground">Your images will appear here</p>
           )}
-           {imageUrls.length > 0 && (
-             <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={handleToggleFullscreen}
-                className={cn(
-                    "absolute top-2 right-2 text-white bg-black/30 hover:bg-black/50 hover:text-white",
-                    "opacity-0 group-hover:opacity-100 transition-opacity",
-                    isFullscreen && "opacity-100"
-                )}
-                aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-             >
-                {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
-             </Button>
-           )}
+          {imageUrls.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleFullscreen}
+              className={cn(
+                "absolute top-2 right-2 text-white bg-black/30 hover:bg-black/50 hover:text-white",
+                "opacity-0 group-hover:opacity-100 transition-opacity",
+                isFullscreen && "opacity-100"
+              )}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
+            </Button>
+          )}
         </div>
-        
+
         {error && (
           <Alert variant="destructive" className="mt-4 hidden transition-all duration-700">
             <AlertTitle>Error</AlertTitle>
@@ -228,23 +237,23 @@ export default function ImageRandomizer() {
       </CardContent>
       <CardFooter>
         <div className="w-full flex flex-col md:flex-row gap-2">
-             <Button
-                onClick={handlePlayPause}
-                disabled={imageUrls.length < 1 || isRateLimited}
-                className="w-full"
-            >
-                {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-                {isPlaying ? "Pause" : isRateLimited ? "Please wait..." : "Play Slideshow"}
-            </Button>
-             <Button
-                onClick={handleStop}
-                disabled={imageUrls.length < 1}
-                variant="destructive"
-                className="w-full md:w-auto"
-            >
-                <Square className="mr-2 h-4 w-4" />
-                Stop
-            </Button>
+          <Button
+            onClick={handlePlayPause}
+            disabled={imageUrls.length < 1 || isRateLimited}
+            className="w-full"
+          >
+            {isPlaying ? <Pause className="mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
+            {isPlaying ? "Pause" : isRateLimited ? "Please wait..." : "Play Slideshow"}
+          </Button>
+          <Button
+            onClick={handleStop}
+            disabled={imageUrls.length < 1}
+            variant="destructive"
+            className="w-full md:w-auto"
+          >
+            <Square className="mr-2 h-4 w-4" />
+            Stop
+          </Button>
         </div>
       </CardFooter>
     </Card>

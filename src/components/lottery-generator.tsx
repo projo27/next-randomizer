@@ -24,11 +24,12 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { PresetManager } from "./preset-manager";
 import type { LotteryPresetParams } from "@/types/presets";
+import { threwConfetti } from "@/lib/confetti";
 
 export default function LotteryGenerator() {
   const [includeLetters, setIncludeLetters] = useState(false);
   const [length, setLength] = useState("6");
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const [result, setResult] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -134,6 +135,13 @@ export default function LotteryGenerator() {
 
         setResult(finalResult);
         setIsGenerating(false);
+
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
 
         update({
           id: toastId,

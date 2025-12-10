@@ -27,6 +27,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
 
 type RpsResult = "Rock" | "Paper" | "Scissors";
 const MOVES: RpsResult[] = ["Rock", "Paper", "Scissors"];
@@ -45,7 +46,7 @@ export default function RockPaperScissors() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,13 +75,13 @@ export default function RockPaperScissors() {
     setResults([]);
 
     const numPlays = parseInt(numberOfPlays, 10);
-    
+
     // Start shuffling animation
     animationIntervalRef.current = setInterval(() => {
-        const tempEmojis = Array.from({ length: numPlays }, () => 
-            EMOJI_VALUES[Math.floor(Math.random() * EMOJI_VALUES.length)]
-        );
-        setDisplayEmojis(tempEmojis);
+      const tempEmojis = Array.from({ length: numPlays }, () =>
+        EMOJI_VALUES[Math.floor(Math.random() * EMOJI_VALUES.length)]
+      );
+      setDisplayEmojis(tempEmojis);
     }, 100);
 
     try {
@@ -93,6 +94,12 @@ export default function RockPaperScissors() {
         setResults(finalResults);
         setDisplayEmojis(finalResults.map(r => EMOJIS[r]));
         setIsPlaying(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
 
     } catch (e) {
@@ -115,11 +122,11 @@ export default function RockPaperScissors() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-  
+
   useEffect(() => {
     setDisplayEmojis(Array(parseInt(numberOfPlays, 10)).fill(EMOJI_VALUES[0]));
     setResults([]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numberOfPlays]);
 
   return (

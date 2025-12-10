@@ -30,6 +30,7 @@ import { PresetManager } from "./preset-manager";
 import type { DataObjectPresetParams } from "@/types/presets";
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
+import { threwConfetti } from '@/lib/confetti';
 
 type ColumnType = 'text' | 'number' | 'imageUrl' | 'urlLink';
 type Column = {
@@ -77,7 +78,7 @@ export default function DataObjectRandomizer() {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -287,6 +288,12 @@ export default function DataObjectRandomizer() {
       setTimeout(() => {
         setResults(randomResults);
         setIsRandomizing(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (err: any) {
       setError(err.message);

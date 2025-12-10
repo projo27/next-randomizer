@@ -24,6 +24,7 @@ import { Slider } from './ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { useSettings } from '@/context/SettingsContext';
 import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
+import { threwConfetti } from '@/lib/confetti';
 
 const LEVEL_DESCRIPTIONS: { [key: number]: string } = {
   1: 'Very Light & Silly',
@@ -43,11 +44,11 @@ export default function ActivityRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const animationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     // Cleanup interval on component unmount or when loading stops
     return () => {
       if (animationIntervalRef.current) {
@@ -59,7 +60,7 @@ export default function ActivityRandomizer() {
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_activity_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
-    
+
     triggerRateLimit();
     playAudio();
     setIsLoading(true);
@@ -75,7 +76,7 @@ export default function ActivityRandomizer() {
 
     try {
       const activityResult = await getRandomActivity(level);
-      
+
       // Stop animation after the duration and show the final result
       setTimeout(() => {
         if (animationIntervalRef.current) {
@@ -85,6 +86,12 @@ export default function ActivityRandomizer() {
         setDisplayActivity(activityResult);
         setIsLoading(false);
         stopAudio();
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
 
     } catch (err: any) {
@@ -121,50 +128,50 @@ export default function ActivityRandomizer() {
       </CardHeader>
       <CardContent className="min-h-[300px] flex flex-col items-center justify-center space-y-6">
         <div className="w-full max-w-md space-y-4">
-            <div className="flex justify-between items-center">
-                <Label htmlFor="level-slider" className="text-base">
-                Activity Level
-                </Label>
-                <span className="font-semibold text-primary">{LEVEL_DESCRIPTIONS[level]}</span>
-            </div>
-            <Slider
-                id="level-slider"
-                min={1}
-                max={5}
-                step={1}
-                value={[level]}
-                onValueChange={(value) => setLevel(value[0])}
-                className="[&&&]:pt-4"
-                disabled={isLoading || isRateLimited}
-            />
+          <div className="flex justify-between items-center">
+            <Label htmlFor="level-slider" className="text-base">
+              Activity Level
+            </Label>
+            <span className="font-semibold text-primary">{LEVEL_DESCRIPTIONS[level]}</span>
+          </div>
+          <Slider
+            id="level-slider"
+            min={1}
+            max={5}
+            step={1}
+            value={[level]}
+            onValueChange={(value) => setLevel(value[0])}
+            className="[&&&]:pt-4"
+            disabled={isLoading || isRateLimited}
+          />
         </div>
-        
+
         <div className="w-full flex-grow flex items-center justify-center p-4">
-            {activityToShow && (
-              <div className="relative w-full text-center p-4 animate-fade-in">
-                  <blockquote className="text-2xl md:text-3xl font-bold text-accent italic">
-                  "{activityToShow.activity}"
-                  </blockquote>
-                  {!isLoading && result && (
-                    <div className="absolute -top-2 right-0">
-                        <Button variant="ghost" size="icon" onClick={handleCopy}>
-                        {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                        </Button>
-                    </div>
-                  )}
-              </div>
-            )}
-            {!isLoading && !activityToShow && !error && (
-              <p className="text-muted-foreground text-center">
-                  Adjust the slider and click the button to get a random activity.
-              </p>
-            )}
-            {error && (
-              <Alert variant="destructive">
-                  <AlertTitle>Oops!</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          {activityToShow && (
+            <div className="relative w-full text-center p-4 animate-fade-in">
+              <blockquote className="text-2xl md:text-3xl font-bold text-accent italic">
+                "{activityToShow.activity}"
+              </blockquote>
+              {!isLoading && result && (
+                <div className="absolute -top-2 right-0">
+                  <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+          {!isLoading && !activityToShow && !error && (
+            <p className="text-muted-foreground text-center">
+              Adjust the slider and click the button to get a random activity.
+            </p>
+          )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Oops!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </div>
 
       </CardContent>

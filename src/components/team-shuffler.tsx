@@ -28,6 +28,7 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { PresetManager } from "./preset-manager";
 import type { TeamShufflerPresetParams } from "@/types/presets";
+import { threwConfetti } from "@/lib/confetti";
 
 type Participant = {
   id: string;
@@ -86,7 +87,7 @@ export default function TeamShuffler() {
   const [inputMode, setInputMode] = useState<"panel" | "textarea">("panel");
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -228,6 +229,12 @@ export default function TeamShuffler() {
       setTimeout(() => {
         setTeams(newTeams);
         setIsShuffling(false);
+        if (confettiConfig.enabled) {
+          threwConfetti({
+            particleCount: confettiConfig.particleCount,
+            spread: confettiConfig.spread,
+          });
+        }
       }, animationDuration * 1000);
     } catch (e: any) {
       setError(e.message);

@@ -20,6 +20,8 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomAnimal, AnimalResult } from '@/app/actions/animal-randomizer-action';
 import { Badge } from './ui/badge';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function AnimalRandomizer() {
   const [result, setResult] = useState<AnimalResult | null>(null);
@@ -27,6 +29,7 @@ export default function AnimalRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5000); // Longer timeout for scraping
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_animal_randomizer', user_email: user?.email ?? 'guest' });
@@ -40,6 +43,12 @@ export default function AnimalRandomizer() {
     try {
       const animalResult = await getRandomAnimal();
       setResult(animalResult);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred. The website structure may have changed.');
       console.error(err);

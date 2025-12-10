@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
 
 type CoinResult = "Heads" | "Tails";
 const ANIMATION_CLASSES = [
@@ -45,7 +46,7 @@ export default function CoinFlipper() {
   const [animationClasses, setAnimationClasses] = useState<string[]>([]);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -80,6 +81,12 @@ export default function CoinFlipper() {
     setTimeout(() => {
       setResults(newResults);
       setIsFlipping(false);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     }, animationDuration * 1000);
   };
 

@@ -19,6 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useRateLimiter } from "@/hooks/use-rate-limiter";
 import { PresetManager } from "./preset-manager";
 import type { PasswordPresetParams } from "@/types/presets";
+import { threwConfetti } from "@/lib/confetti";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function PasswordGenerator() {
   const [length, setLength] = useState(12);
@@ -29,6 +31,7 @@ export default function PasswordGenerator() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(10000);
+  const { confettiConfig } = useSettings();
 
   const getCurrentParams = (): PasswordPresetParams => ({
     length,
@@ -99,7 +102,15 @@ export default function PasswordGenerator() {
                 <Copy className="h-5 w-5" />
               )}
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleGenerate} disabled={isRateLimited}>
+            <Button variant="ghost" size="icon" onClick={() => {
+              handleGenerate();
+              if (confettiConfig.enabled) {
+                threwConfetti({
+                  particleCount: confettiConfig.particleCount,
+                  spread: confettiConfig.spread,
+                });
+              }
+            }} disabled={isRateLimited}>
               <RefreshCw className={`h-5 w-5 ${isRateLimited ? "animate-spin" : ""}`} />
             </Button>
           </div>

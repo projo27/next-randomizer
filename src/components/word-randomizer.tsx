@@ -22,92 +22,94 @@ import { sendGTMEvent } from '@next/third-parties/google';
 import { getRandomDictionaryWord, DictionaryEntry } from '@/app/actions/word-randomizer-action';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import { threwConfetti } from '@/lib/confetti';
+import { useSettings } from '@/context/SettingsContext';
 
-function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: { 
-    entry: DictionaryEntry;
-    onCopy: () => void;
-    isCopied: boolean;
-    onPlayAudio: (audioUrl: string) => void;
+function WordDisplay({ entry, onCopy, isCopied, onPlayAudio }: {
+  entry: DictionaryEntry;
+  onCopy: () => void;
+  isCopied: boolean;
+  onPlayAudio: (audioUrl: string) => void;
 }) {
-    const mainPhonetic = entry.phonetics.find(p => p.text && p.audio);
-    const audioUrl = mainPhonetic?.audio;
+  const mainPhonetic = entry.phonetics.find(p => p.text && p.audio);
+  const audioUrl = mainPhonetic?.audio;
 
-    return (
-        <div className="w-full animate-fade-in space-y-6 p-4 rounded-lg bg-card/50 border">
-            <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                    <h3 className="text-4xl font-bold capitalize text-primary">{entry.word}</h3>
-                    {mainPhonetic?.text && (
-                        <p className="text-muted-foreground">{mainPhonetic.text}</p>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
-                    {audioUrl && (
-                        <Button variant="outline" size="icon" onClick={() => onPlayAudio(audioUrl)}>
-                            <Volume2 className="h-5 w-5" />
-                        </Button>
-                    )}
-                    <Button variant="ghost" size="icon" onClick={onCopy}>
-                        {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                    </Button>
-                </div>
-            </div>
-
-            <Separator />
-            
-            <div className="space-y-8">
-                {entry.meanings.map((meaning, index) => (
-                    <div key={index} className="space-y-3">
-                        <Badge variant="secondary" className="capitalize">{meaning.partOfSpeech}</Badge>
-                        <ul className="list-decimal list-inside space-y-3 pl-2">
-                            {meaning.definitions.slice(0, 3).map((def, defIndex) => (
-                                <li key={defIndex}>
-                                    {def.definition}
-                                    {def.example && (
-                                        <p className="text-sm text-muted-foreground italic pl-4 mt-1">
-                                            "{def.example}"
-                                        </p>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                         {(meaning.synonyms && meaning.synonyms.length > 0) && (
-                            <div className="ml-2 pl-4 border-l-4 border-muted-background">
-                                <h4 className="text-sm font-semibold text-muted-foreground">Synonyms</h4>
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    {meaning.synonyms.map(syn => <Badge key={syn} variant="outline">{syn}</Badge>)}
-                                </div>
-                            </div>
-                        )}
-                        {(meaning.antonyms && meaning.antonyms.length > 0) && (
-                            <div className="ml-2 pl-4 border-l-4 border-muted-background">
-                                <h4 className="text-sm font-semibold text-muted-foreground">Antonyms</h4>
-                                <div className="flex flex-wrap gap-2 mt-1">
-                                    {meaning.antonyms.map(ant => <Badge key={ant} variant="outline">{ant}</Badge>)}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            {entry.sourceUrls && entry.sourceUrls.length > 0 && (
-                <>
-                    <Separator />
-                    <div className="space-y-2">
-                        <h4 className="text-sm font-semibold text-muted-foreground">Sources</h4>
-                        {entry.sourceUrls.map((url, i) => (
-                             <Button key={i} asChild variant="link" size="sm" className="p-0 h-auto block">
-                                <Link href={url} target="_blank" rel="noopener noreferrer" className="text-xs truncate">
-                                    <LinkIcon className="mr-2 h-3 w-3 inline-block" />{url}
-                                </Link>
-                            </Button>
-                        ))}
-                    </div>
-                </>
-            )}
+  return (
+    <div className="w-full animate-fade-in space-y-6 p-4 rounded-lg bg-card/50 border">
+      <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h3 className="text-4xl font-bold capitalize text-primary">{entry.word}</h3>
+          {mainPhonetic?.text && (
+            <p className="text-muted-foreground">{mainPhonetic.text}</p>
+          )}
         </div>
-    );
+        <div className="flex items-center gap-2">
+          {audioUrl && (
+            <Button variant="outline" size="icon" onClick={() => onPlayAudio(audioUrl)}>
+              <Volume2 className="h-5 w-5" />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon" onClick={onCopy}>
+            {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+          </Button>
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-8">
+        {entry.meanings.map((meaning, index) => (
+          <div key={index} className="space-y-3">
+            <Badge variant="secondary" className="capitalize">{meaning.partOfSpeech}</Badge>
+            <ul className="list-decimal list-inside space-y-3 pl-2">
+              {meaning.definitions.slice(0, 3).map((def, defIndex) => (
+                <li key={defIndex}>
+                  {def.definition}
+                  {def.example && (
+                    <p className="text-sm text-muted-foreground italic pl-4 mt-1">
+                      "{def.example}"
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {(meaning.synonyms && meaning.synonyms.length > 0) && (
+              <div className="ml-2 pl-4 border-l-4 border-muted-background">
+                <h4 className="text-sm font-semibold text-muted-foreground">Synonyms</h4>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {meaning.synonyms.map(syn => <Badge key={syn} variant="outline">{syn}</Badge>)}
+                </div>
+              </div>
+            )}
+            {(meaning.antonyms && meaning.antonyms.length > 0) && (
+              <div className="ml-2 pl-4 border-l-4 border-muted-background">
+                <h4 className="text-sm font-semibold text-muted-foreground">Antonyms</h4>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {meaning.antonyms.map(ant => <Badge key={ant} variant="outline">{ant}</Badge>)}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {entry.sourceUrls && entry.sourceUrls.length > 0 && (
+        <>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-muted-foreground">Sources</h4>
+            {entry.sourceUrls.map((url, i) => (
+              <Button key={i} asChild variant="link" size="sm" className="p-0 h-auto block">
+                <Link href={url} target="_blank" rel="noopener noreferrer" className="text-xs truncate">
+                  <LinkIcon className="mr-2 h-3 w-3 inline-block" />{url}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 
@@ -119,13 +121,14 @@ export default function WordRandomizer() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(2000);
   const { user } = useAuth();
+  const { confettiConfig } = useSettings();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   useEffect(() => {
     audioRef.current = new Audio();
     return () => {
-        audioRef.current?.pause();
-        audioRef.current = null;
+      audioRef.current?.pause();
+      audioRef.current = null;
     }
   }, []);
 
@@ -141,6 +144,12 @@ export default function WordRandomizer() {
     try {
       const wordData = await getRandomDictionaryWord();
       setResult(wordData);
+      if (confettiConfig.enabled) {
+        threwConfetti({
+          particleCount: confettiConfig.particleCount,
+          spread: confettiConfig.spread,
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'Could not fetch a word. Please try again.');
       console.error(err);
@@ -159,12 +168,12 @@ export default function WordRandomizer() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-  
+
   const handlePlayAudio = (audioUrl: string) => {
-      if (audioRef.current) {
-          audioRef.current.src = audioUrl;
-          audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
-      }
+    if (audioRef.current) {
+      audioRef.current.src = audioUrl;
+      audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+    }
   }
 
   return (
@@ -172,29 +181,29 @@ export default function WordRandomizer() {
       <CardHeader>
         <CardTitle>Random Dictionary Word</CardTitle>
         <CardDescription>
-          Generate a random English word and discover its definition, pronunciation, and usage. 
-          <i>Powered by <Link href="//random-word-api.vercel.app" target="_blank">random-word-api.vercel.app</Link> 
-          and <Link href="//dictionaryapi.dev" target="_blank">dictionaryapi.dev</Link></i>
+          Generate a random English word and discover its definition, pronunciation, and usage.
+          <i>Powered by <Link href="//random-word-api.vercel.app" target="_blank">random-word-api.vercel.app</Link>
+            and <Link href="//dictionaryapi.dev" target="_blank">dictionaryapi.dev</Link></i>
         </CardDescription>
       </CardHeader>
       <CardContent className="min-h-[300px] flex items-center justify-center">
         {isLoading && (
-            <div className="w-full space-y-4 p-4">
-                <Skeleton className="h-10 w-1/3" />
-                <Skeleton className="h-4 w-1/4" />
-                <Separator className="my-4" />
-                <Skeleton className="h-6 w-1/5 mb-2" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-5/6" />
-            </div>
+          <div className="w-full space-y-4 p-4">
+            <Skeleton className="h-10 w-1/3" />
+            <Skeleton className="h-4 w-1/4" />
+            <Separator className="my-4" />
+            <Skeleton className="h-6 w-1/5 mb-2" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-5/6" />
+          </div>
         )}
         {!isLoading && result && (
-            <WordDisplay entry={result} onCopy={handleCopy} isCopied={isCopied} onPlayAudio={handlePlayAudio} />
+          <WordDisplay entry={result} onCopy={handleCopy} isCopied={isCopied} onPlayAudio={handlePlayAudio} />
         )}
         {!isLoading && !result && !error && (
-            <p className="text-muted-foreground text-center">Click the button to generate a random word from the dictionary.</p>
+          <p className="text-muted-foreground text-center">Click the button to generate a random word from the dictionary.</p>
         )}
-         {error && (
+        {error && (
           <Alert variant="destructive">
             <AlertTitle>Oops! An Error Occurred</AlertTitle>
             <AlertDescription>{error}</AlertDescription>

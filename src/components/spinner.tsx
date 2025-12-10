@@ -23,6 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { PresetManager } from "./preset-manager";
 import type { SpinnerPresetParams } from "@/types/presets";
+import { threwConfetti } from "@/lib/confetti";
 
 const Wheel = dynamic(
   () => import("react-custom-roulette").then((mod) => mod.Wheel),
@@ -87,7 +88,7 @@ export default function Spinner() {
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(5500);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -175,7 +176,7 @@ export default function Spinner() {
     toast({ title: "Copied!", description: "Winner copied to clipboard." });
     setTimeout(() => setIsResultCopied(false), 2000);
   };
-  
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const lines = e.target.value.split('\n');
     if (lines.length > 20) {
@@ -227,6 +228,12 @@ export default function Spinner() {
                 onStopSpinning={() => {
                   setMustSpin(false);
                   setWinner(items[prizeNumber]);
+                  if (confettiConfig.enabled) {
+                    threwConfetti({
+                      particleCount: confettiConfig.particleCount,
+                      spread: confettiConfig.spread,
+                    });
+                  }
                 }}
                 outerBorderColor="#d1d5db"
                 radiusLineColor="#d1d5db"

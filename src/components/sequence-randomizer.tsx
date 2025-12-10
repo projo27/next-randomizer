@@ -19,6 +19,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
 import { useAuth } from "@/context/AuthContext";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { threwConfetti } from "@/lib/confetti";
 import { Label } from "./ui/label";
 import { Switch } from "./ui/switch";
 import { Input } from "./ui/input";
@@ -111,7 +112,7 @@ export default function SequenceRandomizer() {
   const [isResultCopied, setIsResultCopied] = useState(false);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
-  const { animationDuration } = useSettings();
+  const { animationDuration, confettiConfig } = useSettings();
   const { playAudio, stopAudio } = useRandomizerAudio();
   const { user } = useAuth();
 
@@ -180,6 +181,12 @@ export default function SequenceRandomizer() {
         setTimeout(() => {
           setShuffledItems(newShuffledItems);
           setIsShuffling(false);
+          if (confettiConfig.enabled) {
+            threwConfetti({
+              particleCount: confettiConfig.particleCount,
+              spread: confettiConfig.spread,
+            });
+          }
         }, animationDuration * 1000);
       } catch (e) {
         setIsShuffling(false);
