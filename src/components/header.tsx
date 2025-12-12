@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Dice5, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
@@ -68,24 +68,9 @@ export function Header() {
           </Link>
         </div>
         <div className="flex md:flex-1 order-3 justify-end md:order-3 md:mr-8 items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="ring-1 ring-accent dark:ring-0"
-              >
-                <HelpCircle className="h-[1.2rem] w-[1.2rem]" />
-                <span className="sr-only">Open helper menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <SurveyDialog />
-              <DropdownMenuItem asChild>
-                <Link href="/tutorial">Tutorial</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Radix UI DropdownMenu can cause hydration mismatches due to ID generation. 
+              We render it only on the client to avoid this. */}
+          <ClientOnlyDropdown />
           <ThemeToggle />
         </div>
       </div>
@@ -93,5 +78,48 @@ export function Header() {
         Your fun-filled tool for making choices!
       </p>
     </header>
+  );
+}
+
+function ClientOnlyDropdown() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="ring-1 ring-accent dark:ring-0"
+        disabled // or just inert
+      >
+        <HelpCircle className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Open helper menu</span>
+      </Button>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="ring-1 ring-accent dark:ring-0"
+        >
+          <HelpCircle className="h-[1.2rem] w-[1.2rem]" />
+          <span className="sr-only">Open helper menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <SurveyDialog />
+        <DropdownMenuItem asChild>
+          <Link href="/tutorial">Tutorial</Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

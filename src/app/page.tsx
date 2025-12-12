@@ -8,6 +8,8 @@ import { CommentSection } from '@/components/comments/comment-section';
 import { ToolReactionSection } from '@/components/tool-reactions/tool-reaction-section';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { SlidingInfo } from '@/components/sliding-info';
+import { getSlidingInfoItems } from '@/services/sliding-info-service';
 
 function HomePageFallback() {
   return (
@@ -42,9 +44,13 @@ export default async function Home({
   const activeTab =
     typeof resolvedSearchParams.tab === 'string' ? resolvedSearchParams.tab : 'list';
 
+  // Fetch sliding info items from Supabase
+  const slidingInfoItems = await getSlidingInfoItems();
+
   return (
     <div className="flex flex-col items-center justify-start min-h-screen p-4 md:p-8 pt-12 md:pt-16">
       <Header />
+      <SlidingInfo items={slidingInfoItems} />
       <main className="w-full max-w-6xl mx-auto mt-6">
         <Suspense fallback={<HomePageFallback />}>
           <HomePageClient activeTab={activeTab}>
