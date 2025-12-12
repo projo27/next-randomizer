@@ -43,9 +43,10 @@ import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
 import ArtRandomizer from "@/components/art-randomizer";
 import DataObjectRandomizer from "@/components/data-object-randomizer";
 import SongRandomizer from "@/components/song-randomizer";
+import TarotRandomizer from "@/components/tarot-randomizer";
 
 import {
-  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database,
+  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch,
 } from "lucide-react";
 
 
@@ -154,6 +155,14 @@ export const triggerList = [
     hidden: false,
     icon: <Spade className="h-5 w-5" />,
     content: <CardDeckRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "tarot",
+    text: "Tarot",
+    hidden: false,
+    icon: <GitBranch className="h-5 w-5" />,
+    content: <TarotRandomizer />,
     contentGuard: false,
   },
   {
