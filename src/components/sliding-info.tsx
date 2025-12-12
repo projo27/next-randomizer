@@ -71,7 +71,7 @@ export function SlidingInfo({ items = [] }: SlidingInfoProps) {
               >
                 <Link
                   href={item.href}
-                  className="flex items-center justify-center gap-3 group transition-all duration-300 hover:scale-[1.01]"
+                  className="flex items-center justify-center gap-3 group transition-all duration-300 hover:scale-[1.1]"
                 >
                   <div
                     className={cn(
