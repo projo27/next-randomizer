@@ -225,6 +225,7 @@ export default function SongRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleRandomize}
           disabled={isLoading || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

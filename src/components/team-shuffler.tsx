@@ -476,6 +476,7 @@ export default function TeamShuffler() {
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
+          id="randomize-button"
           onClick={handleShuffle}
           disabled={isRateLimited || isShuffling}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

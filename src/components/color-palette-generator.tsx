@@ -238,6 +238,7 @@ export default function ColorPaletteGenerator() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={generatePalettes}
           disabled={isGenerating || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

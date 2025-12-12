@@ -171,7 +171,12 @@ export default function BookRandomizer() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleRandomize} disabled={isLoading || isRateLimited} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button
+          id="randomize-button"
+          onClick={handleRandomize}
+          disabled={isLoading || isRateLimited}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
           <Wand2 className="mr-2 h-4 w-4" />
           {isLoading ? 'Finding a Book...' : isRateLimited ? 'Please wait...' : 'Randomize Book'}
         </Button>

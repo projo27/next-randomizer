@@ -225,6 +225,7 @@ export default function TruthOrDareRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={() => handleRandomize("both")}
           disabled={isAnyLoading || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

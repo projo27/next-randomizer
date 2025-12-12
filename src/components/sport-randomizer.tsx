@@ -216,6 +216,7 @@ export default function SportRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleRandomizeTeam}
           disabled={isLoadingTeam || teamRateLimit}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

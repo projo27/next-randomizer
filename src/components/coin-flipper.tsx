@@ -196,6 +196,7 @@ export default function CoinFlipper() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleFlip}
           disabled={isFlipping || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

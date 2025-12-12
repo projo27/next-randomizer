@@ -244,6 +244,7 @@ export default function DiceRoller() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleRoll}
           disabled={isRolling || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

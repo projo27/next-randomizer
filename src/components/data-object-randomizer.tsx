@@ -483,7 +483,12 @@ export default function DataObjectRandomizer() {
         )}
       </CardContent>
       <CardFooter>
-        <Button variant="default" onClick={handleRandomize} disabled={isRandomizing || isRateLimited} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+        <Button
+          id="randomize-button"
+          variant="default"
+          onClick={handleRandomize}
+          disabled={isRandomizing || isRateLimited}
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
           <Wand2 className="mr-2 h-5 w-5" />
           {isRandomizing ? 'Randomizing...' : isRateLimited ? 'Please wait...' : 'Randomize Data'}
         </Button>

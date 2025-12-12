@@ -368,6 +368,7 @@ export default function ListRandomizer() {
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
+          id="randomize-button"
           onClick={handleRandomize}
           disabled={isRateLimited || isShuffling}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

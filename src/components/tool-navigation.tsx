@@ -61,6 +61,49 @@ export function ToolNavigation() {
     };
   }, [searchQuery, isSearchFocused]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Search shortcut: Ctrl + /
+      if (e.ctrlKey && e.key === "/") {
+        e.preventDefault();
+        setIsSearchFocused(true);
+        setTimeout(() => searchInputRef.current?.focus(), 100);
+      }
+
+      // Tool navigation: Alt + 1-9
+      if (e.altKey && !e.ctrlKey && !e.shiftKey && e.key >= "1" && e.key <= "9") {
+        const index = parseInt(e.key) - 1;
+        if (index < menuOrder.visible.length) {
+          e.preventDefault();
+          const item = menuOrder.visible[index];
+          const params = new URLSearchParams(searchParams.toString());
+          params.set("tab", item.value);
+          router.push(pathname + "?" + params.toString());
+        }
+      }
+
+      // Randomizer trigger: Ctrl + Enter
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        // Since we forceMount tabs, multiple buttons with id="randomize-button" might exist.
+        // We find the one that is currently visible.
+        const allButtons = document.querySelectorAll("button#randomize-button");
+
+        // Find the button that is visible (offsetParent is not null)
+        const visibleButton = Array.from(allButtons).find(
+          (btn) => (btn as HTMLElement).offsetParent !== null
+        ) as HTMLButtonElement | undefined;
+
+        if (visibleButton && !visibleButton.disabled) {
+          visibleButton.click();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [menuOrder.visible, pathname, router, searchParams]);
+
   const handleTabChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString());

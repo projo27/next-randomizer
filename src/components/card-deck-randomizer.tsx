@@ -181,6 +181,7 @@ export default function CardDeckRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleDraw}
           disabled={isDrawing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

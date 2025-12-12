@@ -473,6 +473,7 @@ export default function OotdGeneratorRunware() {
           </div>
         )}
         <Button
+          id="randomize-button"
           onClick={handleGenerate}
           disabled={isLoading || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

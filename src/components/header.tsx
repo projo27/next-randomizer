@@ -16,29 +16,10 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { SurveyDialog } from "./survey-dialog";
+import { triggerList } from "@/lib/menu-data";
 
 // List of available feature tabs (excluding protected/hidden ones for this logic)
-const availableTabs = [
-  "list",
-  "number",
-  "sequence",
-  "password",
-  "date",
-  "team",
-  "coin",
-  "dice",
-  "rps",
-  "card",
-  "lottery",
-  "emoji",
-  "palette",
-  "base",
-  "spinner", //"compass",
-  "image",
-  "youtube",
-  "ootd-runware",
-  "travel",
-];
+const availableTabs = triggerList.filter((item) => !item.hidden).map((item) => item.value);
 
 export function Header() {
   const router = useRouter();

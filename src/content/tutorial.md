@@ -51,6 +51,15 @@ Once logged in, you can access the settings page from the user dropdown menu (cl
 -   **Play Sounds**: Enable or disable the sound effects that play during randomization.
 -   **Tools Order**: This is a powerful feature! You can drag and drop the tools to rearrange them in the main navigation bar. This lets you put your most-used tools first for quick access. The divider shows where the "Show More Tools" button will appear.
 
+
+## 6. Keyboard Shortcuts (Power Users)
+
+For those who want to move fast, we've added some keyboard shortcuts:
+
+-   **Search**: `Ctrl + /` - Focus the search bar to quickly find a tool.
+-   **Quick Navigation**: `Alt + 1` through `Alt + 9` - Switch to the 1st, 2nd, ... 9th tool in your menu order.
+-   **Randomize Action**: `Ctrl + Enter` - Trigger the main "Randomize" / "Generate" button of the current tool.
+
 ---
 
 We hope this helps you get the most out of **Randomizer.fun**. Happy randomizing!

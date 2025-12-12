@@ -186,6 +186,7 @@ export default function RockPaperScissors() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handlePlay}
           disabled={isPlaying || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

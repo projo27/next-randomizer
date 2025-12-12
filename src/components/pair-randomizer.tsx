@@ -180,7 +180,7 @@ export default function PairRandomizer() {
                 </TableHeader>
                 <TableBody>
                   {result.map((pair, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} className="odd:bg-muted even:bg-muted/10">
                       <TableCell className="font-medium">{index + 1}</TableCell>
                       <TableCell>{pair.itemA}</TableCell>
                       <TableCell>{pair.itemB}</TableCell>
@@ -200,6 +200,7 @@ export default function PairRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleRandomize}
           disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

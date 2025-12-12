@@ -313,6 +313,7 @@ export default function Spinner() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleSpin}
           disabled={isSpinning}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

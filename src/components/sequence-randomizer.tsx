@@ -320,6 +320,7 @@ export default function SequenceRandomizer() {
       </CardContent>
       <CardFooter className="flex flex-col">
         <Button
+          id="randomize-button"
           onClick={handleShuffle}
           disabled={isShuffling || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"

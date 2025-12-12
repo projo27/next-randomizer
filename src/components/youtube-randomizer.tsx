@@ -203,6 +203,7 @@ export default function YouTubeRandomizer() {
       </CardContent>
       <CardFooter>
         <Button
+          id="randomize-button"
           onClick={handleRandomize}
           disabled={isRandomizing || isRateLimited}
           className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
