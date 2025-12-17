@@ -24,44 +24,68 @@ import { threwConfetti } from '@/lib/confetti';
 import { useSettings } from '@/context/SettingsContext';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import { PeriodicTableDisplay } from './periodic-table-display';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 function ElementCard({ element }: { element: ChemicalElement }) {
   return (
-    <div className="w-full max-w-md mx-auto animate-fade-in space-y-4">
-      <div 
-        className="relative p-4 rounded-lg shadow-inner border-2"
-        style={{ borderColor: element.color, background: `${element.color}20` }}
-      >
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col items-start">
-            <span className="text-2xl font-bold">{element.atomicNumber}</span>
-            <span className="text-5xl font-extrabold">{element.symbol}</span>
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="w-full max-w-md mx-auto animate-fade-in space-y-4 cursor-pointer group">
+          <div
+            className="relative p-4 rounded-lg shadow-inner border-2 transition-all group-hover:scale-105"
+            style={{ borderColor: element.color, background: `${element.color}20` }}
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex flex-col items-start">
+                <span className="text-2xl font-bold">{element.atomicNumber}</span>
+                <span className="text-5xl font-extrabold">{element.symbol}</span>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="text-sm">{element.atomicMass.toFixed(3)}</span>
+                <span className="text-xl font-semibold capitalize">{element.name}</span>
+              </div>
+            </div>
+            <div className="text-center mt-2 text-xs text-muted-foreground">{element.electronConfiguration}</div>
           </div>
-          <div className="flex flex-col items-end">
-            <span className="text-sm">{element.atomicMass.toFixed(3)}</span>
-            <span className="text-xl font-semibold capitalize">{element.name}</span>
-          </div>
+          <Card className="bg-card/50">
+            <CardContent className="pt-6 space-y-4">
+              <p className="italic">{element.summary}</p>
+              <Separator />
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div><strong className="text-muted-foreground">Category:</strong> <span className="capitalize">{element.category.replace('-', ' ')}</span></div>
+                <div><strong className="text-muted-foreground">Phase:</strong> {element.phase}</div>
+                <div><strong className="text-muted-foreground">Discovered by:</strong> {element.discovered_by}</div>
+                {element.appearance && <div><strong className="text-muted-foreground">Appearance:</strong> <span className="capitalize">{element.appearance}</span></div>}
+              </div>
+              <Button asChild variant="link" className="p-0 h-auto">
+                <Link href={element.source} target="_blank" rel="noopener noreferrer">
+                    Read more on Wikipedia <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-        <div className="text-center mt-2 text-xs text-muted-foreground">{element.electronConfiguration}</div>
-      </div>
-      <Card className="bg-card/50">
-        <CardContent className="pt-6 space-y-4">
-          <p className="italic">{element.summary}</p>
-          <Separator />
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><strong className="text-muted-foreground">Category:</strong> <span className="capitalize">{element.category.replace('-', ' ')}</span></div>
-            <div><strong className="text-muted-foreground">Phase:</strong> {element.phase}</div>
-            <div><strong className="text-muted-foreground">Discovered by:</strong> {element.discovered_by}</div>
-            {element.appearance && <div><strong className="text-muted-foreground">Appearance:</strong> <span className="capitalize">{element.appearance}</span></div>}
-          </div>
-          <Button asChild variant="link" className="p-0 h-auto">
-            <Link href={element.source} target="_blank" rel="noopener noreferrer">
-                Read more on Wikipedia <ExternalLink className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+      </DialogTrigger>
+      <DialogContent className="max-w-7xl">
+        <DialogHeader>
+          <DialogTitle>Periodic Table - {element.name}</DialogTitle>
+          <DialogDescription>
+            Showing the position of {element.name} ({element.symbol}) on the periodic table.
+          </DialogDescription>
+        </DialogHeader>
+        <div className='py-4'>
+            <PeriodicTableDisplay highlightedElement={element.atomicNumber} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
