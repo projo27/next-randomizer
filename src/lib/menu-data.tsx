@@ -44,9 +44,10 @@ import ArtRandomizer from "@/components/art-randomizer";
 import DataObjectRandomizer from "@/components/data-object-randomizer";
 import SongRandomizer from "@/components/song-randomizer";
 import TarotRandomizer from "@/components/tarot-randomizer";
+import ChemicalElementRandomizer from "@/components/chemical-element-randomizer";
 
 import {
-  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch,
+  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker,
 } from "lucide-react";
 
 
@@ -332,6 +333,14 @@ export const triggerList = [
     icon: <Users className="h-5 w-5" />,
     content: <SportRandomizer />,
     contentGuard: true,
+  },
+  {
+    value: 'chemical-element',
+    text: 'Chemical Element',
+    hidden: false,
+    icon: <Beaker className="h-5 w-5" />,
+    content: <ChemicalElementRandomizer />,
+    contentGuard: false,
   },
   {
     value: "science-fact",
