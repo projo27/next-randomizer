@@ -19,7 +19,7 @@ function getElementPosition(element: ChemicalElement): { gridColumn: string; gri
     period = 9;
     group = element.atomicNumber - 89 + 3;
   }
-  
+
   return {
     gridColumn: `${group} / span 1`,
     gridRow: `${period} / span 1`,
@@ -32,10 +32,10 @@ export function PeriodicTableDisplay({ highlightedElement }: PeriodicTableDispla
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="grid gap-0.5" style={{ 
+      <div className="grid gap-0.5" style={{
         gridTemplateColumns: 'repeat(18, minmax(0, 1fr))',
         gridTemplateRows: 'repeat(9, minmax(0, 1fr))',
-       }}>
+      }}>
         <TooltipProvider>
           {allElementsToDisplay.map(el => {
             if (!el) return null;
@@ -52,13 +52,13 @@ export function PeriodicTableDisplay({ highlightedElement }: PeriodicTableDispla
                       isHighlighted ? 'ring-2 ring-offset-2 ring-primary-foreground dark:ring-accent scale-110 z-10' : 'border-transparent',
                     )}
                   >
-                    <div 
-                      className="w-full h-full flex flex-col items-center justify-center rounded-sm transition-transform hover:scale-110" 
-                      style={{ backgroundColor: `${el.color}80` }}
+                    <div
+                      className="w-full h-full flex flex-col items-center justify-center rounded-sm transition-all duration-300 hover:scale-[2] hover:z-50 hover:shadow-xl relative cursor-help"
+                      style={{ backgroundColor: el.color }}
                     >
-                      <div className="text-[0.6rem] font-bold">{el.atomicNumber}</div>
-                      <div className="font-extrabold text-sm">{el.symbol}</div>
-                      <div className="hidden sm:block text-[0.5rem] truncate">{el.name}</div>
+                      <div className="text-[0.6rem] font-bold text-slate-950">{el.atomicNumber}</div>
+                      <div className="font-extrabold text-sm text-slate-950">{el.symbol}</div>
+                      <div className="hidden sm:block text-[0.5rem] truncate text-slate-950 px-0.5">{el.name}</div>
                     </div>
                   </div>
                 </TooltipTrigger>
@@ -72,7 +72,7 @@ export function PeriodicTableDisplay({ highlightedElement }: PeriodicTableDispla
           })}
         </TooltipProvider>
       </div>
-       <div className="mt-4 flex flex-wrap gap-2 justify-center">
+      <div className="mt-4 flex flex-wrap gap-2 justify-center">
         {[
           { name: 'Alkali Metal', color: '#ff6961' },
           { name: 'Diatomic Nonmetal', color: '#a8ffc1' },

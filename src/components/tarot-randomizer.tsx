@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
+import { Separator } from './ui/separator';
 
 export default function TarotRandomizer() {
   const [count, setCount] = useState('3');
@@ -52,7 +53,7 @@ export default function TarotRandomizer() {
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_tarot_randomizer', user_email: user?.email ?? 'guest' });
     if (isRandomizing || isRateLimited) return;
-    
+
     const numCount = parseInt(count, 10);
     if (isNaN(numCount) || numCount <= 0 || numCount > 10) {
       setError('Please enter a number between 1 and 10.');
@@ -88,7 +89,24 @@ export default function TarotRandomizer() {
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Tarot Card Reading</CardTitle>
-        <CardDescription>Draw random tarot cards to get insight and guidance.</CardDescription>
+        <CardDescription>Draw random tarot cards to get insight and guidance.
+
+          Readers choose the number of cards based on the complexity of the question and the desired depth of insight. <br />
+          Common draws include:<br />
+          <ul className="list-disc list-outside pl-4">
+            <li>One Card: Often used for a quick daily message, a simple "yes/no" answer, or a general theme for the day.</li>
+            <li>Three Cards: A popular spread for exploring simple dynamics, such as:
+              <ul className="list-disc list-inside">
+                <li>Past, present, and future</li>
+                <li>Situation, action, and outcome</li>
+                <li>Mind, body, and spirit</li>
+              </ul>
+            </li>
+            <li>Four or Five Cards: Provide more context and allow for deeper exploration of different facets of a problem or situation.</li>
+            <li>Ten Cards: The well-known Celtic Cross spread uses ten cards to give a comprehensive overview of an issue, including the main situation, obstacles, underlying influences, and potential outcomes.</li>
+          </ul>
+
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -125,7 +143,7 @@ export default function TarotRandomizer() {
                 >
                   <div className="absolute inset-0 bg-primary rounded-lg flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
                     <Image
-                      src="/images/tarot_back.png"
+                      src="/images/tarot/tarot_back.png"
                       alt="Tarot card back"
                       width={120}
                       height={210}
@@ -140,13 +158,16 @@ export default function TarotRandomizer() {
                   <DialogDescription className="text-center">{card.short_description}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 items-center" style={{ gridTemplateColumns: '150px 1fr' }}>
-                   <div className={cn("relative w-[150px] h-[262px]", card.orientation === 'reversed' && 'rotate-180')}>
+                  <div className={cn("relative w-[150px] h-[262px]", card.orientation === 'reversed' && 'rotate-180')}>
                     <Image
                       src={card.image_url}
                       alt={card.name}
                       fill
                       data-ai-hint={card.image_hint}
                       className="object-contain rounded-md"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/tarot/tarot_back.png';
+                      }}
                     />
                   </div>
                   <div className="text-sm text-muted-foreground max-h-[262px] overflow-y-auto pr-4">
@@ -156,7 +177,7 @@ export default function TarotRandomizer() {
               </DialogContent>
             </Dialog>
           ))}
-          
+
           {!isRandomizing && results.length === 0 && (
             <div className="text-center text-muted-foreground p-4">
               <GitBranch className="h-16 w-16 mx-auto mb-4" />
@@ -176,6 +197,7 @@ export default function TarotRandomizer() {
           <Wand2 className="mr-2 h-4 w-4" />
           {isRandomizing ? 'Drawing cards...' : 'Draw Tarot Cards'}
         </Button>
+
       </CardFooter>
     </Card>
   );

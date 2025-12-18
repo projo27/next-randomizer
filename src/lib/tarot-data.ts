@@ -2,7 +2,7 @@ export const TAROT_CARDS = [
   {
     "id": "m0",
     "name": "The Fool",
-    "image_url": "https://picsum.photos/seed/m0/200/350",
+    "image_url": "/images/tarot/m0.png",
     "image_hint": "jester cliff",
     "short_description": "New beginnings, innocence, spontaneity.",
     "description": {
@@ -13,7 +13,7 @@ export const TAROT_CARDS = [
   {
     "id": "m1",
     "name": "The Magician",
-    "image_url": "https://picsum.photos/seed/m1/200/350",
+    "image_url": "/images/tarot/m1.png",
     "image_hint": "magician table",
     "short_description": "Manifestation, resourcefulness, power.",
     "description": {
@@ -24,7 +24,7 @@ export const TAROT_CARDS = [
   {
     "id": "m2",
     "name": "The High Priestess",
-    "image_url": "https://picsum.photos/seed/m2/200/350",
+    "image_url": "/images/tarot/m2.png",
     "image_hint": "priestess moon",
     "short_description": "Intuition, sacred knowledge, divine feminine.",
     "description": {
@@ -35,7 +35,7 @@ export const TAROT_CARDS = [
   {
     "id": "m3",
     "name": "The Empress",
-    "image_url": "https://picsum.photos/seed/m3/200/350",
+    "image_url": "/images/tarot/m3.png",
     "image_hint": "empress nature",
     "short_description": "Femininity, beauty, nature, abundance.",
     "description": {
@@ -46,7 +46,7 @@ export const TAROT_CARDS = [
   {
     "id": "m4",
     "name": "The Emperor",
-    "image_url": "https://picsum.photos/seed/m4/200/350",
+    "image_url": "/images/tarot/m4.png",
     "image_hint": "emperor throne",
     "short_description": "Authority, establishment, structure, a father figure.",
     "description": {
@@ -57,7 +57,7 @@ export const TAROT_CARDS = [
   {
     "id": "m5",
     "name": "The Hierophant",
-    "image_url": "https://picsum.photos/seed/m5/200/350",
+    "image_url": "/images/tarot/m5.png",
     "image_hint": "pope religion",
     "short_description": "Spiritual wisdom, religious beliefs, conformity.",
     "description": {
@@ -68,7 +68,7 @@ export const TAROT_CARDS = [
   {
     "id": "m6",
     "name": "The Lovers",
-    "image_url": "https://picsum.photos/seed/m6/200/350",
+    "image_url": "/images/tarot/m6.png",
     "image_hint": "lovers couple",
     "short_description": "Love, harmony, relationships, choices.",
     "description": {
@@ -79,7 +79,7 @@ export const TAROT_CARDS = [
   {
     "id": "m7",
     "name": "The Chariot",
-    "image_url": "https://picsum.photos/seed/m7/200/350",
+    "image_url": "/images/tarot/m7.png",
     "image_hint": "chariot sphinx",
     "short_description": "Control, willpower, success, action.",
     "description": {
@@ -90,7 +90,7 @@ export const TAROT_CARDS = [
   {
     "id": "m8",
     "name": "Strength",
-    "image_url": "https://picsum.photos/seed/m8/200/350",
+    "image_url": "/images/tarot/m8.png",
     "image_hint": "woman lion",
     "short_description": "Strength, courage, patience, compassion.",
     "description": {
@@ -101,7 +101,7 @@ export const TAROT_CARDS = [
   {
     "id": "m9",
     "name": "The Hermit",
-    "image_url": "https://picsum.photos/seed/m9/200/350",
+    "image_url": "/images/tarot/m9.png",
     "image_hint": "hermit lantern",
     "short_description": "Soul-searching, introspection, guidance.",
     "description": {
@@ -112,7 +112,7 @@ export const TAROT_CARDS = [
   {
     "id": "m10",
     "name": "Wheel of Fortune",
-    "image_url": "https://picsum.photos/seed/m10/200/350",
+    "image_url": "/images/tarot/m10.png",
     "image_hint": "wheel fortune",
     "short_description": "Good luck, karma, life cycles, destiny.",
     "description": {
@@ -123,7 +123,7 @@ export const TAROT_CARDS = [
   {
     "id": "m11",
     "name": "Justice",
-    "image_url": "https://picsum.photos/seed/m11/200/350",
+    "image_url": "/images/tarot/m11.png",
     "image_hint": "justice scales",
     "short_description": "Justice, fairness, truth, cause and effect.",
     "description": {
@@ -134,7 +134,7 @@ export const TAROT_CARDS = [
   {
     "id": "m12",
     "name": "The Hanged Man",
-    "image_url": "https://picsum.photos/seed/m12/200/350",
+    "image_url": "/images/tarot/m12.png",
     "image_hint": "man hanging",
     "short_description": "Pause, surrender, letting go, new perspectives.",
     "description": {
@@ -145,7 +145,7 @@ export const TAROT_CARDS = [
   {
     "id": "m13",
     "name": "Death",
-    "image_url": "https://picsum.photos/seed/m13/200/350",
+    "image_url": "/images/tarot/m13.png",
     "image_hint": "death skeleton",
     "short_description": "Endings, change, transformation, transition.",
     "description": {
@@ -156,7 +156,7 @@ export const TAROT_CARDS = [
   {
     "id": "m14",
     "name": "Temperance",
-    "image_url": "https://picsum.photos/seed/m14/200/350",
+    "image_url": "/images/tarot/m14.png",
     "image_hint": "angel water",
     "short_description": "Balance, moderation, patience, purpose.",
     "description": {
@@ -167,7 +167,7 @@ export const TAROT_CARDS = [
   {
     "id": "m15",
     "name": "The Devil",
-    "image_url": "https://picsum.photos/seed/m15/200/350",
+    "image_url": "/images/tarot/m15.png",
     "image_hint": "devil chains",
     "short_description": "Bondage, addiction, materialism, illusion.",
     "description": {
@@ -178,7 +178,7 @@ export const TAROT_CARDS = [
   {
     "id": "m16",
     "name": "The Tower",
-    "image_url": "https://picsum.photos/seed/m16/200/350",
+    "image_url": "/images/tarot/m16.png",
     "image_hint": "tower lightning",
     "short_description": "Sudden change, upheaval, chaos, awakening.",
     "description": {
@@ -189,7 +189,7 @@ export const TAROT_CARDS = [
   {
     "id": "m17",
     "name": "The Star",
-    "image_url": "https://picsum.photos/seed/m17/200/350",
+    "image_url": "/images/tarot/m17.png",
     "image_hint": "star woman",
     "short_description": "Hope, faith, purpose, renewal, spirituality.",
     "description": {
@@ -200,7 +200,7 @@ export const TAROT_CARDS = [
   {
     "id": "m18",
     "name": "The Moon",
-    "image_url": "https://picsum.photos/seed/m18/200/350",
+    "image_url": "/images/tarot/m18.png",
     "image_hint": "moon wolf",
     "short_description": "Illusion, fear, anxiety, subconscious.",
     "description": {
@@ -211,7 +211,7 @@ export const TAROT_CARDS = [
   {
     "id": "m19",
     "name": "The Sun",
-    "image_url": "https://picsum.photos/seed/m19/200/350",
+    "image_url": "/images/tarot/m19.png",
     "image_hint": "sun child",
     "short_description": "Positivity, fun, warmth, success, vitality.",
     "description": {
@@ -222,7 +222,7 @@ export const TAROT_CARDS = [
   {
     "id": "m20",
     "name": "Judgement",
-    "image_url": "https://picsum.photos/seed/m20/200/350",
+    "image_url": "/images/tarot/m20.png",
     "image_hint": "angel trumpet",
     "short_description": "Judgement, rebirth, inner calling, absolution.",
     "description": {
@@ -233,7 +233,7 @@ export const TAROT_CARDS = [
   {
     "id": "m21",
     "name": "The World",
-    "image_url": "https://picsum.photos/seed/m21/200/350",
+    "image_url": "/images/tarot/m21.png",
     "image_hint": "world dancer",
     "short_description": "Completion, integration, accomplishment, travel.",
     "description": {
@@ -244,7 +244,7 @@ export const TAROT_CARDS = [
   {
     "id": "w1",
     "name": "Ace of Wands",
-    "image_url": "https://picsum.photos/seed/w1/200/350",
+    "image_url": "/images/tarot/w1.png",
     "image_hint": "hand wand",
     "short_description": "Inspiration, new opportunities, growth, potential.",
     "description": {
@@ -255,7 +255,7 @@ export const TAROT_CARDS = [
   {
     "id": "w2",
     "name": "Two of Wands",
-    "image_url": "https://picsum.photos/seed/w2/200/350",
+    "image_url": "/images/tarot/w2.png",
     "image_hint": "man globe",
     "short_description": "Future planning, progress, decisions, discovery.",
     "description": {
@@ -266,7 +266,7 @@ export const TAROT_CARDS = [
   {
     "id": "w3",
     "name": "Three of Wands",
-    "image_url": "https://picsum.photos/seed/w3/200/350",
+    "image_url": "/images/tarot/w3.png",
     "image_hint": "man ships",
     "short_description": "Progress, expansion, foresight, overseas opportunities.",
     "description": {
@@ -277,7 +277,7 @@ export const TAROT_CARDS = [
   {
     "id": "w4",
     "name": "Four of Wands",
-    "image_url": "https://picsum.photos/seed/w4/200/350",
+    "image_url": "/images/tarot/w4.png",
     "image_hint": "celebration canopy",
     "short_description": "Celebration, joy, harmony, relaxation, homecoming.",
     "description": {
@@ -288,7 +288,7 @@ export const TAROT_CARDS = [
   {
     "id": "w5",
     "name": "Five of Wands",
-    "image_url": "https://picsum.photos/seed/w5/200/350",
+    "image_url": "/images/tarot/w5.png",
     "image_hint": "men fighting",
     "short_description": "Conflict, disagreements, competition, tension.",
     "description": {
@@ -299,7 +299,7 @@ export const TAROT_CARDS = [
   {
     "id": "w6",
     "name": "Six of Wands",
-    "image_url": "https://picsum.photos/seed/w6/200/350",
+    "image_url": "/images/tarot/w6.png",
     "image_hint": "man horse",
     "short_description": "Success, public recognition, victory, self-confidence.",
     "description": {
@@ -310,7 +310,7 @@ export const TAROT_CARDS = [
   {
     "id": "w7",
     "name": "Seven of Wands",
-    "image_url": "https://picsum.photos/seed/w7/200/350",
+    "image_url": "/images/tarot/w7.png",
     "image_hint": "man defending",
     "short_description": "Challenge, competition, perseverance, standing up for beliefs.",
     "description": {
@@ -321,7 +321,7 @@ export const TAROT_CARDS = [
   {
     "id": "w8",
     "name": "Eight of Wands",
-    "image_url": "https://picsum.photos/seed/w8/200/350",
+    "image_url": "/images/tarot/w8.png",
     "image_hint": "wands flying",
     "short_description": "Movement, fast-paced change, action, travel.",
     "description": {
@@ -332,7 +332,7 @@ export const TAROT_CARDS = [
   {
     "id": "w9",
     "name": "Nine of Wands",
-    "image_url": "https://picsum.photos/seed/w9/200/350",
+    "image_url": "/images/tarot/w9.png",
     "image_hint": "man wounded",
     "short_description": "Resilience, courage, persistence, last stand.",
     "description": {
@@ -343,7 +343,7 @@ export const TAROT_CARDS = [
   {
     "id": "w10",
     "name": "Ten of Wands",
-    "image_url": "https://picsum.photos/seed/w10/200/350",
+    "image_url": "/images/tarot/w10.png",
     "image_hint": "man carrying",
     "short_description": "Burden, responsibility, hard work, stress.",
     "description": {
@@ -354,7 +354,7 @@ export const TAROT_CARDS = [
   {
     "id": "w11",
     "name": "Page of Wands",
-    "image_url": "https://picsum.photos/seed/w11/200/350",
+    "image_url": "/images/tarot/w11.png",
     "image_hint": "page desert",
     "short_description": "Enthusiasm, exploration, discovery, free spirit.",
     "description": {
@@ -365,7 +365,7 @@ export const TAROT_CARDS = [
   {
     "id": "w12",
     "name": "Knight of Wands",
-    "image_url": "https://picsum.photos/seed/w12/200/350",
+    "image_url": "/images/tarot/w12.png",
     "image_hint": "knight horse",
     "short_description": "Energy, passion, adventure, impulsiveness.",
     "description": {
@@ -376,7 +376,7 @@ export const TAROT_CARDS = [
   {
     "id": "w13",
     "name": "Queen of Wands",
-    "image_url": "https://picsum.photos/seed/w13/200/350",
+    "image_url": "/images/tarot/w13.png",
     "image_hint": "queen sunflower",
     "short_description": "Courage, confidence, independence, social butterfly.",
     "description": {
@@ -387,7 +387,7 @@ export const TAROT_CARDS = [
   {
     "id": "w14",
     "name": "King of Wands",
-    "image_url": "https://picsum.photos/seed/w14/200/350",
+    "image_url": "/images/tarot/w14.png",
     "image_hint": "king lizard",
     "short_description": "Natural-born leader, vision, entrepreneur, honour.",
     "description": {
@@ -398,7 +398,7 @@ export const TAROT_CARDS = [
   {
     "id": "c1",
     "name": "Ace of Cups",
-    "image_url": "https://picsum.photos/seed/c1/200/350",
+    "image_url": "/images/tarot/c1.png",
     "image_hint": "hand cup",
     "short_description": "New love, compassion, creativity, emotional beginnings.",
     "description": {
@@ -409,7 +409,7 @@ export const TAROT_CARDS = [
   {
     "id": "c2",
     "name": "Two of Cups",
-    "image_url": "https://picsum.photos/seed/c2/200/350",
+    "image_url": "/images/tarot/c2.png",
     "image_hint": "couple cups",
     "short_description": "Unified love, partnership, mutual attraction.",
     "description": {
@@ -420,7 +420,7 @@ export const TAROT_CARDS = [
   {
     "id": "c3",
     "name": "Three of Cups",
-    "image_url": "https://picsum.photos/seed/c3/200/350",
+    "image_url": "/images/tarot/c3.png",
     "image_hint": "women dancing",
     "short_description": "Celebration, friendship, creativity, collaborations.",
     "description": {
@@ -431,7 +431,7 @@ export const TAROT_CARDS = [
   {
     "id": "c4",
     "name": "Four of Cups",
-    "image_url": "https://picsum.photos/seed/c4/200/350",
+    "image_url": "/images/tarot/c4.png",
     "image_hint": "man tree",
     "short_description": "Apathy, contemplation, disconnectedness, re-evaluation.",
     "description": {
@@ -442,7 +442,7 @@ export const TAROT_CARDS = [
   {
     "id": "c5",
     "name": "Five of Cups",
-    "image_url": "https://picsum.photos/seed/c5/200/350",
+    "image_url": "/images/tarot/c5.png",
     "image_hint": "man cloaked",
     "short_description": "Regret, failure, disappointment, pessimism.",
     "description": {
@@ -453,7 +453,7 @@ export const TAROT_CARDS = [
   {
     "id": "c6",
     "name": "Six of Cups",
-    "image_url": "https://picsum.photos/seed/c6/200/350",
+    "image_url": "/images/tarot/c6.png",
     "image_hint": "children flowers",
     "short_description": "Revisiting the past, childhood memories, innocence, joy.",
     "description": {
@@ -464,7 +464,7 @@ export const TAROT_CARDS = [
   {
     "id": "c7",
     "name": "Seven of Cups",
-    "image_url": "https://picsum.photos/seed/c7/200/350",
+    "image_url": "/images/tarot/c7.png",
     "image_hint": "man choices",
     "short_description": "Opportunities, choices, wishful thinking, illusion.",
     "description": {
@@ -475,7 +475,7 @@ export const TAROT_CARDS = [
   {
     "id": "c8",
     "name": "Eight of Cups",
-    "image_url": "https://picsum.photos/seed/c8/200/350",
+    "image_url": "/images/tarot/c8.png",
     "image_hint": "man walking",
     "short_description": "Disappointment, abandonment, withdrawal, escapism.",
     "description": {
@@ -486,7 +486,7 @@ export const TAROT_CARDS = [
   {
     "id": "c9",
     "name": "Nine of Cups",
-    "image_url": "https://picsum.photos/seed/c9/200/350",
+    "image_url": "/images/tarot/c9.png",
     "image_hint": "man satisfied",
     "short_description": "Contentment, satisfaction, gratitude, wish come true.",
     "description": {
@@ -497,7 +497,7 @@ export const TAROT_CARDS = [
   {
     "id": "c10",
     "name": "Ten of Cups",
-    "image_url": "https://picsum.photos/seed/c10/200/350",
+    "image_url": "/images/tarot/c10.png",
     "image_hint": "family rainbow",
     "short_description": "Divine love, blissful relationships, harmony, alignment.",
     "description": {
@@ -508,7 +508,7 @@ export const TAROT_CARDS = [
   {
     "id": "c11",
     "name": "Page of Cups",
-    "image_url": "https://picsum.photos/seed/c11/200/350",
+    "image_url": "/images/tarot/c11.png",
     "image_hint": "page fish",
     "short_description": "Creative opportunities, intuitive messages, curiosity.",
     "description": {
@@ -519,7 +519,7 @@ export const TAROT_CARDS = [
   {
     "id": "c12",
     "name": "Knight of Cups",
-    "image_url": "https://picsum.photos/seed/c12/200/350",
+    "image_url": "/images/tarot/c12.png",
     "image_hint": "knight romance",
     "short_description": "Romance, charm, imagination, beauty.",
     "description": {
@@ -530,7 +530,7 @@ export const TAROT_CARDS = [
   {
     "id": "c13",
     "name": "Queen of Cups",
-    "image_url": "https://picsum.photos/seed/c13/200/350",
+    "image_url": "/images/tarot/c13.png",
     "image_hint": "queen ornate",
     "short_description": "Compassion, calm, intuitive, flowing.",
     "description": {
@@ -541,7 +541,7 @@ export const TAROT_CARDS = [
   {
     "id": "c14",
     "name": "King of Cups",
-    "image_url": "https://picsum.photos/seed/c14/200/350",
+    "image_url": "/images/tarot/c14.png",
     "image_hint": "king sea",
     "short_description": "Emotionally balanced, compassionate, diplomatic.",
     "description": {
@@ -552,7 +552,7 @@ export const TAROT_CARDS = [
   {
     "id": "s1",
     "name": "Ace of Swords",
-    "image_url": "https://picsum.photos/seed/s1/200/350",
+    "image_url": "/images/tarot/s1.png",
     "image_hint": "hand sword",
     "short_description": "Breakthroughs, new ideas, mental clarity, success.",
     "description": {
@@ -563,7 +563,7 @@ export const TAROT_CARDS = [
   {
     "id": "s2",
     "name": "Two of Swords",
-    "image_url": "https://picsum.photos/seed/s2/200/350",
+    "image_url": "/images/tarot/s2.png",
     "image_hint": "woman blindfolded",
     "short_description": "Difficult choices, indecision, stalemate, impasse.",
     "description": {
@@ -574,7 +574,7 @@ export const TAROT_CARDS = [
   {
     "id": "s3",
     "name": "Three of Swords",
-    "image_url": "https://picsum.photos/seed/s3/200/350",
+    "image_url": "/images/tarot/s3.png",
     "image_hint": "heart swords",
     "short_description": "Heartbreak, emotional pain, sorrow, grief, hurt.",
     "description": {
@@ -585,7 +585,7 @@ export const TAROT_CARDS = [
   {
     "id": "s4",
     "name": "Four of Swords",
-    "image_url": "https://picsum.photos/seed/s4/200/350",
+    "image_url": "/images/tarot/s4.png",
     "image_hint": "knight tomb",
     "short_description": "Rest, relaxation, meditation, contemplation.",
     "description": {
@@ -596,7 +596,7 @@ export const TAROT_CARDS = [
   {
     "id": "s5",
     "name": "Five of Swords",
-    "image_url": "https://picsum.photos/seed/s5/200/350",
+    "image_url": "/images/tarot/s5.png",
     "image_hint": "man victory",
     "short_description": "Conflict, competition, defeat, winning at all costs.",
     "description": {
@@ -607,7 +607,7 @@ export const TAROT_CARDS = [
   {
     "id": "s6",
     "name": "Six of Swords",
-    "image_url": "https://picsum.photos/seed/s6/200/350",
+    "image_url": "/images/tarot/s6.png",
     "image_hint": "boat journey",
     "short_description": "Transition, change, rite of passage, releasing baggage.",
     "description": {
@@ -618,7 +618,7 @@ export const TAROT_CARDS = [
   {
     "id": "s7",
     "name": "Seven of Swords",
-    "image_url": "https://picsum.photos/seed/s7/200/350",
+    "image_url": "/images/tarot/s7.png",
     "image_hint": "man stealing",
     "short_description": "Betrayal, deception, getting away with something, strategy.",
     "description": {
@@ -629,7 +629,7 @@ export const TAROT_CARDS = [
   {
     "id": "s8",
     "name": "Eight of Swords",
-    "image_url": "https://picsum.photos/seed/s8/200/350",
+    "image_url": "/images/tarot/s8.png",
     "image_hint": "woman trapped",
     "short_description": "Negative thoughts, self-imposed restriction, imprisonment.",
     "description": {
@@ -640,7 +640,7 @@ export const TAROT_CARDS = [
   {
     "id": "s9",
     "name": "Nine of Swords",
-    "image_url": "https://picsum.photos/seed/s9/200/350",
+    "image_url": "/images/tarot/s9.png",
     "image_hint": "person bed",
     "short_description": "Anxiety, worry, fear, depression, nightmares.",
     "description": {
@@ -651,7 +651,7 @@ export const TAROT_CARDS = [
   {
     "id": "s10",
     "name": "Ten of Swords",
-    "image_url": "https://picsum.photos/seed/s10/200/350",
+    "image_url": "/images/tarot/s10.png",
     "image_hint": "man stabbed",
     "short_description": "Painful endings, deep wounds, betrayal, loss, crisis.",
     "description": {
@@ -662,7 +662,7 @@ export const TAROT_CARDS = [
   {
     "id": "s11",
     "name": "Page of Swords",
-    "image_url": "https://picsum.photos/seed/s11/200/350",
+    "image_url": "/images/tarot/s11.png",
     "image_hint": "page windy",
     "short_description": "New ideas, curiosity, thirst for knowledge, new ways of communicating.",
     "description": {
@@ -673,7 +673,7 @@ export const TAROT_CARDS = [
   {
     "id": "s12",
     "name": "Knight of Swords",
-    "image_url": "https://picsum.photos/seed/s12/200/350",
+    "image_url": "/images/tarot/s12.png",
     "image_hint": "knight charging",
     "short_description": "Ambitious, action-oriented, fast-thinking, direct.",
     "description": {
@@ -684,7 +684,7 @@ export const TAROT_CARDS = [
   {
     "id": "s13",
     "name": "Queen of Swords",
-    "image_url": "https://picsum.photos/seed/s13/200/350",
+    "image_url": "/images/tarot/s13.png",
     "image_hint": "queen butterfly",
     "short_description": "Independent, unbiased judgement, clear boundaries, direct communication.",
     "description": {
@@ -695,7 +695,7 @@ export const TAROT_CARDS = [
   {
     "id": "s14",
     "name": "King of Swords",
-    "image_url": "https://picsum.photos/seed/s14/200/350",
+    "image_url": "/images/tarot/s14.png",
     "image_hint": "king authority",
     "short_description": "Mental clarity, intellectual power, authority, truth.",
     "description": {
@@ -706,7 +706,7 @@ export const TAROT_CARDS = [
   {
     "id": "p1",
     "name": "Ace of Pentacles",
-    "image_url": "https://picsum.photos/seed/p1/200/350",
+    "image_url": "/images/tarot/p1.png",
     "image_hint": "hand coin",
     "short_description": "New opportunity, manifestation, prosperity.",
     "description": {
@@ -717,7 +717,7 @@ export const TAROT_CARDS = [
   {
     "id": "p2",
     "name": "Two of Pentacles",
-    "image_url": "https://picsum.photos/seed/p2/200/350",
+    "image_url": "/images/tarot/p2.png",
     "image_hint": "man juggling",
     "short_description": "Balancing, priorities, time management.",
     "description": {
@@ -728,7 +728,7 @@ export const TAROT_CARDS = [
   {
     "id": "p3",
     "name": "Three of Pentacles",
-    "image_url": "https://picsum.photos/seed/p3/200/350",
+    "image_url": "/images/tarot/p3.png",
     "image_hint": "teamwork church",
     "short_description": "Teamwork, collaboration, learning, implementation.",
     "description": {
@@ -739,7 +739,7 @@ export const TAROT_CARDS = [
   {
     "id": "p4",
     "name": "Four of Pentacles",
-    "image_url": "https://picsum.photos/seed/p4/200/350",
+    "image_url": "/images/tarot/p4.png",
     "image_hint": "man hoarding",
     "short_description": "Saving money, security, conservatism, scarcity mindset.",
     "description": {
@@ -750,7 +750,7 @@ export const TAROT_CARDS = [
   {
     "id": "p5",
     "name": "Five of Pentacles",
-    "image_url": "https://picsum.photos/seed/p5/200/350",
+    "image_url": "/images/tarot/p5.png",
     "image_hint": "poor people",
     "short_description": "Financial loss, poverty, isolation, worry.",
     "description": {
@@ -761,7 +761,7 @@ export const TAROT_CARDS = [
   {
     "id": "p6",
     "name": "Six of Pentacles",
-    "image_url": "https://picsum.photos/seed/p6/200/350",
+    "image_url": "/images/tarot/p6.png",
     "image_hint": "giving charity",
     "short_description": "Giving, receiving, sharing wealth, charity.",
     "description": {
@@ -772,7 +772,7 @@ export const TAROT_CARDS = [
   {
     "id": "p7",
     "name": "Seven of Pentacles",
-    "image_url": "https://picsum.photos/seed/p7/200/350",
+    "image_url": "/images/tarot/p7.png",
     "image_hint": "man waiting",
     "short_description": "Long-term view, sustainable results, perseverance.",
     "description": {
@@ -783,7 +783,7 @@ export const TAROT_CARDS = [
   {
     "id": "p8",
     "name": "Eight of Pentacles",
-    "image_url": "https://picsum.photos/seed/p8/200/350",
+    "image_url": "/images/tarot/p8.png",
     "image_hint": "man crafting",
     "short_description": "Apprenticeship, repetitive tasks, mastery, skill development.",
     "description": {
@@ -794,7 +794,7 @@ export const TAROT_CARDS = [
   {
     "id": "p9",
     "name": "Nine of Pentacles",
-    "image_url": "https://picsum.photos/seed/p9/200/350",
+    "image_url": "/images/tarot/p9.png",
     "image_hint": "woman garden",
     "short_description": "Abundance, luxury, self-sufficiency, financial independence.",
     "description": {
@@ -805,7 +805,7 @@ export const TAROT_CARDS = [
   {
     "id": "p10",
     "name": "Ten of Pentacles",
-    "image_url": "https://picsum.photos/seed/p10/200/350",
+    "image_url": "/images/tarot/p10.png",
     "image_hint": "family wealth",
     "short_description": "Wealth, financial security, family, legacy, inheritance.",
     "description": {
@@ -816,7 +816,7 @@ export const TAROT_CARDS = [
   {
     "id": "p11",
     "name": "Page of Pentacles",
-    "image_url": "https://picsum.photos/seed/p11/200/350",
+    "image_url": "/images/tarot/p11.png",
     "image_hint": "page pentacle",
     "short_description": "Manifestation, financial opportunity, skill development.",
     "description": {
@@ -827,7 +827,7 @@ export const TAROT_CARDS = [
   {
     "id": "p12",
     "name": "Knight of Pentacles",
-    "image_url": "https://picsum.photos/seed/p12/200/350",
+    "image_url": "/images/tarot/p12.png",
     "image_hint": "knight standing",
     "short_description": "Hard work, productivity, routine, conservatism.",
     "description": {
@@ -838,7 +838,7 @@ export const TAROT_CARDS = [
   {
     "id": "p13",
     "name": "Queen of Pentacles",
-    "image_url": "https://picsum.photos/seed/p13/200/350",
+    "image_url": "/images/tarot/p13.png",
     "image_hint": "queen nature",
     "short_description": "Nurturing, practical, providing financially, a working parent.",
     "description": {
@@ -849,7 +849,7 @@ export const TAROT_CARDS = [
   {
     "id": "p14",
     "name": "King of Pentacles",
-    "image_url": "https://picsum.photos/seed/p14/200/350",
+    "image_url": "/images/tarot/p14.png",
     "image_hint": "king castle",
     "short_description": "Wealth, business, leadership, security, discipline.",
     "description": {

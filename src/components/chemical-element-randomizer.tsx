@@ -1,7 +1,7 @@
 // src/components/chemical-element-randomizer.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -33,6 +33,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
 
 function ElementCard({ element }: { element: ChemicalElement }) {
   return (
@@ -67,7 +68,7 @@ function ElementCard({ element }: { element: ChemicalElement }) {
               </div>
               <Button asChild variant="link" className="p-0 h-auto">
                 <Link href={element.source} target="_blank" rel="noopener noreferrer">
-                    Read more on Wikipedia <ExternalLink className="ml-2 h-4 w-4" />
+                  Read more on Wikipedia <ExternalLink className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </CardContent>
@@ -82,7 +83,7 @@ function ElementCard({ element }: { element: ChemicalElement }) {
           </DialogDescription>
         </DialogHeader>
         <div className='py-4'>
-            <PeriodicTableDisplay highlightedElement={element.atomicNumber} />
+          <PeriodicTableDisplay highlightedElement={element.atomicNumber} />
         </div>
       </DialogContent>
     </Dialog>
@@ -95,19 +96,35 @@ export default function ChemicalElementRandomizer() {
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, triggerRateLimit] = useRateLimiter(3000);
   const { user } = useAuth();
-  const { confettiConfig } = useSettings();
+  const { confettiConfig, animationDuration } = useSettings();
+  const { playAudio, stopAudio } = useRandomizerAudio();
+
+  useEffect(() => {
+    if (!isLoading) {
+      stopAudio();
+    }
+  }, [isLoading, stopAudio]);
 
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_chemical_element_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
 
     triggerRateLimit();
+    playAudio();
     setIsLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const elementResult = await getRandomChemicalElement();
+      // Create a promise that resolves after the animation duration
+      const delayPromise = new Promise(resolve => setTimeout(resolve, animationDuration * 1000));
+
+      // Fetch the random element
+      const elementPromise = getRandomChemicalElement();
+
+      // Wait for both the delay and the data
+      const [_, elementResult] = await Promise.all([delayPromise, elementPromise]);
+
       setResult(elementResult);
       if (confettiConfig.enabled) {
         threwConfetti({
