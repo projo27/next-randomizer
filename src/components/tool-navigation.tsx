@@ -104,14 +104,20 @@ export function ToolNavigation() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [menuOrder.visible, pathname, router, searchParams]);
 
-  const handleTabChange = useCallback(
+  /* const handleTabChange = useCallback(
     (value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", value);
       router.push(pathname + "?" + params.toString());
     },
     [pathname, router, searchParams],
-  );
+  ); */
+
+  const getTabHref = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", value);
+    return pathname + "?" + params.toString();
+  };
 
   const handleSearchIconClick = () => {
     setIsSearchFocused(true);
@@ -234,7 +240,7 @@ export function ToolNavigation() {
               key={item.value}
               item={item}
               isActive={activeTab === item.value}
-              onClick={() => handleTabChange(item.value)}
+              href={getTabHref(item.value)}
               isHighlighted={
                 lowercasedQuery
                   ? item.text.toLowerCase().includes(lowercasedQuery)
@@ -248,7 +254,7 @@ export function ToolNavigation() {
                 key={item.value}
                 item={item}
                 isActive={activeTab === item.value}
-                onClick={() => handleTabChange(item.value)}
+                href={getTabHref(item.value)}
                 isHighlighted={
                   lowercasedQuery
                     ? item.text.toLowerCase().includes(lowercasedQuery)

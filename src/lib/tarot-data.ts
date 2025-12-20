@@ -858,3 +858,708 @@ export const TAROT_CARDS = [
     }
   }
 ]
+
+
+//  based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Fool",
+//   "image_hint": "jester cliff",
+//   "short_description": "New beginnings, innocence, spontaneity.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Magician",
+//   "image_hint": "magician table",
+//   "short_description": "Manifestation, resourcefulness, power.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The High Priestess",
+//   "image_hint": "priestess moon",
+//   "short_description": "Intuition, sacred knowledge, divine feminine.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Empress",
+//   "image_hint": "empress nature",
+//   "short_description": "Femininity, beauty, nature, abundance.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Emperor",
+//   "image_hint": "emperor throne",
+//   "short_description": "Authority, establishment, structure, a father figure.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Hierophant",
+//   "image_hint": "pope religion",
+//   "short_description": "Spiritual wisdom, religious beliefs, conformity.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Lovers",
+//   "image_hint": "lovers couple",
+//   "short_description": "Love, harmony, relationships, choices.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Chariot",
+//   "image_hint": "chariot sphinx",
+//   "short_description": "Control, willpower, success, action.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Strength",
+//   "image_hint": "woman lion",
+//   "short_description": "Strength, courage, patience, compassion.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Hermit",
+//   "image_hint": "hermit lantern",
+//   "short_description": "Soul-searching, introspection, guidance.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Wheel of Fortune",
+//   "image_hint": "wheel fortune",
+//   "short_description": "Good luck, karma, life cycles, destiny.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Justice",
+//   "image_hint": "justice scales",
+//   "short_description": "Justice, fairness, truth, cause and effect.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Hanged Man",
+//   "image_hint": "man hanging",
+//   "short_description": "Pause, surrender, letting go, new perspectives.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Death",
+//   "image_hint": "death skeleton",
+//   "short_description": "Endings, change, transformation, transition.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Temperance",
+//   "image_hint": "angel water",
+//   "short_description": "Balance, moderation, patience, purpose.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Devil",
+//   "image_hint": "devil chains",
+//   "short_description": "Bondage, addiction, materialism, illusion.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Tower",
+//   "image_hint": "tower lightning",
+//   "short_description": "Sudden change, upheaval, chaos, awakening.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Star",
+//   "image_hint": "star woman",
+//   "short_description": "Hope, faith, purpose, renewal, spirituality.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Moon",
+//   "image_hint": "moon wolf",
+//   "short_description": "Illusion, fear, anxiety, subconscious.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The Sun",
+//   "image_hint": "sun child",
+//   "short_description": "Positivity, fun, warmth, success, vitality.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Judgement",
+//   "image_hint": "angel trumpet",
+//   "short_description": "Judgement, rebirth, inner calling, absolution.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "The World",
+//   "image_hint": "world dancer",
+//   "short_description": "Completion, integration, accomplishment, travel.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ace of Wands",
+//   "image_hint": "hand wand",
+//   "short_description": "Inspiration, new opportunities, growth, potential.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Two of Wands",
+//   "image_hint": "man globe",
+//   "short_description": "Future planning, progress, decisions, discovery.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Three of Wands",
+//   "image_hint": "man ships",
+//   "short_description": "Progress, expansion, foresight, overseas opportunities.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Four of Wands",
+//   "image_hint": "celebration canopy",
+//   "short_description": "Celebration, joy, harmony, relaxation, homecoming.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Five of Wands",
+//   "image_hint": "men fighting",
+//   "short_description": "Conflict, disagreements, competition, tension.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Six of Wands",
+//   "image_hint": "man horse",
+//   "short_description": "Success, public recognition, victory, self-confidence.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Seven of Wands",
+//   "image_hint": "man defending",
+//   "short_description": "Challenge, competition, perseverance, standing up for beliefs.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Eight of Wands",
+//   "image_hint": "wands flying",
+//   "short_description": "Movement, fast-paced change, action, travel.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Nine of Wands",
+//   "image_hint": "man wounded",
+//   "short_description": "Resilience, courage, persistence, last stand.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ten of Wands",
+//   "image_hint": "man carrying",
+//   "short_description": "Burden, responsibility, hard work, stress.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Page of Wands",
+//   "image_hint": "page desert",
+//   "short_description": "Enthusiasm, exploration, discovery, free spirit.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Knight of Wands",
+//   "image_hint": "knight horse",
+//   "short_description": "Energy, passion, adventure, impulsiveness.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+  // based on generated image before, create
+  // {
+  //   "object" : "tarot image", 
+  //   "name": "Queen of Wands",
+  //   "image_hint": "queen sunflower",
+  //   "short_description": "Courage, confidence, independence, social butterfly.",
+  //   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+  // }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "King of Wands",
+//   "image_hint": "king lizard",
+//   "short_description": "Natural-born leader, vision, entrepreneur, honour.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ace of Cups",
+//   "image_hint": "hand cup",
+//   "short_description": "New love, compassion, creativity, emotional beginnings.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+  // based on generated image before, create
+  // {
+  //   "object" : "tarot image", 
+  //   "name": "Two of Cups",
+  //   "image_hint": "couple cups",
+  //   "short_description": "Unified love, partnership, mutual attraction.",
+  //   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+  // }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Three of Cups",
+//   "image_hint": "women dancing",
+//   "short_description": "Celebration, friendship, creativity, collaborations.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Four of Cups",
+//   "image_hint": "man tree",
+//   "short_description": "Apathy, contemplation, disconnectedness, re-evaluation.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Five of Cups",
+//   "image_hint": "man cloaked",
+//   "short_description": "Regret, failure, disappointment, pessimism.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Six of Cups",
+//   "image_hint": "children flowers",
+//   "short_description": "Revisiting the past, childhood memories, innocence, joy.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Seven of Cups",
+//   "image_hint": "man choices",
+//   "short_description": "Opportunities, choices, wishful thinking, illusion.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Eight of Cups",
+//   "image_hint": "man walking",
+//   "short_description": "Disappointment, abandonment, withdrawal, escapism.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Nine of Cups",
+//   "image_hint": "man satisfied",
+//   "short_description": "Contentment, satisfaction, gratitude, wish come true.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ten of Cups",
+//   "image_hint": "family rainbow",
+//   "short_description": "Divine love, blissful relationships, harmony, alignment.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Page of Cups",
+//   "image_hint": "page fish",
+//   "short_description": "Creative opportunities, intuitive messages, curiosity.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Knight of Cups",
+//   "image_hint": "knight romance",
+//   "short_description": "Romance, charm, imagination, beauty.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Queen of Cups",
+//   "image_hint": "queen ornate",
+//   "short_description": "Compassion, calm, intuitive, flowing.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "King of Cups",
+//   "image_hint": "king sea",
+//   "short_description": "Emotionally balanced, compassionate, diplomatic.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ace of Swords",
+//   "image_hint": "hand sword",
+//   "short_description": "Breakthroughs, new ideas, mental clarity, success.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Two of Swords",
+//   "image_hint": "woman blindfolded",
+//   "short_description": "Difficult choices, indecision, stalemate, impasse.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Three of Swords",
+//   "image_hint": "heart swords",
+//   "short_description": "Heartbreak, emotional pain, sorrow, grief, hurt.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Four of Swords",
+//   "image_hint": "knight tomb",
+//   "short_description": "Rest, relaxation, meditation, contemplation.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Five of Swords",
+//   "image_hint": "man victory",
+//   "short_description": "Conflict, competition, defeat, winning at all costs.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Six of Swords",
+//   "image_hint": "boat journey",
+//   "short_description": "Transition, change, rite of passage, releasing baggage.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Seven of Swords",
+//   "image_hint": "man stealing",
+//   "short_description": "Betrayal, deception, getting away with something, strategy.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Eight of Swords",
+//   "image_hint": "woman trapped",
+//   "short_description": "Negative thoughts, self-imposed restriction, imprisonment.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Nine of Swords",
+//   "image_hint": "person bed",
+//   "short_description": "Anxiety, worry, fear, depression, nightmares.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ten of Swords",
+//   "image_hint": "man stabbed",
+//   "short_description": "Painful endings, deep wounds, betrayal, loss, crisis.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Page of Swords",
+//   "image_hint": "page windy",
+//   "short_description": "New ideas, curiosity, thirst for knowledge, new ways of communicating.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Knight of Swords",
+//   "image_hint": "knight charging",
+//   "short_description": "Ambitious, action-oriented, fast-thinking, direct.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Queen of Swords",
+//   "image_hint": "queen butterfly",
+//   "short_description": "Independent, unbiased judgement, clear boundaries, direct communication.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "King of Swords",
+//   "image_hint": "king authority",
+//   "short_description": "Mental clarity, intellectual power, authority, truth.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ace of Pentacles",
+//   "image_hint": "hand coin",
+//   "short_description": "New opportunity, manifestation, prosperity.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+  // based on generated image before, create
+  // {
+  //   "object" : "tarot image", 
+  //   "name": "Two of Pentacles",
+  //   "image_hint": "man juggling",
+  //   "short_description": "Balancing, priorities, time management.",
+  //   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+  // }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Three of Pentacles",
+//   "image_hint": "teamwork church",
+//   "short_description": "Teamwork, collaboration, learning, implementation.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Four of Pentacles",
+//   "image_hint": "man hoarding",
+//   "short_description": "Saving money, security, conservatism, scarcity mindset.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Five of Pentacles",
+//   "image_hint": "poor people",
+//   "short_description": "Financial loss, poverty, isolation, worry.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Six of Pentacles",
+//   "image_hint": "giving charity",
+//   "short_description": "Giving, receiving, sharing wealth, charity.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Seven of Pentacles",
+//   "image_hint": "man waiting",
+//   "short_description": "Long-term view, sustainable results, perseverance.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Eight of Pentacles",
+//   "image_hint": "man crafting",
+//   "short_description": "Apprenticeship, repetitive tasks, mastery, skill development.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Nine of Pentacles",
+//   "image_hint": "woman garden",
+//   "short_description": "Abundance, luxury, self-sufficiency, financial independence.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Ten of Pentacles",
+//   "image_hint": "family wealth",
+//   "short_description": "Wealth, financial security, family, legacy, inheritance.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Page of Pentacles",
+//   "image_hint": "page pentacle",
+//   "short_description": "Manifestation, financial opportunity, skill development.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Knight of Pentacles",
+//   "image_hint": "knight standing",
+//   "short_description": "Hard work, productivity, routine, conservatism.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "Queen of Pentacles",
+//   "image_hint": "queen nature",
+//   "short_description": "Nurturing, practical, providing financially, a working parent.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+// based on generated image before, create
+// {
+//   "object" : "tarot image", 
+//   "name": "King of Pentacles",
+//   "image_hint": "king castle",
+//   "short_description": "Wealth, business, leadership, security, discipline.",
+//   "style" : "tarot like, vector character, flat design, simple, lovable, teen, long shot camera, soft color, no border, arial bold text under inside white box, no shadow, full image no padding" 
+// }
+
+

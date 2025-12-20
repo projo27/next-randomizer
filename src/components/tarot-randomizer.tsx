@@ -129,48 +129,60 @@ export default function TarotRandomizer() {
           </Alert>
         )}
 
-        <div className="relative flex flex-wrap justify-center items-center gap-4 min-h-[250px] p-4 bg-muted/50 rounded-lg">
+        <div className="relative flex flex-wrap justify-center items-center gap-4 min-h-[360px] p-4 bg-muted/50 rounded-lg">
           {isRandomizing && Array.from({ length: parseInt(count) || 3 }).map((_, i) => (
-            <Skeleton key={i} className="w-[120px] h-[210px]" />
+            <Skeleton key={i} className="w-[196px] h-[320px]" />
           ))}
 
           {!isRandomizing && results.length > 0 && results.map((card, index) => (
             <Dialog key={card.id}>
               <DialogTrigger asChild>
                 <div
-                  className="relative w-[120px] h-[210px] cursor-pointer group animate-reveal-card"
+                  className="relative w-[196px] h-[300px] cursor-pointer group animate-reveal-card [perspective:1000px]"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  <div className="absolute inset-0 bg-primary rounded-lg flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
-                    <Image
-                      src="/images/tarot/tarot_back.png"
-                      alt="Tarot card back"
-                      width={120}
-                      height={210}
-                      className="object-contain"
-                    />
+                  <div className="relative w-full h-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                    {/* Front Face (Card Back) */}
+                    <div className="absolute inset-0 bg-primary rounded-lg flex items-center justify-center [backface-visibility:hidden]">
+                      <Image
+                        src="/images/tarot/tarot_back.png"
+                        alt="Tarot card back"
+                        fill
+                        className="object-fill rounded-lg"
+                      />
+                    </div>
+                    {/* Back Face (Card Front) */}
+                    <div className="absolute inset-0 bg-background rounded-lg flex items-center justify-center [backface-visibility:hidden] [transform:rotateY(180deg)] shadow-xl border">
+                      <Image
+                        src={card.image_url}
+                        alt={card.name}
+                        fill
+                        className={cn("object-fill rounded-lg", card.orientation === 'reversed' && 'rotate-180')}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
                   <DialogTitle className="text-2xl text-center">{card.name} - <span className={cn(card.orientation === 'reversed' && 'text-red-500')}>{card.orientation}</span></DialogTitle>
                   <DialogDescription className="text-center">{card.short_description}</DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4 items-center" style={{ gridTemplateColumns: '150px 1fr' }}>
-                  <div className={cn("relative w-[150px] h-[262px]", card.orientation === 'reversed' && 'rotate-180')}>
+                <div className="grid gap-4 py-4 items-start" style={{ gridTemplateColumns: '196px 1fr' }}>
+                  <div className={cn("relative w-[196px] h-[300px] rounded-lg transition-transform duration-500 ease-in-out", card.orientation === 'reversed' && 'rotate-180 hover:rotate-0')}>
                     <Image
                       src={card.image_url}
                       alt={card.name}
                       fill
                       data-ai-hint={card.image_hint}
-                      className="object-contain rounded-md"
+                      className="object-fill rounded-lg"
                       onError={(e) => {
                         e.currentTarget.src = '/images/tarot/tarot_back.png';
                       }}
                     />
                   </div>
-                  <div className="text-sm text-muted-foreground max-h-[262px] overflow-y-auto pr-4">
+                  <div className="text-muted-foreground max-h-[262px] overflow-y-auto pr-4 pt-2">
                     <p>{card.orientation === 'upright' ? card.description.upright : card.description.reversed}</p>
                   </div>
                 </div>
