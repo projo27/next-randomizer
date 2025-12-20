@@ -46,6 +46,7 @@ import SongRandomizer from "@/components/song-randomizer";
 import TarotRandomizer from "@/components/tarot-randomizer";
 import ChemicalElementRandomizer from "@/components/chemical-element-randomizer";
 import QuranRandomizer from "@/components/quran-randomizer";
+import BibleRandomizer from "@/components/bible-randomizer";
 
 import {
   ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker,
@@ -301,6 +302,14 @@ export const triggerList = [
     hidden: false,
     icon: <BookOpen className="h-5 w-5" />,
     content: <QuranRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: 'bible',
+    text: 'Bible',
+    hidden: false,
+    icon: <BookOpen className="h-5 w-5" />,
+    content: <BibleRandomizer />,
     contentGuard: false,
   },
   {
