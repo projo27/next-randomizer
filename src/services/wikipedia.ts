@@ -1,5 +1,6 @@
 'use server';
 
+import { USER_AGENT } from '@/lib/utils';
 import * as cheerio from 'cheerio';
 import { z } from 'zod';
 
@@ -32,7 +33,7 @@ export async function getEventsForDay(month: number, day: number): Promise<Wikip
   try {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Randomizer.fun/1.0.0 (support@randomizer.fun; https://randomizer.fun)',
+        'User-Agent': USER_AGENT,
         'Accept': 'application/json; charset=utf-8'
       },
       cache: 'no-store' // The data changes daily, so we shouldn't cache it for long.
@@ -47,16 +48,16 @@ export async function getEventsForDay(month: number, day: number): Promise<Wikip
     if (!data.events || !Array.isArray(data.events)) {
       throw new Error("Invalid data format received from Wikipedia API.");
     }
-    
+
     // Parse and validate each event
     const parsedEvents = data.events.map((event: any): WikipediaEvent | null => {
       if (!event.text || !event.year || !event.pages) {
         return null;
       }
-      
+
       const links = event.pages.map((page: any): z.infer<typeof EventLinkSchema> => ({
-          title: page.titles.normalized,
-          url: page.content_urls.desktop.page
+        title: page.titles.normalized,
+        url: page.content_urls.desktop.page
       }));
 
       // Zod validation for each parsed event
@@ -73,7 +74,7 @@ export async function getEventsForDay(month: number, day: number): Promise<Wikip
         return null;
       }
     }).filter((event: any): event is WikipediaEvent => event !== null);
-    
+
     return parsedEvents;
 
   } catch (error) {

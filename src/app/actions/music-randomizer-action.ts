@@ -1,5 +1,7 @@
 'use server';
 
+import { USER_AGENT } from "@/lib/utils";
+
 export interface MusicBrainzRecording {
   id: string;
   title: string;
@@ -47,7 +49,7 @@ async function fetchRandomRecording(): Promise<MusicBrainzRecording | null> {
   const response = await fetch(url, {
     headers: {
       'Accept': 'application/json',
-      'User-Agent': 'Randomizer.fun/1.0.0 ( support@randomizer.fun )'
+      'User-Agent': USER_AGENT
     }
   });
 

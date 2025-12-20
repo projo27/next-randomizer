@@ -1,5 +1,6 @@
 "use server";
 
+import { USER_AGENT } from "@/lib/utils";
 import { z } from "zod";
 
 const API_BASE_URL = "https://de1.api.radio-browser.info/json";
@@ -39,7 +40,7 @@ async function fetchFromApi<T>(
   try {
     const response = await fetch(url, {
       headers: {
-        "User-Agent": "Randomizer.fun/1.0.0 (support@randomizer.fun)",
+        'User-Agent': USER_AGENT,
       },
       cache: "no-store", // Radio stations can change, so don't cache this on the server
     });
@@ -84,14 +85,24 @@ async function fetchFromApi<T>(
  * @returns A promise that resolves to an array of Country objects.
  */
 export async function getCountries(): Promise<Country[]> {
-  const countries = await fetchFromApi(
-    "countries?order=stationcount&reverse=true",
-    z.array(CountrySchema),
-  );
-  // Filter out countries with no stations
-  return countries
-    .filter((c) => c.stationcount > 0)
-    .sort((a, b) => (a.name < b.name ? -1 : 1));
+  try {
+    const countries = await fetchFromApi(
+      "countries?order=stationcount&reverse=true",
+      z.array(CountrySchema),
+    );
+    // Filter out countries with no stations
+    return countries
+      .filter((c) => c.stationcount > 0)
+      .sort((a, b) => (a.name < b.name ? -1 : 1));
+  } catch (error) {
+    console.error(`Error fetching countries from Radio Browser API:`, error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(
+      "An unknown error occurred while fetching countries from Radio Browser API.",
+    );
+  }
 }
 
 /**
@@ -102,20 +113,30 @@ export async function getCountries(): Promise<Country[]> {
 export async function getRandomStationByCountry(
   countryCode: string,
 ): Promise<RadioStation | null> {
-  let endpoint =
-    "stations/search?limit=150&order=votes&reverse=true&hidebroken=true";
+  try {
+    let endpoint =
+      "stations/search?limit=150&order=votes&reverse=true&hidebroken=true";
 
-  if (countryCode !== "all") {
-    endpoint += `&countrycode=${countryCode}`;
+    if (countryCode !== "all") {
+      endpoint += `&countrycode=${countryCode}`;
+    }
+
+    const stations = await fetchFromApi(endpoint, z.array(RadioStationSchema));
+
+    if (stations.length === 0) {
+      return null;
+    }
+
+    // Pick a random station from the fetched list
+    const randomIndex = Math.floor(Math.random() * stations.length);
+    return stations[randomIndex];
+  } catch (error) {
+    console.error(`Error fetching random station from Radio Browser API:`, error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(
+      "An unknown error occurred while fetching random station from Radio Browser API.",
+    );
   }
-
-  const stations = await fetchFromApi(endpoint, z.array(RadioStationSchema));
-
-  if (stations.length === 0) {
-    return null;
-  }
-
-  // Pick a random station from the fetched list
-  const randomIndex = Math.floor(Math.random() * stations.length);
-  return stations[randomIndex];
 }

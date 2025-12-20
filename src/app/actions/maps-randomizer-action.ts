@@ -2,6 +2,7 @@
 'use server';
 
 import { STREETVIEW_LOCATIONS } from '@/lib/streetview-locations-server';
+import { USER_AGENT } from '@/lib/utils';
 import * as cheerio from 'cheerio';
 
 
@@ -33,7 +34,7 @@ export async function getTrulyRandomPlace(): Promise<LatLng> {
   try {
     const response = await fetch('https://randomcoords.com/', {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': USER_AGENT
       }
     });
     if (!response.ok) {
