@@ -8,11 +8,12 @@ const API_BASE_URL = 'https://www.sefaria.org/api/texts';
 
 const SefariaResponseSchema = z.object({
   ref: z.string(),
-  he: z.array(z.string()),
-  text: z.array(z.string()),
+  heRef: z.string(),
+  he: z.string(),
+  text: z.string(),
   book: z.string(),
-  sections: z.array(z.string()),
-  toSections: z.array(z.string()),
+  sections: z.array(z.number()),
+  toSections: z.array(z.number()),
 });
 
 export type RandomTanakhResult = z.infer<typeof SefariaResponseSchema>;
@@ -26,6 +27,7 @@ async function fetchVersesFromApi(
   const ref = `${book}.${chapter}.${startVerse}-${endVerse}`;
   const url = `${API_BASE_URL}/${ref}?context=0&commentary=0`;
   try {
+    console.log("url", url);
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
       // Sefaria API might return 404 for invalid verse ranges, which is expected.

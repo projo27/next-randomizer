@@ -83,7 +83,7 @@ export default function TanakhRandomizer() {
   
   const handleCopy = () => {
     if (!result) return;
-    const textToCopy = `${result.ref}\n\n${result.he.join(' ')}\n\n${result.text.join(' ')}`;
+    const textToCopy = `${result.ref}\n\n${result.he}\n\n${result.text}`;
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
     toast({
@@ -168,10 +168,10 @@ export default function TanakhRandomizer() {
               </div>
               <div className="p-4 border rounded-lg bg-card/50 space-y-4">
                 <p className="text-right text-2xl font-mono leading-relaxed" dir="rtl">
-                  {result.he.join(' ')}
+                  {result.he}
                 </p>
                 <Separator />
-                <p className="text-lg leading-relaxed">{result.text.join(' ')}</p>
+                <p className="text-lg leading-relaxed">{result.text}</p>
               </div>
             </div>
           )}

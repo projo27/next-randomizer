@@ -129,7 +129,7 @@ export async function getRandomVerses(
     const surahInfo = await surahInfoResponse.json();
     const totalVerses = surahInfo.chapter.verses_count;
 
-    console.log("surahINfo ", surahInfo, "totalVerses ", totalVerses);
+    // console.log("surahINfo ", surahInfo, "totalVerses ", totalVerses);
 
     if (verseCount > totalVerses) {
       throw new Error(`The selected Surah only has ${totalVerses} verses. Cannot fetch ${verseCount} verses.`);
@@ -148,7 +148,7 @@ export async function getRandomVerses(
     if (!versesResponse.ok) throw new Error('Failed to fetch verses and translation');
 
     const data = await versesResponse.json();
-    console.log("versesUrl ", versesUrl, "verseByChapterUrl ", verseByChapterUrl, "versesData ", data);
+    // console.log("versesUrl ", versesUrl, "verseByChapterUrl ", verseByChapterUrl, "versesData ", data);
     const parsed = VerseResponseSchema.safeParse(data);
 
     if (!parsed.success) {
