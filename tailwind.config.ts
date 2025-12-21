@@ -15,6 +15,7 @@ export default {
         body: ["Sora", "sans-serif"],
         headline: ["Geist", "sans-serif"],
         code: ["Sora", "monospace"],
+        arabic: ["Parastoo", "sans-serif"],
       },
       colors: {
         background: "hsl(var(--background))",

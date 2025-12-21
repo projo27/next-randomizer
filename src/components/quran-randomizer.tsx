@@ -32,27 +32,32 @@ import {
   getSurahList,
   getRandomVerses,
   getTranslationLanguages,
+  getTranslationResources,
   Surah,
   Language,
   RandomVerseResult,
+  TranslationResource,
 } from '@/app/actions/quran-randomizer-action';
 import { Separator } from './ui/separator';
+import { stripHtmlTags } from '@/lib/utils';
+import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
 
 export default function QuranRandomizer() {
   // Option States
   const [surahList, setSurahList] = useState<Surah[]>([]);
-  const [languageList, setLanguageList] = useState<Language[]>([]);
+  const [translationList, setTranslationList] = useState<TranslationResource[]>([]);
   const [selectedSurah, setSelectedSurah] = useState('all'); // 'all' or surah ID
   const [verseCount, setVerseCount] = useState('3');
-  const [selectedTranslation, setSelectedTranslation] = useState('131'); // Default to English - Sahih International
-  
+  const [selectedTranslation, setSelectedTranslation] = useState('20'); // Default to English - Sahih International
+  const { playAudio, stopAudio } = useRandomizerAudio();
+
   // Result States
   const [results, setResults] = useState<RandomVerseResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingOptions, setIsLoadingOptions] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-  
+
   // Hooks
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(4000);
@@ -62,12 +67,12 @@ export default function QuranRandomizer() {
   // Fetch initial data for dropdowns
   const fetchOptions = useCallback(async () => {
     try {
-      const [surahs, languages] = await Promise.all([
+      const [surahs, translations] = await Promise.all([
         getSurahList(),
-        getTranslationLanguages(),
+        getTranslationResources(),
       ]);
       setSurahList(surahs);
-      setLanguageList(languages);
+      setTranslationList(translations);
     } catch (err: any) {
       setError('Could not load Surah and language options. Please refresh the page.');
     } finally {
@@ -79,28 +84,35 @@ export default function QuranRandomizer() {
     fetchOptions();
   }, [fetchOptions]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      stopAudio();
+    }
+  }, [isLoading, stopAudio]);
+
   const handleRandomize = async () => {
     sendGTMEvent({ event: 'action_quran_randomizer', user_email: user?.email ?? 'guest' });
     if (isLoading || isRateLimited) return;
 
     triggerRateLimit();
     setIsLoading(true);
+    playAudio();
     setError(null);
     setResults([]);
     setIsCopied(false);
-    
+
     try {
       const surahId = selectedSurah === 'all'
         ? Math.floor(Math.random() * 114) + 1
         : parseInt(selectedSurah, 10);
-        
+
       const count = parseInt(verseCount, 10);
       const translationId = parseInt(selectedTranslation, 10);
 
       if (isNaN(count) || count < 1 || count > 20) {
         throw new Error("Please enter a valid number of verses (1-20).");
       }
-      
+
       const verseResults = await getRandomVerses(surahId, count, translationId);
       setResults(verseResults);
 
@@ -119,7 +131,7 @@ export default function QuranRandomizer() {
 
   const handleCopy = () => {
     if (results.length === 0) return;
-    const textToCopy = results.map(v => `${v.verse_key}\n${v.text_uthmani}\n${v.translations[0].text}`).join('\n\n');
+    const textToCopy = results.map(v => `${v.verse_key}\n${v.text_uthmani}\n${v.translations?.[0].text}`).join('\n\n');
     navigator.clipboard.writeText(textToCopy);
     setIsCopied(true);
     toast({
@@ -128,7 +140,7 @@ export default function QuranRandomizer() {
     });
     setTimeout(() => setIsCopied(false), 2000);
   };
-  
+
   const selectedSurahInfo = surahList.find(s => s.id.toString() === selectedSurah);
 
   return (
@@ -183,9 +195,9 @@ export default function QuranRandomizer() {
                   <SelectValue placeholder="Select a Translation" />
                 </SelectTrigger>
                 <SelectContent>
-                  {languageList.map(lang => (
+                  {translationList.map(lang => (
                     <SelectItem key={lang.id} value={lang.id.toString()}>
-                      {lang.name}
+                      {lang.language_name.charAt(0).toUpperCase() + lang.language_name.slice(1)} - {lang.author_name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -202,21 +214,21 @@ export default function QuranRandomizer() {
             </div>
           )}
           {!isLoading && results.length > 0 && (
-            <div className="w-full space-y-4 animate-fade-in relative">
-                <Button variant="ghost" size="icon" className="absolute top-0 right-0" onClick={handleCopy}>
-                    {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-                </Button>
-                {results.map((verse, index) => (
-                    <div key={verse.id}>
-                        <div className="p-4 border rounded-lg bg-card/50 space-y-4">
-                            <p className="text-right text-3xl font-mono leading-relaxed" dir="rtl">
-                                {verse.text_uthmani} <span className='text-xl text-primary font-sans'>({verse.verse_key.split(':')[1]})</span>
-                            </p>
-                            <Separator />
-                            <p className="text-muted-foreground">{verse.translations[0].text}</p>
-                        </div>
-                    </div>
-                ))}
+            <div className="w-full space-y-4 animate-fade-in relative pt-6">
+              <Button variant="ghost" size="icon" className="absolute top-0 right-0" onClick={handleCopy}>
+                {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+              </Button>
+              {results.map((verse, index) => (
+                <div key={verse.id}>
+                  <div className="p-4 border rounded-lg bg-card/50 space-y-4">
+                    <p className="text-right text-4xl font-arabic leading-relaxed" dir="rtl">
+                      {verse.text_uthmani} <span className='text-3xl font-mono tracking-tighter' dir="rtl">[{parseInt(verse.verse_key.split(':')[1]).toLocaleString("ar-u-nu-arab", { useGrouping: false })}]</span>
+                    </p>
+                    <Separator />
+                    <p className="text-muted-foreground">{stripHtmlTags(verse.translations?.[0].text ?? "")} <span className="font-mono">[{verse.verse_key}]</span></p>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           {!isLoading && results.length === 0 && !error && (

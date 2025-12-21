@@ -122,6 +122,7 @@
 - Poetry DB → [poetrydb.org](https://poetrydb.org)
 - World Wildlife Fund → [worldwildlife.org](https://worldwildlife.org)
 - Random Coords → [randomcoords.com](https://randomcoords.com)
+- Quran.com → [quran.com](https://api.quran.com)
 - Sound Effect by [freesound_community](https://pixabay.com/id/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=63590 "freesound_community") from [Pixabay](https://pixabay.com/sound-effects/037766-8039s-synth-67009/)
 
 ---

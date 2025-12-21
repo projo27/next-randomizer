@@ -28,6 +28,19 @@ const LanguageListResponseSchema = z.object({
   languages: z.array(LanguageSchema),
 });
 
+const TranslationResourceSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  author_name: z.string(),
+  slug: z.string().nullable(),
+  language_name: z.string(),
+});
+
+export type TranslationResource = z.infer<typeof TranslationResourceSchema>;
+
+const TranslationResourceListResponseSchema = z.object({
+  translations: z.array(TranslationResourceSchema),
+});
 
 const VerseSchema = z.object({
   id: z.number(),
@@ -36,7 +49,7 @@ const VerseSchema = z.object({
   translations: z.array(z.object({
     text: z.string(),
     resource_id: z.number(),
-  })).min(1),
+  })).min(1).optional(),
 });
 
 const VerseResponseSchema = z.object({
@@ -68,18 +81,37 @@ export async function getSurahList(): Promise<Surah[]> {
  * Fetches the list of available translation languages.
  */
 export async function getTranslationLanguages(): Promise<Language[]> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/resources/languages`);
-      if (!response.ok) throw new Error('Failed to fetch languages');
-      const data = await response.json();
-      const parsed = LanguageListResponseSchema.safeParse(data);
-      if (!parsed.success) throw new Error('Invalid language list format');
-      // Filter to only include languages with available translations, and sort them
-      return parsed.data.languages.sort((a, b) => a.name.localeCompare(b.name));
-    } catch (error) {
-      console.error('Error in getTranslationLanguages:', error);
-      throw error;
-    }
+  try {
+    const response = await fetch(`${API_BASE_URL}/resources/languages`, { cache: 'force-cache' });
+    if (!response.ok) throw new Error('Failed to fetch languages');
+    const data = await response.json();
+    const parsed = LanguageListResponseSchema.safeParse(data);
+    if (!parsed.success) throw new Error('Invalid language list format');
+    // Filter to only include languages with available translations, and sort them
+    return parsed.data.languages.sort((a, b) => a.name.localeCompare(b.name));
+  } catch (error) {
+    console.error('Error in getTranslationLanguages:', error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches the list of available translation resources.
+ */
+export async function getTranslationResources(): Promise<TranslationResource[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/resources/translations`, { cache: 'force-cache' });
+    if (!response.ok) throw new Error('Failed to fetch translation re ources');
+    const data = await response.json();
+    const parsed = TranslationResourceListResponseSchema.safeParse(data);
+    if (!parsed.success) throw new Error('Invalid translation resources format');
+    // console.log("parsed.translation", parsed.data.translations);
+    // Filter to only include languages with available translations, and sort them
+    return parsed.data.translations.sort((a, b) => a.language_name.localeCompare(b.language_name));
+  } catch (error) {
+    console.error('Error in getTranslationResources:', error);
+    throw error;
+  }
 }
 
 /**
@@ -97,6 +129,8 @@ export async function getRandomVerses(
     const surahInfo = await surahInfoResponse.json();
     const totalVerses = surahInfo.chapter.verses_count;
 
+    console.log("surahINfo ", surahInfo, "totalVerses ", totalVerses);
+
     if (verseCount > totalVerses) {
       throw new Error(`The selected Surah only has ${totalVerses} verses. Cannot fetch ${verseCount} verses.`);
     }
@@ -108,11 +142,13 @@ export async function getRandomVerses(
 
     const fields = 'text_uthmani,chapter_id,verse_number';
     const versesUrl = `${API_BASE_URL}/quran/verses/uthmani?chapter_number=${surahId}&juz_number=${startVerse}&limit=${verseCount}`;
+    const verseByChapterUrl = `${API_BASE_URL}/verses/by_chapter/${surahId}?language=en&words=false&translations=${translationId}&page=1&per_page=${verseCount}&from=${startVerse}&fields=${fields}`;
 
-    const versesResponse = await fetch(`${API_BASE_URL}/verses/by_chapter/${surahId}?language=en&words=false&translations=${translationId}&page=1&per_page=${verseCount}&from=${startVerse}&fields=${fields}`);
-    if(!versesResponse.ok) throw new Error('Failed to fetch verses and translation');
-    
+    const versesResponse = await fetch(verseByChapterUrl);
+    if (!versesResponse.ok) throw new Error('Failed to fetch verses and translation');
+
     const data = await versesResponse.json();
+    console.log("versesUrl ", versesUrl, "verseByChapterUrl ", verseByChapterUrl, "versesData ", data);
     const parsed = VerseResponseSchema.safeParse(data);
 
     if (!parsed.success) {
@@ -123,9 +159,9 @@ export async function getRandomVerses(
     if (parsed.data.verses.length === 0) {
       throw new Error('No verses returned from the API for the selected range.');
     }
-    
+
     return parsed.data.verses;
-    
+
   } catch (error) {
     console.error('Error in getRandomVerses:', error);
     throw error;
