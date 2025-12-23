@@ -130,7 +130,9 @@ export default function BibleRandomizer() {
       <CardHeader>
         <CardTitle>Bible Verse Randomizer</CardTitle>
         <CardDescription>
-          Get random verses from the Holy Bible. Select a translation to see available books.
+          Get random verses from the Holy Bible. Select a translation to see available books. <i>Powered by <a href="https://bible-api.com" target="_blank" rel="noopener noreferrer">bible-api.com</a></i>
+          <br />
+          Please Inform us on the comment bellow if the result invalid.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

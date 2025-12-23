@@ -316,7 +316,7 @@ export const triggerList = [
   {
     value: 'tanakh',
     text: 'Tanakh',
-    hidden: false,
+    hidden: true,
     icon: <BookOpen className="h-5 w-5" />,
     content: <TanakhRandomizer />,
     contentGuard: false,

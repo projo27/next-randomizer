@@ -47,7 +47,8 @@ export default function QuranRandomizer() {
   const [surahList, setSurahList] = useState<Surah[]>([]);
   const [translationList, setTranslationList] = useState<TranslationResource[]>([]);
   const [selectedSurah, setSelectedSurah] = useState('all'); // 'all' or surah ID
-  const [verseCount, setVerseCount] = useState('3');
+  const [selectedSurahInfo, setSelectedSurahInfo] = useState<Surah | null>(null);
+  const [verseCount, setVerseCount] = useState('1');
   const [selectedTranslation, setSelectedTranslation] = useState('20'); // Default to English - Sahih International
   const { playAudio, stopAudio } = useRandomizerAudio();
 
@@ -102,9 +103,13 @@ export default function QuranRandomizer() {
     setIsCopied(false);
 
     try {
+      // 114 was the last surah on the Quran
       const surahId = selectedSurah === 'all'
         ? Math.floor(Math.random() * 114) + 1
         : parseInt(selectedSurah, 10);
+
+      const surahInfo = surahList.find(s => s.id === surahId);
+      setSelectedSurahInfo(surahInfo || null);
 
       const count = parseInt(verseCount, 10);
       const translationId = parseInt(selectedTranslation, 10);
@@ -141,14 +146,14 @@ export default function QuranRandomizer() {
     setTimeout(() => setIsCopied(false), 2000);
   };
 
-  const selectedSurahInfo = surahList.find(s => s.id.toString() === selectedSurah);
-
   return (
     <Card className="w-full shadow-lg border-none">
       <CardHeader>
         <CardTitle>Quran Randomizer</CardTitle>
         <CardDescription>
-          Get random verses from the Holy Quran with translations.
+          Get random verses from the Holy Quran with translations. <i>Powered by <a href="https://api.quran.com" target="_blank" rel="noopener noreferrer">api.quran.com</a></i>
+          <br />
+          Please Inform us on the comment bellow if the result invalid.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -215,14 +220,17 @@ export default function QuranRandomizer() {
           )}
           {!isLoading && results.length > 0 && (
             <div className="w-full space-y-4 animate-fade-in relative pt-6">
-              <Button variant="ghost" size="icon" className="absolute top-0 right-0" onClick={handleCopy}>
-                {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-              </Button>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-primary">Surah: {selectedSurahInfo?.name_simple}</h3>
+                <Button variant="ghost" size="icon" className="absolute top-0 right-0" onClick={handleCopy}>
+                  {isCopied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
+                </Button>
+              </div>
               {results.map((verse, index) => (
                 <div key={verse.id}>
                   <div className="p-4 border rounded-lg bg-card/50 space-y-4">
                     <p className="text-right text-4xl font-arabic leading-relaxed" dir="rtl">
-                      {verse.text_uthmani} <span className='text-3xl font-mono tracking-tighter' dir="rtl">[{parseInt(verse.verse_key.split(':')[1]).toLocaleString("ar-u-nu-arab", { useGrouping: false })}]</span>
+                      {verse.text_uthmani} <span className='text-3xl font-arabic tracking-tighter' dir="rtl">[{parseInt(verse.verse_key.split(':')[1]).toLocaleString("ar-u-nu-arab", { useGrouping: false })}]</span>
                     </p>
                     <Separator />
                     <p className="text-muted-foreground">{stripHtmlTags(verse.translations?.[0].text ?? "")} <span className="font-mono">[{verse.verse_key}]</span></p>
