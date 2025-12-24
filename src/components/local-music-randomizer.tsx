@@ -29,6 +29,8 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
+import { Label } from './ui/label';
+import { ScrollArea } from './ui/scroll-area';
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -56,6 +58,10 @@ export default function LocalMusicRandomizer() {
 
   const currentTrack = shuffledPlaylist[currentTrackIndex];
 
+  const handleNext = useCallback(() => {
+    setCurrentTrackIndex((prevIndex) => (prevIndex + 1) % shuffledPlaylist.length);
+  }, [shuffledPlaylist.length]);
+
   // Effect for handling audio playback and events
   useEffect(() => {
     const audio = audioRef.current;
@@ -74,7 +80,7 @@ export default function LocalMusicRandomizer() {
       audio.removeEventListener('durationchange', handleDurationChange);
       audio.removeEventListener('ended', handleTrackEnd);
     };
-  }, [currentTrackIndex, shuffledPlaylist]); // Dependency array is important
+  }, [handleNext]);
 
   // Effect for playing/pausing
   useEffect(() => {
@@ -132,10 +138,6 @@ export default function LocalMusicRandomizer() {
         description: `Added ${audioFiles.length} songs and shuffled the playlist.`,
       });
     }
-  };
-
-  const handleNext = () => {
-    setCurrentTrackIndex((prevIndex) => (prevIndex + 1) % shuffledPlaylist.length);
   };
 
   const handlePrev = () => {
@@ -266,9 +268,4 @@ export default function LocalMusicRandomizer() {
       </CardContent>
     </Card>
   );
-}
-
-// Dummy CardFooter for consistent layout, but no global button needed here.
-function ScrollArea({ className, children }: { className: string, children: React.ReactNode }) {
-    return <div className={cn("overflow-y-auto", className)}>{children}</div>
 }
