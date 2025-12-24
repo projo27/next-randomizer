@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Point to the sitemap for better indexing
-Sitemap: https://randomizer.fun/sitemap.xml
+Sitemap: https://www.randomizer.fun/sitemap.xml
