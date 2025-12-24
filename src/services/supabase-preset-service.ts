@@ -134,7 +134,7 @@ export async function getPublicPresets(
   // BUT this performs an INNER JOIN behavior usually or filters the parent rows.
   // Correct way: .select("*, my_reaction:preset_reactions(reaction)").eq("my_reaction.user_id", currentUserId)
   // This will return the preset even if no reaction, but `my_reaction` will be empty array or filtered array.
-  
+
   if (currentUserId) {
     // We need to be careful. If we use !inner, it filters presets. We want left join.
     // Supabase JS client handles this.
@@ -145,7 +145,7 @@ export async function getPublicPresets(
     // Syntax: .select("*, my_reaction:preset_reactions(reaction)")
     // And then we might need to apply a filter on that relation, but Supabase JS .eq() applies to top level usually unless scoped.
     // Scoped filters in select string: preset_reactions!user_id=eq.UUID
-    
+
     query = supabase
       .from(TABLE_NAME)
       .select(`*, my_reaction:preset_reactions(reaction)`)
@@ -192,39 +192,40 @@ export async function getPublicPresets(
 /**
  * Retrieves all public presets across all tools, with pagination.
  */
-export async function getAllPublicPresets(page: number = 0, currentUserId?: string): Promise<ToolPreset[]> {
+export async function getAllPublicPresets(
+  page: number = 0,
+  currentUserId?: string,
+  searchQuery?: string
+): Promise<{ data: ToolPreset[]; count: number }> {
   const from = page * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  let query;
+  let query = supabase
+    .from(TABLE_NAME)
+    .select(`*, my_reaction:preset_reactions(reaction)`, { count: 'exact' })
+    .eq('is_public', true)
+    .eq('is_deleted', false);
 
   if (currentUserId) {
-    query = supabase
-      .from(TABLE_NAME)
-      .select(`*, my_reaction:preset_reactions(reaction)`)
-      .eq('is_public', true)
-      .eq('is_deleted', false)
-      .filter("my_reaction.user_id", "eq", currentUserId)
-      .order('created_at', { ascending: false })
-      .range(from, to);
-  } else {
-    query = supabase
-      .from(TABLE_NAME)
-      .select('*')
-      .eq('is_public', true)
-      .eq('is_deleted', false)
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    query = query.filter("my_reaction.user_id", "eq", currentUserId);
   }
 
-  const { data, error } = await query;
+  if (searchQuery) {
+    query = query.ilike('name', `%${searchQuery}%`);
+  }
+
+  query = query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  const { data, error, count } = await query;
 
   if (error) {
     console.error("Error fetching all public presets:", error);
     throw new Error(error.message);
   }
-  
-  return data.map((item: any) => ({
+
+  const presets = data.map((item: any) => ({
     id: item.id,
     name: item.name,
     toolId: item.tool_id,
@@ -238,6 +239,8 @@ export async function getAllPublicPresets(page: number = 0, currentUserId?: stri
     reactionCounts: item.reaction_counts || {},
     userReaction: item.my_reaction?.[0]?.reaction || null,
   }));
+
+  return { data: presets, count: count || 0 };
 }
 
 

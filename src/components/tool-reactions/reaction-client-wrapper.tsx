@@ -96,13 +96,13 @@ export function ReactionClientWrapper({
             // variant="outline"
             onClick={() => handleEmojiClick(emoji)}
             className={cn(
-              "flex flex-col sm:flex-row items-center gap-2 transition-all cursor-pointer border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2",
+              "flex flex-col sm:flex-row items-center gap-2 transition-all group cursor-pointer border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-2",
               userHasReacted && "bg-accent text-accent-foreground border-accent-foreground/50",
               !user && "cursor-not-allowed disabled"
             )}
           // disabled={!user}
           >
-            <span className="text-xl">{emoji}</span>
+            <span className="text-xl group-hover:scale-[3] transition-all duration-200">{emoji}</span>
             <span className="font-bold">{count}</span>
           </div>
         );

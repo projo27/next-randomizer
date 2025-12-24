@@ -219,7 +219,7 @@ export default function ListRandomizer() {
       setTimeout(() => {
         setResult(serverResult);
         setIsShuffling(false);
-        if (confettiConfig.enabled) {
+        if (confettiConfig.enabled && !isShuffling && result != null) {
           threwConfetti({
             particleCount: confettiConfig.particleCount,
             spread: confettiConfig.spread,

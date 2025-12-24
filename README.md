@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.3.2 : Added preset page, fixing on emoji comment, tools and preset reaction, add local music randomizer too
 - v1.3.1 : Added Chemical Element Randomizer with periodic table view and Tarot Card Randomizer
 - v1.3.0 : Added confetti animation on results (toggleable in settings)
 - v1.2.9 : Use can add reaction and comment or feedback on tools
