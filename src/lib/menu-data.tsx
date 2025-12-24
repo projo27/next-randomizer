@@ -48,9 +48,10 @@ import ChemicalElementRandomizer from "@/components/chemical-element-randomizer"
 import QuranRandomizer from "@/components/quran-randomizer";
 import BibleRandomizer from "@/components/bible-randomizer";
 import TanakhRandomizer from "@/components/tanakh-randomizer";
+import LocalMusicRandomizer from "@/components/local-music-randomizer";
 
 import {
-  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker,
+  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
 } from "lucide-react";
 
 
@@ -343,6 +344,14 @@ export const triggerList = [
     hidden: false,
     icon: <Music className="h-5 w-5" />,
     content: <SongRandomizer />,
+    contentGuard: false,
+  },
+  {
+    value: "local-music",
+    text: "Local Music",
+    hidden: false,
+    icon: <Library className="h-5 w-5" />,
+    content: <LocalMusicRandomizer />,
     contentGuard: false,
   },
   {
