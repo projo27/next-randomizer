@@ -11,6 +11,9 @@ export function Footer() {
             <Link href="/about" className="text-sm hover:text-foreground transition-colors">
             About
             </Link>
+            <Link href="/presets" className="text-sm hover:text-foreground transition-colors">
+            Public Presets
+            </Link>
             <Link href="/privacy" className="text-sm hover:text-foreground transition-colors">
             Privacy Policy
             </Link>

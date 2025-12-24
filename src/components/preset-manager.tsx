@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   savePreset,
@@ -60,6 +61,7 @@ export function PresetManager({
 }: PresetManagerProps) {
   const { user, signInWithGoogle } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
 
   // Data States
   const [userPresets, setUserPresets] = useState<ToolPreset[]>([]);
@@ -106,6 +108,22 @@ export function PresetManager({
     });
     if (node) publicObserver.current.observe(node);
   }, [isLoadingPublic, hasMorePublic]);
+
+  useEffect(() => {
+    const presetKey = `preset_for_${toolId}`;
+    const storedPreset = sessionStorage.getItem(presetKey);
+
+    if (storedPreset) {
+      try {
+        const params = JSON.parse(storedPreset);
+        onLoadPreset(params);
+        sessionStorage.removeItem(presetKey); // Clear after loading
+        toast({ title: "Public Preset Loaded", description: "The community preset has been applied." });
+      } catch (e) {
+        console.error("Failed to parse preset from session storage", e);
+      }
+    }
+  }, [toolId, onLoadPreset, toast]);
 
   // Fetch Functions
   const fetchUserPresets = useCallback(async (page: number, append: boolean = false) => {

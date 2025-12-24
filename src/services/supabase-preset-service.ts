@@ -190,6 +190,58 @@ export async function getPublicPresets(
 }
 
 /**
+ * Retrieves all public presets across all tools, with pagination.
+ */
+export async function getAllPublicPresets(page: number = 0, currentUserId?: string): Promise<ToolPreset[]> {
+  const from = page * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  let query;
+
+  if (currentUserId) {
+    query = supabase
+      .from(TABLE_NAME)
+      .select(`*, my_reaction:preset_reactions(reaction)`)
+      .eq('is_public', true)
+      .eq('is_deleted', false)
+      .filter("my_reaction.user_id", "eq", currentUserId)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+  } else {
+    query = supabase
+      .from(TABLE_NAME)
+      .select('*')
+      .eq('is_public', true)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error fetching all public presets:", error);
+    throw new Error(error.message);
+  }
+  
+  return data.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    toolId: item.tool_id,
+    parameters: item.parameters,
+    createdAt: item.created_at,
+    isPublic: item.is_public,
+    userId: item.user_id,
+    userEmail: item.user_email,
+    userDisplayName: item.user_display_name,
+    userAvatarUrl: item.user_avatar_url,
+    reactionCounts: item.reaction_counts || {},
+    userReaction: item.my_reaction?.[0]?.reaction || null,
+  }));
+}
+
+
+/**
  * Toggles a reaction on a preset.
  */
 export async function togglePresetReaction(
