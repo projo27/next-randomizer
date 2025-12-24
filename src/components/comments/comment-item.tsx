@@ -132,13 +132,13 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
                         variant="ghost"
                         size="icon"
                         className={cn(
-                          "h-10 w-10 text-2xl",
+                          "h-10 w-10 text-2xl group",
                           optimisticReactions[emoji]?.users.includes(user?.uid || '') && "bg-accent"
                         )}
                         onClick={() => handleEmojiClick(emoji)}
                         disabled={!user}
                       >
-                        {emoji}
+                        <span className="group-hover:scale-[3] transition-all duration-200">{emoji}</span>
                       </Button>
                     ))}
                   </div>

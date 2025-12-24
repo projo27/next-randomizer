@@ -17,7 +17,7 @@ export function MenuTriggerItem({ item, isActive, onClick, isHighlighted, href }
       value={item.value}
       asChild
       className={cn(
-        "flex flex-col xl:flex-row gap-2 h-14 xl:h-10 transition-all duration-200 cursor-pointer",
+        "flex flex-col xl:flex-row gap-2 h-14 xl:h-10 transition-all duration-200 cursor-pointer group hover:bg-primary/10",
         item.hidden ? "[&&&]:hidden" : "",
         isHighlighted && !isActive ? "ring-2 ring-primary/80 bg-primary/20" : "",
         isActive ? "hover:ring-2 hover:ring-primary-foreground hover:dark:ring-primary" : ""

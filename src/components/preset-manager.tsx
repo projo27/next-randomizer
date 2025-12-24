@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import {
   savePreset,
@@ -37,12 +38,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Switch } from "./ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Save, Trash2, LockKeyhole, Globe, Lock, User, Loader2, Users } from "lucide-react";
+import { Save, Trash2, LockKeyhole, Globe, Lock, User, Loader2, Users, ExternalLink } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { Label } from "./ui/label";
-import { cn, formatRelativeDate } from "@/lib/utils";
+import { cn, formatRelativeDate, PRESET_REACTIONS } from "@/lib/utils";
 
 interface PresetManagerProps {
   toolId: string;
@@ -60,6 +62,7 @@ export function PresetManager({
 }: PresetManagerProps) {
   const { user, signInWithGoogle } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
 
   // Data States
   const [userPresets, setUserPresets] = useState<ToolPreset[]>([]);
@@ -106,6 +109,22 @@ export function PresetManager({
     });
     if (node) publicObserver.current.observe(node);
   }, [isLoadingPublic, hasMorePublic]);
+
+  useEffect(() => {
+    const presetKey = `preset_for_${toolId}`;
+    const storedPreset = sessionStorage.getItem(presetKey);
+
+    if (storedPreset) {
+      try {
+        const params = JSON.parse(storedPreset);
+        onLoadPreset(params);
+        sessionStorage.removeItem(presetKey); // Clear after loading
+        toast({ title: "Public Preset Loaded", description: "The community preset has been applied." });
+      } catch (e) {
+        console.error("Failed to parse preset from session storage", e);
+      }
+    }
+  }, [toolId, onLoadPreset, toast]);
 
   // Fetch Functions
   const fetchUserPresets = useCallback(async (page: number, append: boolean = false) => {
@@ -431,7 +450,7 @@ export function PresetManager({
                 })}
                 {/* Actually, let's just show the buttons always available to click */}
                 <div className="flex gap-1 my-1">
-                  {["👍", "❤️", "😂", "👎"].map(emoji => {
+                  {PRESET_REACTIONS.map(emoji => {
                     const count = preset.reactionCounts?.[emoji] || 0;
                     const isReacted = preset.userReaction === emoji;
                     return (
@@ -440,7 +459,7 @@ export function PresetManager({
                         variant="ghost"
                         size="lg"
                         className={cn(
-                          "h-6 px-2 text-xs gap-1 rounded-full",
+                          "h-6 px-2 text-xs gap-1 rounded-full group",
                           isReacted && "bg-primary/10 text-primary hover:bg-primary/20"
                         )}
                         onClick={(e) => {
@@ -448,7 +467,7 @@ export function PresetManager({
                           handleReaction(preset, emoji);
                         }}
                       >
-                        <span>{emoji}</span>
+                        <span className="group-hover:scale-[3] transition-all duration-200">{emoji}</span>
                         {count > 0 && <span>{count}</span>}
                       </Button>
                     );
@@ -568,6 +587,13 @@ export function PresetManager({
           <span className="text-xs">by {user.uid === loadedPreset.userId ? "You" : loadedPreset.userDisplayName}</span>
         </div>
       )}
+
+      <Button variant="link" asChild className={!loadedPreset ? "ml-auto" : ""}>
+        <Link href="/presets" title="Browse Public Presets">
+          <Globe className="h-4 w-4" />
+          <span className="md:block hidden">Public Presets</span>
+        </Link>
+      </Button>
     </div>
   );
 }
