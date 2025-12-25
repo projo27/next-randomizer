@@ -11,7 +11,7 @@ import { addReply, toggleCommentReaction } from "@/services/comment-service";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Smile, MessageSquare } from "lucide-react";
+import { Smile, MessageSquare, X, CircleX, Reply } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -174,9 +174,11 @@ export function CommentItem({ comment, isReply = false, onReplyAdded }: CommentI
               disabled={isSubmittingReply}
             />
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" size="sm" onClick={() => setShowReplyForm(false)}>Cancel</Button>
-              <Button type="submit" size="sm" disabled={!replyComment.trim() || isSubmittingReply}>
-                {isSubmittingReply ? "Replying..." : "Reply"}
+              <Button type="button" variant="ghost" className="w-1/3 md:w-fit" onClick={() => setShowReplyForm(false)}>
+                <CircleX className="h-4 w-4" /> Cancel
+              </Button>
+              <Button type="submit" className="w-2/3 md:w-fit" disabled={!replyComment.trim() || isSubmittingReply}>
+                <Reply className="h-4 w-4" /> {isSubmittingReply ? "Replying..." : "Reply"}
               </Button>
             </div>
           </form>

@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { SlidingInfo } from '@/components/sliding-info';
 import { getSlidingInfoItems } from '@/services/sliding-info-service';
+import { Footer } from '@/components/footer';
 
 function HomePageFallback() {
   return (
@@ -59,6 +60,7 @@ export default async function Home({
           </HomePageClient>
         </Suspense>
       </main>
+      <Footer />
     </div>
   );
 }

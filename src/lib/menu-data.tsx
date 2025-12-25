@@ -51,7 +51,10 @@ import TanakhRandomizer from "@/components/tanakh-randomizer";
 import LocalMusicRandomizer from "@/components/local-music-randomizer";
 
 import {
-  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
+  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
+  BookMarked,
+  BookPlus,
+  Wallpaper,
 } from "lucide-react";
 
 
@@ -294,7 +297,7 @@ export const triggerList = [
     value: 'book',
     text: 'Book',
     hidden: false,
-    icon: <BookOpen className="h-5 w-5" />,
+    icon: <BookIcon className="h-5 w-5" />,
     content: <BookRandomizer />,
     contentGuard: false,
   },
@@ -310,7 +313,7 @@ export const triggerList = [
     value: 'bible',
     text: 'Bible',
     hidden: false,
-    icon: <BookOpen className="h-5 w-5" />,
+    icon: <BookPlus className="h-5 w-5" />,
     content: <BibleRandomizer />,
     contentGuard: false,
   },
@@ -318,7 +321,7 @@ export const triggerList = [
     value: 'tanakh',
     text: 'Tanakh',
     hidden: true,
-    icon: <BookOpen className="h-5 w-5" />,
+    icon: <BookMarked className="h-5 w-5" />,
     content: <TanakhRandomizer />,
     contentGuard: false,
   },
@@ -407,7 +410,7 @@ export const triggerList = [
     value: "unsplash",
     text: "Unsplash Image",
     hidden: false,
-    icon: <ImageIcon className="h-5 w-5" />,
+    icon: <Wallpaper className="h-5 w-5" />,
     content: <UnsplashImageRandomizer />,
     contentGuard: true,
   },

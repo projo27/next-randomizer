@@ -38,13 +38,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Switch } from "./ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Save, Trash2, LockKeyhole, Globe, Lock, User, Loader2, Users, ExternalLink } from "lucide-react";
+import { Save, Trash2, LockKeyhole, Globe, Lock, User, Loader2, Users, ExternalLink, ScrollText, LoaderPinwheel } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { Label } from "./ui/label";
 import { cn, formatRelativeDate, PRESET_REACTIONS } from "@/lib/utils";
+import ScrollerText from "./ui/scroller-text";
 
 interface PresetManagerProps {
   toolId: string;
@@ -487,13 +488,13 @@ export function PresetManager({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2 items-center p-2 rounded-lg border border-dashed">
+    <div className="flex flex-wrap gap-2 items-center p-2 rounded-lg border border-dashed">
       <p className="text-sm font-medium text-muted-foreground mr-2">Presets:</p>
 
       <Dialog open={isLoadDialogOpen} onOpenChange={setLoadDialogOpen} >
         <DialogTrigger asChild>
           <Button variant="outline" className="w-full sm:w-auto">
-            Load Preset
+            <LoaderPinwheel className="mr-2 h-4 w-4" /> Load Preset
           </Button>
         </DialogTrigger>
         <DialogContent className="w-full">
@@ -581,19 +582,21 @@ export function PresetManager({
         </DialogContent>
       </Dialog>
 
-      {loadedPreset && (
-        <div className="flex items-center gap-2 ml-auto sm:ml-2 text-sm text-muted-foreground border-l pl-3 ">
-          <span className="font-medium text-foreground">{loadedPreset.name}</span>
-          <span className="text-xs">by {user.uid === loadedPreset.userId ? "You" : loadedPreset.userDisplayName}</span>
-        </div>
-      )}
+      <div className="flex flex-col sm:flex-row items-center gap-2 md:ml-auto sm:w-full md:w-auto">
+        {loadedPreset && (
+          <div className="flex items-center gap-2 sm:mr-auto md:ml-2 text-sm text-muted-foreground sm:border-l border-none shrink-0">
+            <ScrollerText text={loadedPreset.name} className="font-medium text-foreground sm:max-w-md " />
+            <span className="text-xs">by {user.uid === loadedPreset.userId ? "You" : loadedPreset.userDisplayName}</span>
+          </div>
+        )}
 
-      <Button variant="link" asChild className={!loadedPreset ? "ml-auto" : ""}>
-        <Link href="/presets" title="Browse Public Presets">
-          <Globe className="h-4 w-4" />
-          <span className="md:block hidden">Public Presets</span>
-        </Link>
-      </Button>
+        <Button variant="link" asChild className="md:ml-auto">
+          <Link href="/presets" title="Browse Public Presets">
+            <Globe className="h-4 w-4" />
+            <span className="">Public Presets</span>
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

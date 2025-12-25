@@ -86,7 +86,7 @@ export default function PoetryRandomizer() {
           <div className="relative w-full animate-fade-in space-y-4 p-4 rounded-lg bg-card/50 border">
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-primary">{result.title}</h3>
-              <p className="text-sm text-muted-foreground">by <Badge>{result.author}</Badge></p>
+              <div className="text-sm text-muted-foreground mt-2">by <Badge>{result.author}</Badge></div>
             </div>
             <Separator />
             <div className="mt-4 space-y-2 text-center text-card-foreground/90">

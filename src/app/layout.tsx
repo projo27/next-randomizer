@@ -50,7 +50,6 @@ export default function RootLayout({
                 <RandomizerAudioProvider>
                   {children}
                   <Toaster />
-                  <Footer />
                 </RandomizerAudioProvider>
               </MenuOrderProvider>
             </SettingsProvider>

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Send } from "lucide-react";
 
 type CommentClientWrapperProps = {
   toolId: string;
@@ -131,8 +132,8 @@ export function CommentClientWrapper({
             disabled={isSubmitting}
           />
           <div className="flex justify-end items-center">
-            <Button type="submit" disabled={!newComment.trim() || isSubmitting}>
-              {isSubmitting ? "Posting..." : "Post Comment"}
+            <Button type="submit" disabled={!newComment.trim() || isSubmitting} className="w-full md:w-fit">
+              <Send /> {isSubmitting ? "Posting..." : "Post Comment"}
             </Button>
           </div>
         </form>

@@ -31,6 +31,7 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { Label } from './ui/label';
 import { ScrollArea } from './ui/scroll-area';
+import ScrollerText from './ui/scroller-text';
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -41,52 +42,6 @@ function shuffleArray<T>(array: T[]): T[] {
   }
   return shuffled;
 }
-
-const ScrollText = ({ text, className }: { text: string; className?: string }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const [moveDistance, setMoveDistance] = useState(0);
-
-  useEffect(() => {
-    const calculateScroll = () => {
-      if (containerRef.current && textRef.current) {
-        const containerWidth = containerRef.current.clientWidth;
-        const textWidth = textRef.current.scrollWidth;
-        if (textWidth > containerWidth) {
-          setMoveDistance(textWidth - containerWidth);
-        } else {
-          setMoveDistance(0);
-        }
-      }
-    };
-
-    calculateScroll();
-    window.addEventListener('resize', calculateScroll);
-    return () => window.removeEventListener('resize', calculateScroll);
-  }, [text]);
-
-  return (
-    <div
-      ref={containerRef}
-      className={cn("overflow-hidden whitespace-nowrap min-w-0", className)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div
-        ref={textRef}
-        className="inline-block transition-transform ease-linear will-change-transform"
-        style={{
-          transform: isHovered && moveDistance > 0 ? `translateX(-${moveDistance}px)` : 'translateX(0)',
-          // Adjust duration based on width for consistent speed (e.g., 20ms per pixel)
-          transitionDuration: isHovered && moveDistance > 0 ? `${moveDistance * 20}ms` : '300ms'
-        }}
-      >
-        {text}
-      </div>
-    </div>
-  );
-};
 
 export default function LocalMusicRandomizer() {
   const [playlist, setPlaylist] = useState<File[]>([]);
@@ -320,7 +275,7 @@ export default function LocalMusicRandomizer() {
                     onClick={() => setCurrentTrackIndex(index)}
                   >
                     <Music4 className="h-5 w-5 shrink-0" />
-                    <ScrollText text={file.name} className="flex-1 text-sm font-medium" />
+                    <ScrollerText text={file.name} className="flex-1 text-sm font-medium" />
                     {index === currentTrackIndex && isPlaying && <Volume2 className="h-4 w-4 animate-pulse" />}
                   </div>
                 ))
@@ -339,7 +294,7 @@ export default function LocalMusicRandomizer() {
               <>
                 <div className="text-center mb-4">
                   <p className="text-sm text-muted-foreground">Now Playing</p>
-                  <ScrollText text={currentTrack.name} className="font-semibold text-lg w-full max-w-xs mx-auto" />
+                  <ScrollerText text={currentTrack.name} className="font-semibold text-lg w-full max-w-xs mx-auto" />
                 </div>
 
                 {/* Progress Bar */}

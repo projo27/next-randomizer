@@ -117,6 +117,9 @@ function ClientOnlyDropdown() {
       <DropdownMenuContent align="end">
         <SurveyDialog />
         <DropdownMenuItem asChild>
+          <Link href="/presets">Public Presets</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/tutorial">Tutorial</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
