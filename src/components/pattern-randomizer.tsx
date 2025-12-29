@@ -182,7 +182,7 @@ export default function PatternRandomizer() {
     setTimeout(() => {
       setIsGenerating(false);
     }, 500);
-  }, [aspectRatio, density, patternType, isGenerating, isRateLimited, playAudio, user]);
+  }, [aspectRatio, density, patternType, isRateLimited, playAudio, user]);
 
   useEffect(() => {
     handleGenerate();
