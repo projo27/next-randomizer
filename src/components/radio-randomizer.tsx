@@ -182,9 +182,8 @@ function Separator({
 }) {
   return (
     <div
-      className={`bg-border ${
-        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]"
-      } ${className}`}
+      className={`bg-border ${orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]"
+        } ${className}`}
     />
   );
 }
@@ -245,7 +244,7 @@ export default function RadioRandomizer() {
       <CardHeader>
         <CardTitle>Radio Randomizer</CardTitle>
         <CardDescription>
-          Discover random internet radio stations from around the world.
+          Discover random internet radio stations from around the world. <i>Powered by <a href="https://www.radio-browser.info/" target="_blank" rel="noopener noreferrer">radio-browser.info</a></i>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -262,8 +261,15 @@ export default function RadioRandomizer() {
             <SelectContent>
               <SelectItem value="all">All Countries</SelectItem>
               {countries.map((c) => (
-                <SelectItem key={c.iso_3166_1} value={c.iso_3166_1}>
-                  {c.name} ({c.stationcount})
+                <SelectItem
+                  key={c.iso_3166_1}
+                  value={c.iso_3166_1}
+                  className="[&>span:last-child]:flex [&>span:last-child]:w-full [&>span:last-child]:justify-between [&>span:last-child]:gap-4"
+                >
+                  <span className="truncate">{c.name} </span>
+                  <span className="text-muted-foreground shrink-0">
+                    ({c.stationcount} channels)
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -285,8 +291,8 @@ export default function RadioRandomizer() {
           {!isLoading && station && (
             <RadioPlayer
               station={station}
-              onPlay={() => {}}
-              onPause={() => {}}
+              onPlay={() => { }}
+              onPause={() => { }}
             />
           )}
           {!isLoading && !station && !error && (

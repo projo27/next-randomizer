@@ -376,8 +376,8 @@ export default function DataObjectRandomizer() {
               className="font-mono text-xs"
             />
             <div className="flex flex-row">
-              <Button variant="ghost" size="icon" onClick={handleCopyInput} className="absolute top-2 right-4"><Copy className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" onClick={handleGenerateColumnByInput} className="absolute top-10 right-4"><Table2Icon className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={handleCopyInput} className="absolute top-2 right-4" title="Copy Json Data"><Copy className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={handleGenerateColumnByInput} className="absolute top-10 right-4" title="Generate Column By Json Data"><Table2Icon className="h-4 w-4" /></Button>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">Paste JSON directly, or use buttons to import. Spreadsheet data should have headers in the first row.</p>
@@ -387,17 +387,17 @@ export default function DataObjectRandomizer() {
         <div className="space-y-2">
           <Label className="text-base font-semibold">2. Define Data Structure</Label>
           <div className="p-4 border space-y-2 rounded-lg bg-muted/30">
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="space-y-2 max-h-[400px] overflow-y-auto p-1">
               {columns.map((col) => (
                 <div key={col.id} className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
                   <Input
                     placeholder="Column Name"
                     value={col.name}
                     onChange={(e) => handleColumnChange(col.id, 'name', e.target.value)}
-                    className="h-8"
+                  // className="ml-2"
                   />
                   <Select value={col.type} onValueChange={(v) => handleColumnChange(col.id, 'type', v)}>
-                    <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="text">Text</SelectItem>
                       <SelectItem value="number">Number</SelectItem>
@@ -433,7 +433,7 @@ export default function DataObjectRandomizer() {
           <div className="space-y-4 pt-4 border-t">
             <div className="flex justify-between items-center">
               <Label className="text-lg">Results</Label>
-              {results && <Button variant="ghost" size="sm" onClick={handleCopy}>{isCopied ? <Check className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />} Copy JSON</Button>}
+              {results && <Button variant="ghost" size="sm" onClick={handleCopy}>{isCopied ? <Check className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />} Copy JSON Result</Button>}
             </div>
 
             {/* Desktop Table View */}

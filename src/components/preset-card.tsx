@@ -91,7 +91,7 @@ export function PresetCard({ preset: initialPreset }: PresetCardProps) {
           <div className="flex-grow min-w-0">
             <CardTitle className="text-lg truncate pr-8">{preset.name}</CardTitle>
             <CardDescription className="truncate flex items-center gap-2 text-muted-foreground text-xs shrink-0">
-              For {getToolIcon(preset.toolId)} <span className="font-semibold text-primary">{triggerList.find(t => t.value === preset.toolId)?.text || 'Unknown Tool'}</span>
+              {getToolIcon(preset.toolId)} <span className="font-semibold text-primary">{triggerList.find(t => t.value === preset.toolId)?.text || 'Unknown Tool'}</span>
             </CardDescription>
           </div>
         </div>

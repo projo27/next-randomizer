@@ -25,11 +25,11 @@ export default async function PublicPresetsPage(props: PageProps) {
       <Header />
       <main className="w-full max-w-4xl mx-auto mt-6">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Public Presets</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Public Presets</h1>
           <p className="text-muted-foreground mt-2">Discover and use presets shared by the community.</p>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col">
           <PresetSearch />
 
           <PublicPresetList

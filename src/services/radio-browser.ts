@@ -3,7 +3,7 @@
 import { USER_AGENT } from "@/lib/utils";
 import { z } from "zod";
 
-const API_BASE_URL = "https://de1.api.radio-browser.info/json";
+const API_BASE_URL = "https://all.api.radio-browser.info/json";
 
 // --- Type Definitions ---
 
@@ -31,12 +31,12 @@ const CountrySchema = z.object({
 export type Country = z.infer<typeof CountrySchema>;
 
 // --- Helper Functions ---
-
 async function fetchFromApi<T>(
   endpoint: string,
   schema: z.ZodType<T>,
 ): Promise<T> {
   const url = `${API_BASE_URL}/${endpoint}`;
+  console.info(url);
   try {
     const response = await fetch(url, {
       headers: {
