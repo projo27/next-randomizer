@@ -238,7 +238,7 @@ export default function Spinner() {
                 outerBorderColor="#d1d5db"
                 radiusLineColor="#d1d5db"
                 fontSize={16}
-                spinDuration={animationDuration * 0.1}
+                spinDuration={animationDuration}
                 pointerProps={{
                   style: {
                     color: "#fffff",

@@ -49,12 +49,14 @@ import QuranRandomizer from "@/components/quran-randomizer";
 import BibleRandomizer from "@/components/bible-randomizer";
 import TanakhRandomizer from "@/components/tanakh-randomizer";
 import LocalMusicRandomizer from "@/components/local-music-randomizer";
+import PatternRandomizer from "@/components/pattern-randomizer";
 
 import {
   ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
   BookMarked,
   BookPlus,
   Wallpaper,
+  Layers,
 } from "lucide-react";
 
 
@@ -203,6 +205,14 @@ export const triggerList = [
     hidden: false,
     icon: <Palette className="h-5 w-5" />,
     content: <ColorPaletteGenerator />,
+    contentGuard: false,
+  },
+  {
+    value: "pattern",
+    text: "Pattern",
+    hidden: false,
+    icon: <Layers className="h-5 w-5" />,
+    content: <PatternRandomizer />,
     contentGuard: false,
   },
   {
