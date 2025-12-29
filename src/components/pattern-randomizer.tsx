@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -186,7 +186,7 @@ export default function PatternRandomizer() {
 
   useEffect(() => {
     handleGenerate();
-  }, [aspectRatio, patternType, density]); // Removed handleGenerate from deps to avoid loop with useCallback
+  }, [aspectRatio, patternType, density, handleGenerate]);
 
   const handleDownload = (format: 'png' | 'webp') => {
     if (!svgRef.current) return;
