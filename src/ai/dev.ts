@@ -7,3 +7,4 @@ import '@/ai/flows/ootd-generator-flow.ts';
 import '@/ai/flows/travel-recommender-flow.ts';
 import '@/ai/flows/ootd-generator-runware.ts';
 import '@/ai/flows/science-fact-flow.ts';
+import '@/ai/flows/random-walk-flow.ts';

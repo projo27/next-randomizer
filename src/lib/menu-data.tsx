@@ -50,6 +50,7 @@ import BibleRandomizer from "@/components/bible-randomizer";
 import TanakhRandomizer from "@/components/tanakh-randomizer";
 import LocalMusicRandomizer from "@/components/local-music-randomizer";
 import PatternRandomizer from "@/components/pattern-randomizer";
+import RandomWalkGenerator from "@/components/random-walk-generator";
 
 import {
   ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
@@ -57,6 +58,7 @@ import {
   BookPlus,
   Wallpaper,
   Layers,
+  Footprints,
 } from "lucide-react";
 
 
@@ -463,6 +465,14 @@ export const triggerList = [
     hidden: false,
     icon: <Map className="h-5 w-5" />,
     content: <MapsRandomizer />,
+    contentGuard: true,
+  },
+  {
+    value: 'random_walk',
+    text: 'Random Walk',
+    hidden: false,
+    icon: <Footprints className="h-5 w-5" />,
+    content: <RandomWalkGenerator />,
     contentGuard: true,
   },
   // {
