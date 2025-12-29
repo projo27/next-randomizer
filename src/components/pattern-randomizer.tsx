@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Wand2, Download, RectangleHorizontal, RectangleVertical, Square, Layers, Circle, Triangle
+  Wand2, Download, RectangleHorizontal, RectangleVertical, Square, Layers, Circle, Triangle, Waves
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
@@ -33,7 +33,7 @@ import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { Slider } from './ui/slider';
 
 type AspectRatio = '16:9' | '9:16' | '1:1' | '4:3';
-type PatternType = 'circles' | 'squares' | 'triangles' | 'lines';
+type PatternType = 'circles' | 'squares' | 'triangles' | 'lines' | 'waves';
 
 const ASPECT_RATIOS: { value: AspectRatio, icon: React.ReactNode, label: string }[] = [
   { value: '16:9', icon: <RectangleHorizontal />, label: 'Desktop' },
@@ -47,6 +47,7 @@ const PATTERN_TYPES: { value: PatternType, icon: React.ReactNode, label: string 
   { value: 'squares', icon: <Square />, label: 'Squares' },
   { value: 'triangles', icon: <Triangle />, label: 'Triangles' },
   { value: 'lines', icon: <Layers />, label: 'Lines' },
+  { value: 'waves', icon: <Waves />, label: 'Waves' },
 ];
 
 function generateRandomColor() {
@@ -56,35 +57,94 @@ function generateRandomColor() {
   return `hsl(${h}, ${s}%, ${l}%)`;
 }
 
+function drawSeamlessElement(element: React.ReactNode, x: number, y: number, width: number, height: number, size: number) {
+  const elements = [element];
+  const halfSize = size / 2;
+
+  // Check edges and wrap around
+  if (x - halfSize < 0) { // Left edge
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-l`, transform: `translate(${width}, 0)` }));
+  }
+  if (x + halfSize > width) { // Right edge
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-r`, transform: `translate(${-width}, 0)` }));
+  }
+  if (y - halfSize < 0) { // Top edge
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-t`, transform: `translate(0, ${height})` }));
+  }
+  if (y + halfSize > height) { // Bottom edge
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-b`, transform: `translate(0, ${-height})` }));
+  }
+
+  // Check corners
+  if (x - halfSize < 0 && y - halfSize < 0) { // Top-left
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-tl`, transform: `translate(${width}, ${height})` }));
+  }
+  if (x + halfSize > width && y - halfSize < 0) { // Top-right
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-tr`, transform: `translate(${-width}, ${height})` }));
+  }
+  if (x - halfSize < 0 && y + halfSize > height) { // Bottom-left
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-bl`, transform: `translate(${width}, ${-height})` }));
+  }
+  if (x + halfSize > width && y + halfSize > height) { // Bottom-right
+    elements.push(React.cloneElement(element as React.ReactElement, { key: `${(element as any).key}-br`, transform: `translate(${-width}, ${-height})` }));
+  }
+
+  return <g>{elements}</g>;
+}
+
+
 function generatePattern(width: number, height: number, density: number, type: PatternType) {
   const elements = [];
-  const numElements = Math.floor((width * height) / (10000 / density));
-  const colors = [generateRandomColor(), generateRandomColor(), generateRandomColor(), generateRandomColor()];
+  const numElements = Math.floor((width * height) / (15000 / density));
+  const colors = Array.from({ length: 4 }, generateRandomColor);
+  const baseRotation = Math.random() * 360;
 
-  for (let i = 0; i < numElements; i++) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const size = Math.random() * 50 + 20;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const opacity = Math.random() * 0.5 + 0.3;
+  if (type === 'waves') {
+    for (let i = 0; i < numElements / 2; i++) {
+        const x1 = -width * 0.1;
+        const y1 = Math.random() * height;
+        const x2 = width * 1.1;
+        const y2 = Math.random() * height;
+        const cx1 = Math.random() * width;
+        const cy1 = Math.random() * height;
+        const cx2 = Math.random() * width;
+        const cy2 = Math.random() * height;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const opacity = Math.random() * 0.5 + 0.3;
+        elements.push(
+            <path key={i} d={`M ${x1},${y1} C ${cx1},${cy1} ${cx2},${cy2} ${x2},${y2}`} stroke={color} strokeWidth={Math.random() * 15 + 5} fill="none" opacity={opacity} />
+        );
+    }
+  } else {
+    for (let i = 0; i < numElements; i++) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      const size = Math.random() * (width / 10) + (width / 25);
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const opacity = Math.random() * 0.6 + 0.2;
+      const rotation = baseRotation + (Math.random() - 0.5) * 60;
 
-    switch (type) {
-      case 'circles':
-        elements.push(<circle key={i} cx={x} cy={y} r={size / 2} fill={color} opacity={opacity} />);
-        break;
-      case 'squares':
-        elements.push(<rect key={i} x={x - size / 2} y={y - size / 2} width={size} height={size} fill={color} opacity={opacity} transform={`rotate(${Math.random() * 90} ${x} ${y})`} />);
-        break;
-      case 'triangles':
-        const halfSize = size / 2;
-        elements.push(<polygon key={i} points={`${x},${y - halfSize} ${x - halfSize},${y + halfSize} ${x + halfSize},${y + halfSize}`} fill={color} opacity={opacity} transform={`rotate(${Math.random() * 360} ${x} ${y})`} />);
-        break;
-      case 'lines':
-        const angle = Math.random() * 360;
-        const x2 = x + Math.cos(angle * Math.PI / 180) * (size * 2);
-        const y2 = y + Math.sin(angle * Math.PI / 180) * (size * 2);
-        elements.push(<line key={i} x1={x} y1={y} x2={x2} y2={y2} stroke={color} strokeWidth={Math.random() * 4 + 1} opacity={opacity} />);
-        break;
+      let element;
+
+      switch (type) {
+        case 'circles':
+          element = <circle key={i} cx={x} cy={y} r={size / 2} fill={color} opacity={opacity} />;
+          break;
+        case 'squares':
+          element = <rect key={i} x={x - size / 2} y={y - size / 2} width={size} height={size} fill={color} opacity={opacity} transform={`rotate(${rotation} ${x} ${y})`} />;
+          break;
+        case 'triangles':
+          const halfSize = size / 2;
+          element = <polygon key={i} points={`${x},${y - halfSize} ${x - halfSize},${y + halfSize} ${x + halfSize},${y + halfSize}`} fill={color} opacity={opacity} transform={`rotate(${rotation} ${x} ${y})`} />;
+          break;
+        case 'lines':
+          const angle = Math.random() * 360;
+          const x2 = x + Math.cos(angle * Math.PI / 180) * size * 2;
+          const y2 = y + Math.sin(angle * Math.PI / 180) * size * 2;
+          element = <line key={i} x1={x} y1={y} x2={x2} y2={y2} stroke={color} strokeWidth={Math.random() * 8 + 2} opacity={opacity} />;
+          break;
+      }
+      elements.push(drawSeamlessElement(element, x, y, width, height, size));
     }
   }
 
@@ -151,7 +211,7 @@ export default function PatternRandomizer() {
       link.click();
       toast({ title: 'Success', description: `Pattern downloaded as ${format.toUpperCase()}.` });
     };
-    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
 
   return (
@@ -159,7 +219,7 @@ export default function PatternRandomizer() {
       <CardHeader>
         <CardTitle>SVG Pattern Randomizer</CardTitle>
         <CardDescription>
-          Generate beautiful, random SVG patterns and download them as PNG or WEBP.
+          Generate beautiful, seamless SVG patterns and download them as PNG or WEBP.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
