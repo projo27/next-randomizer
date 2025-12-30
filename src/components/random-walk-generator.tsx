@@ -71,7 +71,7 @@ export default function RandomWalkGenerator() {
           mapRef.current.setZoom(14);
         }
         setIsGettingLocation(false);
-        toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
+        // toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
       },
       (geoError) => {
         setError(`Could not get your location: ${geoError.message}. Please set it manually.`);

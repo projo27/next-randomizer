@@ -23,6 +23,7 @@ const UnsplashPhotoSchema = z.object({
 
 export type UnsplashResult = {
   imageUrl: string;
+  fullImageUrl: string;
   downloadUrl: string;
   photographerName: string;
   photographerUrl: string;
@@ -77,23 +78,25 @@ export async function getRandomUnsplashImage(query: string): Promise<UnsplashRes
         Authorization: `Client-ID ${accessKey}`,
       },
     });
-    
+
     if (!downloadTriggerResponse.ok) {
-        // If trigger fails, fall back to a direct link. It's better than no download.
-        console.warn("Failed to trigger Unsplash download location, falling back to direct URL.");
-        return {
-          imageUrl: urls.regular,
-          downloadUrl: urls.full, // Fallback to full URL
-          photographerName: user.name,
-          photographerUrl: user.links.html,
-          alt: alt_description || description || `A random image about ${searchQuery}`,
-        };
+      // If trigger fails, fall back to a direct link. It's better than no download.
+      console.warn("Failed to trigger Unsplash download location, falling back to direct URL.");
+      return {
+        imageUrl: urls.regular,
+        fullImageUrl: urls.full,
+        downloadUrl: urls.full, // Fallback to full URL
+        photographerName: user.name,
+        photographerUrl: user.links.html,
+        alt: alt_description || description || `A random image about ${searchQuery}`,
+      };
     }
 
     const downloadData = await downloadTriggerResponse.json();
 
     return {
       imageUrl: urls.regular,
+      fullImageUrl: urls.full,
       downloadUrl: downloadData.url,
       photographerName: user.name,
       photographerUrl: user.links.html,
@@ -103,7 +106,7 @@ export async function getRandomUnsplashImage(query: string): Promise<UnsplashRes
   } catch (error) {
     console.error('Error in getRandomUnsplashImage:', error);
     if (error instanceof Error) {
-        throw error;
+      throw error;
     }
     throw new Error('An unknown error occurred while fetching the image.');
   }

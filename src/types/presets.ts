@@ -95,6 +95,11 @@ export type DataObjectPresetParams = {
   columns?: any[]; // Optional column definitions
 };
 
+export type UnsplashPresetParams = {
+  query: string;
+  autoPlayDuration: number;
+};
+
 // Union type for any possible preset parameters
 export type AnyPresetParams =
   | ListPresetParams
@@ -108,7 +113,8 @@ export type AnyPresetParams =
   | SpinnerPresetParams
   | LotteryPresetParams
   | OotdPresetParams
-  | DataObjectPresetParams;
+  | DataObjectPresetParams
+  | UnsplashPresetParams;
 
 // Generic preset type for use in components
 export type ToolPreset = Preset<AnyPresetParams>;
