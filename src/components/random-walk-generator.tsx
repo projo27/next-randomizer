@@ -16,13 +16,14 @@ import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
 import { useSettings } from '@/context/SettingsContext';
 import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
-import { generateRandomWalk, RandomWalkOutput, RandomWalkInput } from '@/ai/flows/random-walk-flow';
+import { generateRandomWalk } from '@/ai/flows/random-walk-flow';
+import { RandomWalkOutput, RandomWalkInput } from '@/ai/flows/random-walk-types';
 import { useToast } from '@/hooks/use-toast';
 import { GoogleMap, useJsApiLoader, Polyline, Marker } from '@react-google-maps/api';
 
 const mapContainerStyle = {
   width: '100%',
-  height: '400px',
+  height: '480px',
 };
 
 export default function RandomWalkGenerator() {
@@ -38,9 +39,15 @@ export default function RandomWalkGenerator() {
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(8000);
   const { user } = useAuth();
-  const { playAudio } = useRandomizerAudio();
-  
+  const { playAudio, stopAudio } = useRandomizerAudio();
+
   const mapRef = useRef<google.maps.Map | null>(null);
+
+  useEffect(() => {
+    if (!isLoading) {
+      stopAudio();
+    }
+  }, [isLoading, stopAudio]);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -56,6 +63,13 @@ export default function RandomWalkGenerator() {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         });
+        if (mapRef.current) {
+          mapRef.current.setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          mapRef.current.setZoom(14);
+        }
         setIsGettingLocation(false);
         toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
       },
@@ -66,7 +80,7 @@ export default function RandomWalkGenerator() {
       { enableHighAccuracy: true }
     );
   }, [toast]);
-  
+
   useEffect(() => {
     handleGetLocation();
   }, [handleGetLocation]);
@@ -109,13 +123,17 @@ export default function RandomWalkGenerator() {
 
   useEffect(() => {
     if (result && mapRef.current) {
-        const bounds = new google.maps.LatLngBounds();
-        bounds.extend(new google.maps.LatLng(result.bounds.southwest.lat, result.bounds.southwest.lng));
-        bounds.extend(new google.maps.LatLng(result.bounds.northeast.lat, result.bounds.northeast.lng));
-        mapRef.current.fitBounds(bounds);
+      const bounds = new google.maps.LatLngBounds();
+      bounds.extend(new google.maps.LatLng(result.bounds.southwest.lat, result.bounds.southwest.lng));
+      bounds.extend(new google.maps.LatLng(result.bounds.northeast.lat, result.bounds.northeast.lng));
+      mapRef.current.fitBounds(bounds);
     } else if (startLocation && mapRef.current) {
-        mapRef.current.setCenter(startLocation);
-        mapRef.current.setZoom(14);
+      // Only set center if we are not already close to it?
+      // Actually, let's stop auto-centering/zooming here on every startLocation change 
+      // because it overrides user pan/zoom when they click.
+
+      mapRef.current.setCenter(startLocation);
+      // mapRef.current.setZoom(14);
     }
   }, [result, startLocation]);
 
@@ -136,12 +154,12 @@ export default function RandomWalkGenerator() {
             <Label>Starting Point</Label>
             <div className="flex items-center gap-2 mt-1.5">
               <Button onClick={handleGetLocation} disabled={isGettingLocation}>
-                <LocateFixed className="mr-2 h-4 w-4"/>
+                <LocateFixed className="mr-2 h-4 w-4" />
                 {isGettingLocation ? 'Getting Location...' : 'Use My Location'}
               </Button>
-               {startLocation && <p className="text-xs text-muted-foreground">({startLocation.lat.toFixed(4)}, {startLocation.lng.toFixed(4)})</p>}
+              {startLocation && <p className="text-xs text-muted-foreground">({startLocation.lat.toFixed(4)}, {startLocation.lng.toFixed(4)})</p>}
             </div>
-             <p className="text-xs text-muted-foreground mt-1">Click on the map to set a custom starting point.</p>
+            <p className="text-xs text-muted-foreground mt-1">Click on the map to set a custom starting point.</p>
           </div>
           <div>
             <div className="flex justify-between items-center">
@@ -175,11 +193,11 @@ export default function RandomWalkGenerator() {
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={startLocation || { lat: 51.5072, lng: -0.1276 }}
-              zoom={startLocation ? 14 : 8}
+              zoom={8}
               onLoad={onMapLoad}
               onClick={(e) => {
                 if (e.latLng) {
-                   setStartLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+                  setStartLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
                 }
               }}
               options={{

@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+// import Image from 'next/image';
 import {
   Card,
   CardContent,
@@ -12,13 +13,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Wand2, Download, RectangleHorizontal, RectangleVertical, Square, Layers, Circle, Triangle, Waves
 } from 'lucide-react';
@@ -36,11 +30,18 @@ type AspectRatio = '16:9' | '9:16' | '1:1' | '4:3';
 type PatternType = 'circles' | 'squares' | 'triangles' | 'lines' | 'waves';
 
 const ASPECT_RATIOS: { value: AspectRatio, icon: React.ReactNode, label: string }[] = [
-  { value: '16:9', icon: <RectangleHorizontal />, label: 'Desktop' },
-  { value: '9:16', icon: <RectangleVertical />, label: 'Phone' },
-  { value: '1:1', icon: <Square />, label: 'Square' },
-  { value: '4:3', icon: <RectangleHorizontal className="transform scale-x-75" />, label: 'Standard' },
+  { value: '16:9', icon: <RectangleHorizontal />, label: 'Desktop (1920x1080)' },
+  { value: '9:16', icon: <RectangleVertical />, label: 'Phone (1080x1920)' },
+  { value: '1:1', icon: <Square />, label: 'Square (1080x1080)' },
+  { value: '4:3', icon: <RectangleHorizontal className="transform scale-x-75" />, label: 'Standard (720x480)' },
 ];
+
+const RATIO_DIMENSIONS: Record<AspectRatio, { width: number, height: number }> = {
+  '16:9': { width: 1920, height: 1080 },
+  '9:16': { width: 1080, height: 1920 },
+  '1:1': { width: 1080, height: 1080 },
+  '4:3': { width: 720, height: 480 },
+};
 
 const PATTERN_TYPES: { value: PatternType, icon: React.ReactNode, label: string }[] = [
   { value: 'circles', icon: <Circle />, label: 'Circles' },
@@ -101,19 +102,19 @@ function generatePattern(width: number, height: number, density: number, type: P
 
   if (type === 'waves') {
     for (let i = 0; i < numElements / 2; i++) {
-        const x1 = -width * 0.1;
-        const y1 = Math.random() * height;
-        const x2 = width * 1.1;
-        const y2 = Math.random() * height;
-        const cx1 = Math.random() * width;
-        const cy1 = Math.random() * height;
-        const cx2 = Math.random() * width;
-        const cy2 = Math.random() * height;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const opacity = Math.random() * 0.5 + 0.3;
-        elements.push(
-            <path key={i} d={`M ${x1},${y1} C ${cx1},${cy1} ${cx2},${cy2} ${x2},${y2}`} stroke={color} strokeWidth={Math.random() * 15 + 5} fill="none" opacity={opacity} />
-        );
+      const x1 = -width * 0.1;
+      const y1 = Math.random() * height;
+      const x2 = width * 1.1;
+      const y2 = Math.random() * height;
+      const cx1 = Math.random() * width;
+      const cy1 = Math.random() * height;
+      const cx2 = Math.random() * width;
+      const cy2 = Math.random() * height;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const opacity = Math.random() * 0.5 + 0.3;
+      elements.push(
+        <path key={i} d={`M ${x1},${y1} C ${cx1},${cy1} ${cx2},${cy2} ${x2},${y2}`} stroke={color} strokeWidth={Math.random() * 15 + 5} fill="none" opacity={opacity} />
+      );
     }
   } else {
     for (let i = 0; i < numElements; i++) {
@@ -150,7 +151,7 @@ function generatePattern(width: number, height: number, density: number, type: P
 
   const bgColor = `hsl(${Math.floor(Math.random() * 360)}, 20%, 95%)`;
   return (
-    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} style={{ backgroundColor: bgColor }}>
+    <svg key="pattern-svg" className="w-full h-full object-scale-down" height="100%" width="100%" viewBox={`0 0 ${width} ${height}`} style={{ backgroundColor: bgColor }}>
       {elements}
     </svg>
   );
@@ -165,8 +166,9 @@ export default function PatternRandomizer() {
   const svgRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [isRateLimited, triggerRateLimit] = useRateLimiter(2000);
-  const { playAudio } = useRandomizerAudio();
   const { user } = useAuth();
+  const { animationDuration } = useSettings();
+  const { playAudio, stopAudio } = useRandomizerAudio();
 
   const handleGenerate = useCallback(() => {
     sendGTMEvent({ event: 'action_pattern_randomizer', user_email: user?.email ?? 'guest' });
@@ -175,18 +177,25 @@ export default function PatternRandomizer() {
     playAudio();
     setIsGenerating(true);
 
-    const [w, h] = aspectRatio.split(':').map(Number);
-    const generatedPattern = generatePattern(w * 100, h * 100, density, patternType);
+    const { width, height } = RATIO_DIMENSIONS[aspectRatio];
+    const generatedPattern = generatePattern(width, height, density, patternType);
     setPatternSvg(generatedPattern);
 
     setTimeout(() => {
       setIsGenerating(false);
-    }, 500);
+    }, animationDuration * 1000);
   }, [aspectRatio, density, patternType, isRateLimited, playAudio, user]);
 
   useEffect(() => {
     handleGenerate();
-  }, [aspectRatio, patternType, density, handleGenerate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isGenerating) {
+      stopAudio();
+    }
+  }, [isGenerating, stopAudio]);
 
   const handleDownload = (format: 'png' | 'webp') => {
     if (!svgRef.current) return;
@@ -195,10 +204,10 @@ export default function PatternRandomizer() {
 
     const svgData = new XMLSerializer().serializeToString(svgElement);
     const canvas = document.createElement('canvas');
-    const [w, h] = aspectRatio.split(':').map(Number);
-    const scale = 2; // for higher resolution
-    canvas.width = w * 100 * scale;
-    canvas.height = h * 100 * scale;
+    const { width, height } = RATIO_DIMENSIONS[aspectRatio];
+    const scale = 1; // Direct 1:1 scale to the predefined dimensions
+    canvas.width = width * scale;
+    canvas.height = height * scale;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -233,7 +242,7 @@ export default function PatternRandomizer() {
               className="justify-start mt-2"
             >
               {ASPECT_RATIOS.map(ratio => (
-                <ToggleGroupItem key={ratio.value} value={ratio.value} aria-label={ratio.label} className="flex flex-col h-16 w-16 gap-1">
+                <ToggleGroupItem key={ratio.value} value={ratio.value} aria-label={ratio.label} className="flex flex-col h-16 w-16 gap-1" title={ratio.label}>
                   {ratio.icon}
                   <span className="text-xs">{ratio.value}</span>
                 </ToggleGroupItem>
@@ -271,7 +280,7 @@ export default function PatternRandomizer() {
         </div>
 
         <div className="relative" style={{ aspectRatio }}>
-          <div ref={svgRef} className={cn("w-full h-full bg-muted rounded-lg overflow-hidden transition-opacity duration-300", isGenerating ? "opacity-50" : "opacity-100")}>
+          <div ref={svgRef} className={cn("mx-auto w-full max-h-[500px] h-full rounded-lg overflow-hidden transition-opacity duration-300", isGenerating ? "opacity-50" : "opacity-100")}>
             {patternSvg}
           </div>
         </div>
