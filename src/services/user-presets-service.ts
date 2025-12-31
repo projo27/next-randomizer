@@ -1,15 +1,15 @@
 import { db } from "@/lib/firebase-config";
+import type { AnyPresetParams, ToolPreset } from "@/types/presets";
 import {
-  collection,
   addDoc,
-  getDocs,
+  collection,
   deleteDoc,
   doc,
+  getDocs,
   query,
-  where,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
-import type { ToolPreset, AnyPresetParams } from "@/types/presets";
 
 const USER_PREFERENCE_COLLECTION = "userPreferences";
 const PRESETS_SUBCOLLECTION = "presets";
@@ -80,11 +80,17 @@ export async function getPresets(
     const presets = querySnapshot.docs.map(
       (doc) => ({ id: doc.id, ...doc.data() } as ToolPreset)
     );
-    
+
     // Sort on the client-side
     return presets.sort((a, b) => {
-      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
-      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+      const getDate = (d: any) => {
+        if (d?.toDate) return d.toDate();
+        if (d instanceof Date) return d;
+        if (typeof d === "string") return new Date(d);
+        return new Date(0);
+      };
+      const dateA = getDate(a.createdAt);
+      const dateB = getDate(b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
 

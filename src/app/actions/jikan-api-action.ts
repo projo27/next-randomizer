@@ -16,7 +16,7 @@ const BaseEntrySchema = z.object({
   mal_id: z.number(),
   url: z.string().url(),
   images: ImageSchema,
-  title: z.string(),
+  title: z.string().nullable().optional(),
   score: z.number().nullable(),
   synopsis: z.string().nullable(),
   genres: z.array(z.object({ name: z.string() })),
@@ -44,8 +44,7 @@ const CharacterResponseSchema = z.object({
     images: ImageSchema,
     name: z.string(),
     about: z.string().nullable(),
-    anime: z.array(z.object({ anime: z.object({ title: z.string() }) })).optional(),
-    manga: z.array(z.object({ manga: z.object({ title: z.string() }) })).optional(),
+    nicknames: z.array(z.string()).optional(),
   }),
 });
 
