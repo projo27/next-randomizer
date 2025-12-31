@@ -212,7 +212,7 @@ export const triggerList = [
   {
     value: "pattern",
     text: "Pattern",
-    hidden: false,
+    hidden: true,
     icon: <Layers className="h-5 w-5" />,
     content: <PatternRandomizer />,
     contentGuard: false,

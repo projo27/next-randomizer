@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.3.4 : Added Random Walk Generator
 - v1.3.3 : Added preset page, fixing on emoji comment, tools and preset reaction, add local music randomizer too
 - v1.3.2 : Add Quran and Bible Randomizer
 - v1.3.1 : Added Chemical Element Randomizer with periodic table view and Tarot Card Randomizer
@@ -66,7 +67,7 @@
 - Random name generator
 - Plant ✅
 - Animalia ✅
-- Object / Things Randomizer
+- Object / Things Randomizer ✅
 - Random word by language ✅ (english only for now)
 - Random Country with flag ✅
 - Random Places on Google Maps ✅
@@ -85,6 +86,8 @@
 - Riddle Randomizer
 - Random Gift ✅
 - Unsplash Image Randomizer ✅
+- Random Walk Generator ✅
+
 
 ## Development Roadmap :
 
@@ -97,7 +100,7 @@
 - User can rearrange the menu / tools to satisfy their needs ✅
 - Add survey whats new feature to catch user needs ✅
 - Add API to support another developer to generate randomize (PRO)
-- Add Running news after title and subtitle, to aware user for new feature or news
+- Add Running news after title and subtitle, to aware user for new feature or news ✅
 - User can save and share the result (PRO)
 - Mobile support
 - Confetti after suffling / randomization done ✅
