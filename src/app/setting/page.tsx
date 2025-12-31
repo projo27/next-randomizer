@@ -1,8 +1,9 @@
 
 "use client";
 
-import Link from "next/link";
 import { Header } from "@/components/header";
+import { MenuOrderSettings } from "@/components/settings/menu-order-settings";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,16 +13,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LockKeyhole, RotateCcw } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
 import { useAuth } from "@/context/AuthContext";
-import { MenuOrderSettings } from "@/components/settings/menu-order-settings";
 import { useMenuOrder } from "@/context/MenuOrderContext";
+import { useSettings } from "@/context/SettingsContext";
+import { LockKeyhole, RotateCcw } from "lucide-react";
+import Link from "next/link";
 
 // --- Main Settings Page Content ---
 function SettingsPageContent() {
@@ -80,7 +80,7 @@ function SettingsPageContent() {
       </CardHeader>
       <Separator />
       <CardContent className="space-y-8 py-6">
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col space-y-2" id="animation-duration">
           <div className="flex justify-between items-center">
             <Label htmlFor="animation-duration" className="text-base">
               Animation Duration
@@ -100,13 +100,13 @@ function SettingsPageContent() {
             step={1}
             value={[animationDuration]}
             onValueChange={(value) => setAnimationDuration(value[0])}
-            className="[&&&]:pt-4"
+            className="[&&&]:mt-4"
           />
         </div>
 
         <Separator />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" id="play-sounds">
           <div className="space-y-1">
             <Label htmlFor="play-sounds" className="text-base">
               Play Sounds
@@ -124,7 +124,7 @@ function SettingsPageContent() {
 
         <Separator />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" id="confetti-enabled">
           <div className="space-y-1">
             <Label htmlFor="confetti-enabled" className="text-base">
               Confetti Effects
@@ -143,7 +143,7 @@ function SettingsPageContent() {
         </div>
 
         {confettiConfig.enabled && (
-          <div className="space-y-6 pt-4 border-t">
+          <div className="space-y-6 pt-4 border-t ml-6">
             <div className="flex flex-col space-y-2">
               <div className="flex justify-between items-center">
                 <Label htmlFor="particle-count" className="text-base">
@@ -165,7 +165,7 @@ function SettingsPageContent() {
                 onValueChange={(value) =>
                   setConfettiConfig({ ...confettiConfig, particleCount: value[0] })
                 }
-                className="[&&&]:pt-4"
+                className="[&&&]:mt-4"
               />
             </div>
 
@@ -190,7 +190,7 @@ function SettingsPageContent() {
                 onValueChange={(value) =>
                   setConfettiConfig({ ...confettiConfig, spread: value[0] })
                 }
-                className="[&&&]:pt-4"
+                className="[&&&]:mt-4"
               />
             </div>
           </div>
@@ -217,7 +217,7 @@ function SettingsPageContent() {
             step={1}
             value={[visibleToolCount]}
             onValueChange={(value) => setVisibleToolCount(value[0])}
-            className="[&&&]:pt-4"
+            className="[&&&]:mt-4"
           />
         </div>
 
