@@ -51,6 +51,7 @@ import TanakhRandomizer from "@/components/tanakh-randomizer";
 import LocalMusicRandomizer from "@/components/local-music-randomizer";
 import PatternRandomizer from "@/components/pattern-randomizer";
 import RandomWalkGenerator from "@/components/random-walk-generator";
+import AnimeMangaRandomizer from "@/components/anime-manga-randomizer";
 
 import {
   ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
@@ -59,6 +60,7 @@ import {
   Wallpaper,
   Layers,
   Footprints,
+  Tv,
 } from "lucide-react";
 
 
@@ -272,6 +274,14 @@ export const triggerList = [
     icon: <Laugh className="h-5 w-5" />,
     content: <MemeRandomizer />,
     contentGuard: true,
+  },
+  {
+    value: "anime",
+    text: "Anime/Manga",
+    hidden: false,
+    icon: <Tv className="h-5 w-5" />,
+    content: <AnimeMangaRandomizer />,
+    contentGuard: false,
   },
   {
     value: "gift",
