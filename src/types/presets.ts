@@ -79,6 +79,15 @@ export type SpinnerPresetParams = {
 export type LotteryPresetParams = {
   length: string;
   includeLetters: boolean;
+  mode?: 'simple' | 'complex';
+  segments?: Array<{
+    id: string;
+    type: string;
+    value: string | number;
+    min?: number;
+    max?: number;
+    allowedChars?: string;
+  }>;
 };
 
 export type OotdPresetParams = {
