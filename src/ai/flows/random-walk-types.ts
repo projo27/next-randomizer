@@ -19,5 +19,7 @@ export const RandomWalkOutputSchema = z.object({
     northeast: LatLngSchema,
     southwest: LatLngSchema,
   }).describe('The bounding box for the generated route.'),
+  startPoint: LatLngSchema.describe('The starting point of the route.'),
+  turnPoint: LatLngSchema.describe('The farthest point or turn-around point of the route.'),
 });
 export type RandomWalkOutput = z.infer<typeof RandomWalkOutputSchema>;

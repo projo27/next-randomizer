@@ -8,13 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Wand2, LocateFixed, MapPinned, Footprints } from 'lucide-react';
+import { LocateFixed, Footprints } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Skeleton } from './ui/skeleton';
 import { useRateLimiter } from '@/hooks/use-rate-limiter';
 import { useAuth } from '@/context/AuthContext';
 import { sendGTMEvent } from '@next/third-parties/google';
-import { useSettings } from '@/context/SettingsContext';
 import { useRandomizerAudio } from '@/context/RandomizerAudioContext';
 import { generateRandomWalk } from '@/ai/flows/random-walk-flow';
 import { RandomWalkOutput, RandomWalkInput } from '@/ai/flows/random-walk-types';
@@ -30,7 +29,7 @@ export default function RandomWalkGenerator() {
   const [startLocation, setStartLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [distance, setDistance] = useState(5); // in km
   const [isLoop, setIsLoop] = useState(true);
-  const [result, setResult] = useState<RandomWalkOutput | null>(null);
+  const [result, setResult] = useState<(RandomWalkOutput & { id: number }) | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
@@ -42,6 +41,7 @@ export default function RandomWalkGenerator() {
   const { playAudio, stopAudio } = useRandomizerAudio();
 
   const mapRef = useRef<google.maps.Map | null>(null);
+  const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -65,7 +65,7 @@ export default function RandomWalkGenerator() {
           mapRef.current.setZoom(14);
         }
         setIsGettingLocation(false);
-        toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
+        //toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
       },
       (geoError) => {
         setError(`Could not get your location: ${geoError.message}. Please set it manually.`);
@@ -92,11 +92,13 @@ export default function RandomWalkGenerator() {
     }
     if (isLoading || isRateLimited) return;
 
+    setIsLoading(true);
+    setError(null);
+    setResult(null); // Clear previous result immediately
+
     sendGTMEvent({ event: 'action_random_walk_randomizer', user_email: user?.email ?? 'guest' });
     triggerRateLimit();
     playAudio();
-    setError(null);
-    setResult(null);
     setIsLoading(true);
 
     try {
@@ -106,7 +108,7 @@ export default function RandomWalkGenerator() {
         isLoop,
       };
       const walkResult = await generateRandomWalk(input);
-      setResult(walkResult);
+      setResult({ ...walkResult, id: Date.now() });
 
     } catch (err: any) {
       setError(err.message || 'An unknown error occurred while generating the route.');
@@ -121,7 +123,15 @@ export default function RandomWalkGenerator() {
   }, []);
 
   useEffect(() => {
+    if (result == null) {
+      setPath([]);
+    }
+    if (result) {
+      setPath(result.path);
+    }
+
     if (result && mapRef.current) {
+      console.log(result);
       const bounds = new google.maps.LatLngBounds();
       bounds.extend(new google.maps.LatLng(result.bounds.southwest.lat, result.bounds.southwest.lng));
       bounds.extend(new google.maps.LatLng(result.bounds.northeast.lat, result.bounds.northeast.lng));
@@ -132,7 +142,6 @@ export default function RandomWalkGenerator() {
       // because it overrides user pan/zoom when they click.
 
       mapRef.current.setCenter(startLocation);
-      // mapRef.current.setZoom(14);
     }
   }, [result, startLocation]);
 
@@ -201,19 +210,45 @@ export default function RandomWalkGenerator() {
               }}
               options={{
                 streetViewControl: false,
-                mapTypeControl: false,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                  style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                  position: google.maps.ControlPosition.TOP_LEFT,
+                  mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
+                },
                 fullscreenControl: false,
               }}
             >
               {startLocation && <Marker position={startLocation} />}
               {result && (
                 <Polyline
-                  path={result.path}
+                  key={result.id}
+                  path={path}
                   options={{
                     strokeColor: "#FF5722",
                     strokeOpacity: 0.8,
-                    strokeWeight: 6,
+                    strokeWeight: 5,
+                    geodesic: true,
+                    icons: [{
+                      icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, fillColor: "#FFF", fillOpacity: 1, strokeWeight: 1, scale: 2.3, strokeOpacity: 0.8 },
+                      offset: "100%",
+                      repeat: "10%",
+                    }]
                   }}
+                />
+              )}
+              {result && result.startPoint && (
+                <Marker
+                  position={result.startPoint}
+                  label={{ text: "A", color: "white" }}
+                  title="Starting Point"
+                />
+              )}
+              {result && result.turnPoint && (
+                <Marker
+                  position={result.turnPoint}
+                  label={{ text: "B", color: "white" }}
+                  title={isLoop ? "Turn Point" : "Destination"}
                 />
               )}
             </GoogleMap>
