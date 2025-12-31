@@ -4,6 +4,7 @@
 
 ## Changelog :
 
+- v1.3.5 : Anime/Manga/Character Randomizer release
 - v1.3.4 : Added Random Walk Generator
 - v1.3.3 : Added preset page, fixing on emoji comment, tools and preset reaction, add local music randomizer too
 - v1.3.2 : Add Quran and Bible Randomizer
@@ -80,7 +81,7 @@
 - Android APK Randomizer
 - IOS APK Randomizer
 - Meme Randomizer ✅
-- Anime Randomizer
+- Anime Randomizer ✅
 - Webtoon Randomizer
 - Football Club Randomizer ✅
 - Riddle Randomizer
