@@ -4,7 +4,12 @@
 import "server-only";
 import { google } from "googleapis";
 
-const youtube = google.youtube("v3");
+const youtube = google.youtube({
+  version: "v3",
+  headers: {
+    Referer: process.env.NEXT_PUBLIC_APP_URL || "https://randomizer.fun",
+  },
+});
 
 /**
  * Searches for popular videos on YouTube based on a category ID.

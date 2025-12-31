@@ -43,12 +43,6 @@ export default function RandomWalkGenerator() {
 
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  useEffect(() => {
-    if (!isLoading) {
-      stopAudio();
-    }
-  }, [isLoading, stopAudio]);
-
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: ['places'],
@@ -71,7 +65,7 @@ export default function RandomWalkGenerator() {
           mapRef.current.setZoom(14);
         }
         setIsGettingLocation(false);
-        // toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
+        toast({ title: "Location Found", description: "Your current location has been set as the starting point." });
       },
       (geoError) => {
         setError(`Could not get your location: ${geoError.message}. Please set it manually.`);
@@ -85,6 +79,11 @@ export default function RandomWalkGenerator() {
     handleGetLocation();
   }, [handleGetLocation]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      stopAudio();
+    }
+  }, [isLoading, stopAudio]);
 
   const handleRandomize = async () => {
     if (!startLocation) {
@@ -173,7 +172,7 @@ export default function RandomWalkGenerator() {
               step={1}
               value={[distance]}
               onValueChange={(value) => setDistance(value[0])}
-              className="[&&&]:pt-4"
+              className="[&&&]:mt-4"
               disabled={isLoading || isRateLimited}
             />
           </div>
@@ -193,7 +192,7 @@ export default function RandomWalkGenerator() {
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
               center={startLocation || { lat: 51.5072, lng: -0.1276 }}
-              zoom={8}
+              zoom={12}
               onLoad={onMapLoad}
               onClick={(e) => {
                 if (e.latLng) {

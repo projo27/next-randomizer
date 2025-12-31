@@ -5,35 +5,21 @@
  * - generateRandomWalk - A function that creates a random walking path based on a start point and desired distance.
  */
 
-import { RandomWalkInputSchema, RandomWalkOutputSchema, RandomWalkInput, RandomWalkOutput } from './random-walk-types';
+import { Client, TravelMode } from "@googlemaps/google-maps-services-js";
+import { RandomWalkInputSchema, RandomWalkInput, RandomWalkOutput } from './random-walk-types';
+
+// Initialize the Google Maps Client
+const client = new Client({});
 
 interface LatLng {
   lat: number;
   lng: number;
 }
 
-async function getDirections(origin: LatLng, destination: LatLng): Promise<any> {
-  // Use the server-specific key first, fallback to public key (though public key often has referer restrictions)
-  const apiKey = process.env.GOOGLE_MAPS_SERVER_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  if (!apiKey) {
-    throw new Error("Google Maps API Key is not configured.");
-  }
-
-  const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&mode=walking&key=${apiKey}`;
-
-  console.log(url);
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Google Directions API request failed: ${response.statusText}`);
-  }
-  const data = await response.json();
-  if (data.status !== 'OK') {
-    if (data.status === 'ZERO_RESULTS') return null;
-    throw new Error(`Directions API error: ${data.status} - ${data.error_message || 'No details'}`);
-  }
-  return data;
-}
-
+// Utility to decode polyline if needed, or we can use the library's utility if we import it.
+// However, to keep it simple and dependency-free for this util, we can keep the existing function 
+// or import { decodePath } from "@googlemaps/google-maps-services-js/dist/util";
+// Let's use the manual one to ensure we get exactly the array format we expect {lat, lng}
 function decodePolyline(encoded: string): LatLng[] {
   let index = 0, len = encoded.length;
   let lat = 0, lng = 0;
@@ -64,11 +50,51 @@ function decodePolyline(encoded: string): LatLng[] {
   return path;
 }
 
+async function getDirections(origin: LatLng, destination: LatLng) {
+  const apiKey = process.env.GOOGLE_MAPS_SERVER_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  if (!apiKey) {
+    throw new Error("Google Maps API Key is not configured.");
+  }
+
+  // Debug log (masked)
+  console.log(`Using API Key: ${apiKey.substring(0, 5)}... with Referer: ${process.env.NEXT_PUBLIC_APP_URL}`);
+
+  try {
+    const response = await client.directions({
+      params: {
+        origin: [origin.lat, origin.lng],
+        destination: [destination.lat, destination.lng],
+        mode: TravelMode.walking,
+        key: apiKey,
+      },
+      timeout: 5000, // 5 seconds timeout
+      headers: {
+        "Referer": process.env.NEXT_PUBLIC_APP_URL || "https://randomizer.fun",
+        "User-Agent": "NextRandomizer/1.0",
+      },
+    });
+
+    if (response.data.status !== 'OK') {
+      if (response.data.status === 'ZERO_RESULTS') return null;
+      throw new Error(`Directions API error: ${response.data.status} - ${response.data.error_message || 'No details'}`);
+    }
+
+    return response.data;
+  } catch (error: any) {
+    // Better error logging
+    if (error.response) {
+      console.error("API Error Response:", error.response.data);
+      throw new Error(`Google Directions API request failed: ${error.response.status} ${error.response.statusText} - ${JSON.stringify(error.response.data)}`);
+    }
+    throw new Error(`Google Directions API request failed: ${error.message}`);
+  }
+}
+
 export async function generateRandomWalk(input: RandomWalkInput): Promise<RandomWalkOutput> {
   const { startLocation, distanceKm, isLoop } = RandomWalkInputSchema.parse(input);
   const targetDistanceMeters = distanceKm * 1000;
 
-  for (let i = 0; i < 2; i++) { // Try up to 3 times to find a suitable route
+  for (let i = 0; i < 1; i++) { // Try up to 3 times
     // Generate a random destination point.
     // The straight-line distance is adjusted to be less than the walking distance.
     const angle = Math.random() * 2 * Math.PI;
@@ -96,6 +122,9 @@ export async function generateRandomWalk(input: RandomWalkInput): Promise<Random
             totalDistance += fromDestResult.routes[0].legs.reduce((sum: number, leg: any) => sum + leg.distance.value, 0);
 
             // Combine bounds
+            // Note: The library returns bounds as {northeast: {lat, lng}, southwest: {lat, lng}}
+            // which matches our interface, but we need to ensure types match.
+            // The API response bounds values are numbers.
             bounds.northeast.lat = Math.max(bounds.northeast.lat, fromDestResult.routes[0].bounds.northeast.lat);
             bounds.northeast.lng = Math.max(bounds.northeast.lng, fromDestResult.routes[0].bounds.northeast.lng);
             bounds.southwest.lat = Math.min(bounds.southwest.lat, fromDestResult.routes[0].bounds.southwest.lat);
@@ -104,11 +133,17 @@ export async function generateRandomWalk(input: RandomWalkInput): Promise<Random
         }
 
         // Check if the found route is within a reasonable range of the target distance
-        if (totalDistance > targetDistanceMeters * 0.7 && totalDistance < targetDistanceMeters * 1.5) {
+        const minDistance = targetDistanceMeters * 0.5; // Relaxed lower bound
+        const maxDistance = targetDistanceMeters * 1.5;
+
+        if (totalDistance > minDistance && totalDistance < maxDistance) {
           return {
             path,
             actualDistanceMeters: totalDistance,
-            bounds,
+            bounds: {
+              northeast: { lat: bounds.northeast.lat, lng: bounds.northeast.lng },
+              southwest: { lat: bounds.southwest.lat, lng: bounds.southwest.lng }
+            },
           };
         }
       }

@@ -6,6 +6,7 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { ToolNavigation } from '@/components/tool-navigation';
 import { triggerList } from '@/lib/menu-data';
 import TabContentGuard from './ui/tab-content-guard';
+import { LazyTabContent } from './ui/lazy-tab-content';
 
 interface HomePageClientProps {
   activeTab: string;
@@ -30,11 +31,13 @@ export function HomePageClient({ activeTab, children }: HomePageClientProps) {
       {/* Tabs Content for tools */}
       {triggerList.map(item => (
         <TabsContent key={item.value} value={item.value} forceMount>
-          {item.contentGuard ? (
-            <TabContentGuard>{item.content}</TabContentGuard>
-          ) : (
-            item.content
-          )}
+          <LazyTabContent value={item.value} activeTab={activeTab}>
+            {item.contentGuard ? (
+              <TabContentGuard>{item.content}</TabContentGuard>
+            ) : (
+              item.content
+            )}
+          </LazyTabContent>
         </TabsContent>
       ))}
 

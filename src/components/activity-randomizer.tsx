@@ -141,7 +141,7 @@ export default function ActivityRandomizer() {
             step={1}
             value={[level]}
             onValueChange={(value) => setLevel(value[0])}
-            className="[&&&]:pt-4"
+            className="[&&&]:mt-4"
             disabled={isLoading || isRateLimited}
           />
         </div>
