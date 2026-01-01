@@ -209,7 +209,7 @@ export function SurveyDialog() {
               </div>
             );
           })}
-          <div className="pt-2">
+          <div className="pt-2 px-1">
             <Label htmlFor="other-tool">
               Something else? (Enter your idea)
             </Label>

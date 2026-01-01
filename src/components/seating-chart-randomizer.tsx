@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { randomizeSeatingChart } from "@/app/actions/seating-chart-action";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,26 +10,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Wand2, Copy, Check } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { useToast } from "@/hooks/use-toast";
-import { useRateLimiter } from "@/hooks/use-rate-limiter";
-import { useSettings } from "@/context/SettingsContext";
-import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
-import { sendGTMEvent } from "@next/third-parties/google";
-import { randomizeSeatingChart } from "@/app/actions/seating-chart-action";
-import { Skeleton } from "./ui/skeleton";
-import { PresetManager } from "./preset-manager";
+import { useRandomizerAudio } from "@/context/RandomizerAudioContext";
+import { useSettings } from "@/context/SettingsContext";
+import { useRateLimiter } from "@/hooks/use-rate-limiter";
+import { useToast } from "@/hooks/use-toast";
 import type { SeatingChartPresetParams } from "@/types/presets";
+import { sendGTMEvent } from "@next/third-parties/google";
+import { Check, Copy, Wand2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { PresetManager } from "./preset-manager";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Skeleton } from "./ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export default function SeatingChartRandomizer() {
-  const [rows, setRows] = useState("4");
-  const [cols, setCols] = useState("5");
+  const [rows, setRows] = useState("5");
+  const [cols, setCols] = useState("2");
   const [participantsText, setParticipantsText] = useState(
     "Alice\nBob\nCharlie\nDavid\nEve\nFrank\nGrace\nHeidi\nIvan\nJudy",
   );
@@ -202,9 +203,12 @@ export default function SeatingChartRandomizer() {
                 ))}
               </div>
             ) : seatingChart ? (
-              <div className="grid gap-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+              <div className="grid gap-x-6 gap-y-4 my-8" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
                 {seatingChart.flat().map((seat, index) => (
-                  <div key={index} className={`flex items-center justify-center h-12 p-1 rounded-md text-xs text-center font-semibold ${seat === 'Empty' ? 'bg-background/50 text-muted-foreground/30 italic' : 'bg-primary/20 text-muted-foreground'}`}>
+                  <div key={index}
+                    className={cn(`flex items-center justify-center h-12 p-1 rounded-md text-sm text-center font-semibold`,
+                    seat === 'Empty' ? 'bg-background/20 text-muted-foreground italic' : 'bg-primary text-primary-foreground')}
+                  >
                     {seat}
                   </div>
                 ))}
