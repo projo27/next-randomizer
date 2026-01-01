@@ -21,12 +21,13 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
     UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY,
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     GIPHY_API_KEY: process.env.GIPHY_API_KEY,
     THESPORTSDB_API_KEY: process.env.THESPORTSDB_API_KEY,
+    TREFLE_API_KEY: process.env.TREFLE_API_KEY,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -120,33 +121,33 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-      {
+       {
         protocol: "https",
-        hostname: "bs.plantnet.org",
+        hostname: "bs.floristic.org",
         port: "",
         pathname: "/**",
       },
       {
-        protocol: 'https', // Specify the protocol (http or https)
-        hostname: '*.cloudfront.net', // Use a wildcard for the subdomain
-        port: '', // Leave empty if no specific port is used
-        pathname: '/**', // Allow any path for the image
-      },
-      {
-        protocol: 'https', // Specify the protocol (http or https)
-        hostname: '*.openlibrary.org', // Use a wildcard for the subdomain
-        port: '', // Leave empty if no specific port is used
-        pathname: '/**', // Allow any path for the image
-      },
-      {
         protocol: 'https',
-        hostname: 'www.artic.edu',
+        hostname: 'plus.unsplash.com',
         port: '',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'cdn.myanimelist.net',
+        hostname: 'www.worldwildlife.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'files.worldwildlife.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'oaidalleapiprodscus.blob.core.windows.net',
         port: '',
         pathname: '/**',
       },
@@ -167,7 +168,11 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-  turbopack: {},
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
+  },
 };
 
 export default withPWA(nextConfig);

@@ -52,6 +52,7 @@ import LocalMusicRandomizer from "@/components/local-music-randomizer";
 import PatternRandomizer from "@/components/pattern-randomizer";
 import RandomWalkGenerator from "@/components/random-walk-generator";
 import AnimeMangaRandomizer from "@/components/anime-manga-randomizer";
+import TodayCookingRandomizer from "@/components/today-cooking-randomizer";
 
 import {
   ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
@@ -61,6 +62,7 @@ import {
   Layers,
   Footprints,
   Tv,
+  CookingPot,
 } from "lucide-react";
 
 
@@ -409,6 +411,14 @@ export const triggerList = [
     hidden: false,
     icon: <FlaskConical className="h-5 w-5" />,
     content: <ScienceFactRandomizer />,
+    contentGuard: true,
+  },
+  {
+    value: "cooking",
+    text: "Today's Cooking",
+    hidden: false,
+    icon: <CookingPot className="h-5 w-5" />,
+    content: <TodayCookingRandomizer />,
     contentGuard: true,
   },
   // Not Showed, feature not ready
