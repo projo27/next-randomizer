@@ -97,17 +97,22 @@ const recipeImageGeneratorFlow = ai.defineFlow(
   async (input) => {
     const { dishName, description, country } = input;
     const prompt = `A high-quality, realistic, and appetizing photograph of a freshly prepared "${dishName}". 
-The dish is a classic from ${country} cuisine, described as: "${description}".
+The dish is a classic from ${country} cuisine.
+Visually depict the dish as "${description}".
+Add Text Title "${dishName}" artistically on the image. 
 The presentation should be clean and modern, styled on a simple plate or bowl. The background should be a cozy kitchen or dining setting. 
-Focus on the texture and colors of the food. The lighting should be bright and natural. Do not include any text or labels in the image.`;
+Focus on the texture and colors of the food. The lighting should be bright and natural.`;
 
     const { media } = await ai.generate({
+      // model: googleAI.model("googleai/imagen-4.0-fast-generate-001"),// 'googleai/gemini-2.0-flash-live-001',
       model: 'googleai/imagen-4.0-fast-generate-001',
       prompt: prompt,
     }).catch(err => {
       console.error("Image generation failed:", err);
       return { media: null };
     });
+
+    console.log("Generated image:", media);
 
     return { imageUrl: media?.url || "" };
   }

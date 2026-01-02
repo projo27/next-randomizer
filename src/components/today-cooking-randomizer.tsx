@@ -57,17 +57,17 @@ export default function TodayCookingRandomizer() {
 
     try {
       const selectedCountry = country === 'all' ? CUISINE_COUNTRIES[Math.floor(Math.random() * CUISINE_COUNTRIES.length)] : country;
-      
+
       const recipeResponse = await generateTodaysCooking({ country: selectedCountry });
       setResult(recipeResponse);
       setIsLoading(false); // Stop main loading to show text result
 
       // Start image generation in the background
       setIsGeneratingImage(true);
-      generateRecipeImage({ 
-        dishName: recipeResponse.dishName, 
+      generateRecipeImage({
+        dishName: recipeResponse.dishName,
         description: recipeResponse.description,
-        country: selectedCountry 
+        country: selectedCountry
       }).then(imageResponse => {
         setImageUrl(imageResponse.imageUrl);
       }).catch(err => {
@@ -134,29 +134,31 @@ export default function TodayCookingRandomizer() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <div className="space-y-4">
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+                  <div className="relative aspect-square rounded-lg overflow-hidden bg-muted flex items-center justify-center">
                     {isGeneratingImage && <ChefHat className="h-16 w-16 text-muted-foreground animate-pulse" />}
-                    {imageUrl && <Image src={imageUrl} alt={result.dishName} fill className="object-cover" />}
+                    {imageUrl && <Image src={imageUrl} alt={result.dishName} fill className="object-contain" />}
                     {!isGeneratingImage && !imageUrl && <ImageIcon className="h-16 w-16 text-muted-foreground" />}
                   </div>
+                </div>
 
-                  <div>
+                <div>
+                  <div className='mb-6'>
                     <h4 className="font-semibold text-lg flex items-center gap-2 mb-2"><Sandwich className="h-5 w-5" /> Ingredients</h4>
-                    <ul className="list-disc list-inside space-y-1 text-sm pl-2">
+                    <ul className="list-disc list-outside space-y-1 text-sm pl-2 ml-2">
                       {result.ingredients.map((item, index) => (
                         <li key={index}>{item}</li>
                       ))}
                     </ul>
                   </div>
-                </div>
 
-                <div>
-                  <h4 className="font-semibold text-lg flex items-center gap-2 mb-2"><Utensils className="h-5 w-5" /> Instructions</h4>
-                  <ol className="list-decimal list-inside space-y-2 text-sm pl-2">
-                    {result.instructions.map((step, index) => (
-                      <li key={index}>{step}</li>
-                    ))}
-                  </ol>
+                  <div className='mb-6'>
+                    <h4 className="font-semibold text-lg flex items-center gap-2 mb-2"><Utensils className="h-5 w-5" /> Instructions</h4>
+                    <ol className="list-decimal list-outside space-y-2 text-sm pl-2 ml-2">
+                      {result.instructions.map((step, index) => (
+                        <li key={index}>{step}</li>
+                      ))}
+                    </ol>
+                  </div>
                 </div>
               </div>
             </div>
