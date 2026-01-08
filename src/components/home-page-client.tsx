@@ -1,19 +1,24 @@
 // src/components/home-page-client.tsx
 'use client';
 
-import { useEffect } from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { ToolNavigation } from '@/components/tool-navigation';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { triggerList } from '@/lib/menu-data';
-import TabContentGuard from './ui/tab-content-guard';
+import { useEffect } from 'react';
 import { LazyTabContent } from './ui/lazy-tab-content';
+import TabContentGuard from './ui/tab-content-guard';
+
+import { usePathname } from 'next/navigation';
 
 interface HomePageClientProps {
-  activeTab: string;
   children: React.ReactNode; // This will receive the server components
 }
 
-export function HomePageClient({ activeTab, children }: HomePageClientProps) {
+export function HomePageClient({ children }: HomePageClientProps) {
+  const pathname = usePathname();
+  // Extract activeTab from pathname /tool/[toolName]
+  const activeTab = pathname?.split('/')[2] || 'list';
+
   useEffect(() => {
     const currentTool = triggerList.find(item => item.value === activeTab);
     if (currentTool) {

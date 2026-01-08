@@ -1,29 +1,37 @@
 
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { TabsList } from "@/components/ui/tabs";
 import { useMenuOrder } from "@/context/MenuOrderContext";
+import { cn } from "@/lib/utils";
+import { ChevronDown, LucideListOrdered, LucideLoader, Search, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MenuTriggerItem } from "./menu-trigger-item";
+import { Button } from "./ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "./ui/collapsible";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { ChevronDown, LucideListOrdered, LoaderCircle, Search, X, LucideLoader } from "lucide-react";
-import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
+import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export function ToolNavigation() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") || "list";
+  const activeTab = useMemo(() => {
+    // pathname format is /tool/[toolName]
+    // we want to extract [toolName]
+    const parts = pathname.split("/");
+    // If we are at /tool/list, parts would be ["", "tool", "list"]
+    if (parts.length >= 3 && parts[1] === "tool") {
+      return parts[2];
+    }
+    return "list";
+  }, [pathname]);
 
   const { menuOrder, loading } = useMenuOrder();
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,9 +84,7 @@ export function ToolNavigation() {
         if (index < menuOrder.visible.length) {
           e.preventDefault();
           const item = menuOrder.visible[index];
-          const params = new URLSearchParams(searchParams.toString());
-          params.set("tab", item.value);
-          router.push(pathname + "?" + params.toString());
+          router.push(`/tool/${item.value}`);
         }
       }
 
@@ -102,21 +108,10 @@ export function ToolNavigation() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [menuOrder.visible, pathname, router, searchParams]);
-
-  /* const handleTabChange = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("tab", value);
-      router.push(pathname + "?" + params.toString());
-    },
-    [pathname, router, searchParams],
-  ); */
+  }, [menuOrder.visible, pathname, router]);
 
   const getTabHref = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", value);
-    return pathname + "?" + params.toString();
+    return `/tool/${value}`;
   };
 
   const handleSearchIconClick = () => {
