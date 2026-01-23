@@ -88,6 +88,9 @@
 - Random Gift ✅
 - Unsplash Image Randomizer ✅
 - Random Walk Generator ✅
+- Card with Picture and Label Randomizer
+- Picture Card Pairing Randomizer
+- 
 
 
 ## Development Roadmap :
@@ -110,6 +113,8 @@
 - User can save the preset ✅
 - User can share their preset to public or make it private ✅
 - User can add reaction and comment on tools ✅
+- Socket or Syncronize, so like lottery can be access from client too, when the admin hit randomizer, the all client that subscribe the url / topic will start the randomizer too ✅
+- 
 
 ### Thanks to :
 
