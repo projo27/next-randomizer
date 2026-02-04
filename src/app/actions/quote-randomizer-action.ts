@@ -10,22 +10,28 @@ export type QuoteResult = {
   quote: string;
   author: string;
   authorLink: string;
+  tags: string[];
 };
 
-export async function getRandomQuote(): Promise<QuoteResult> {
+export async function getRandomQuote(retryCount = 0): Promise<QuoteResult> {
+  const MAX_RETRIES = 2;
   const randomId = Math.floor(Math.random() * MAX_QUOTE_ID) + 1;
   const url = `${BASE_URL}${randomId}`;
 
   try {
     const response = await fetch(url, {
-        headers: {
-            // Mimic a browser user-agent to avoid being blocked
-            'User-Agent': USER_AGENT
-        }
+      headers: {
+        // Mimic a browser user-agent to avoid being blocked
+        'User-Agent': USER_AGENT
+      }
     });
 
     if (!response.ok) {
-      throw new Error(`We have a problem to connect with Server, try again later`);
+      if (retryCount < MAX_RETRIES) {
+        console.warn(`Failed to fetch quote ID ${randomId} (Status: ${response.status}). Retrying...`);
+        return getRandomQuote(retryCount + 1);
+      }
+      throw new Error(`Failed to fetch quote after ${MAX_RETRIES} attempts. Status: ${response.status}`);
     }
 
     const html = await response.text();
@@ -33,8 +39,11 @@ export async function getRandomQuote(): Promise<QuoteResult> {
 
     const wrapBlock = $('.wrap-block').first();
     if (wrapBlock.length === 0) {
-      // If the main container isn't found, try to get another quote
-      console.warn(`Quote with ID ${randomId} might not exist. Retrying...`);
+      if (retryCount < MAX_RETRIES) {
+        console.warn(`Quote content missing for ID ${randomId}. Retrying...`);
+        return getRandomQuote(retryCount + 1);
+      }
+      throw new Error(`Quote content missing for ID ${randomId}`);
     }
 
     const quote = wrapBlock.find('p.single-quote').text().trim();
@@ -42,20 +51,32 @@ export async function getRandomQuote(): Promise<QuoteResult> {
     const author = authorElement.text().trim();
     const authorLink = authorElement.attr('href') || '#';
 
+    const tags: string[] = [];
+    const tagsElement = wrapBlock.find('.tags a');
+    tagsElement.each((_, el) => {
+      tags.push($(el).text().trim());
+    });
+
     if (!quote || !author) {
-      console.warn(`Could not parse quote or author for ID ${randomId}. Retrying...`);
+      if (retryCount < MAX_RETRIES) {
+        console.warn(`Incomplete data for ID ${randomId}. Retrying...`);
+        return getRandomQuote(retryCount + 1);
+      }
+      throw new Error(`Incomplete data for ID ${randomId}`);
     }
 
     return {
       quote,
       author,
       authorLink: `https://www.azquotes.com${authorLink}`,
+      tags
     };
   } catch (error) {
     console.error('Error fetching or parsing quote:', error);
-    // In case of a network error, we can either throw or retry. Let's retry.
-    // To prevent infinite loops, you might add a retry limit in a real app.
-    // return getRandomQuote();
+    if (retryCount < MAX_RETRIES) {
+      return getRandomQuote(retryCount + 1);
+    }
     throw error;
   }
 }
+
