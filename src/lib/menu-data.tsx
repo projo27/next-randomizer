@@ -1,68 +1,107 @@
-import ListRandomizer from "@/components/list-randomizer";
-import NumberRandomizer from "@/components/number-randomizer";
-import SequenceRandomizer from "@/components/sequence-randomizer";
-import PasswordGenerator from "@/components/password-generator";
-import DateRandomizer from "@/components/date-randomizer";
-import TeamShuffler from "@/components/team-shuffler";
-import CoinFlipper from "@/components/coin-flipper";
-import DiceRoller from "@/components/dice-roller";
-import RockPaperScissors from "@/components/rock-paper-scissors";
 import CardDeckRandomizer from "@/components/card-deck-randomizer";
-import LotteryGenerator from "@/components/lottery-generator";
-import EmojiGenerator from "@/components/emoji-generator";
+import CoinFlipper from "@/components/coin-flipper";
 import ColorPaletteGenerator from "@/components/color-palette-generator";
-import NumberBaseRandomizer from "@/components/number-base-randomizer";
-import Spinner from "@/components/spinner";
-import CompassRandomizer from "@/components/compass-randomizer";
+import DateRandomizer from "@/components/date-randomizer";
+import DiceRoller from "@/components/dice-roller";
+import EmojiGenerator from "@/components/emoji-generator";
 import ImageRandomizer from "@/components/image-randomizer";
-import YouTubeRandomizer from "@/components/youtube-randomizer";
-import OotdGenerator from "@/components/ootd-generator";
+import ListRandomizer from "@/components/list-randomizer";
+import LotteryGenerator from "@/components/lottery-generator";
+import NumberBaseRandomizer from "@/components/number-base-randomizer";
+import NumberRandomizer from "@/components/number-randomizer";
 import OotdGeneratorRunware from "@/components/ootd-generator-runware";
+import PasswordGenerator from "@/components/password-generator";
+import RockPaperScissors from "@/components/rock-paper-scissors";
+import SequenceRandomizer from "@/components/sequence-randomizer";
+import Spinner from "@/components/spinner";
+import TeamShuffler from "@/components/team-shuffler";
 import TravelRandomizer from "@/components/travel-randomizer";
-import RandomNews from "@/components/random-news";
+import YouTubeRandomizer from "@/components/youtube-randomizer";
 // import GoogleSheetRandomizer from "@/components/google-sheet-randomizer";
-import QuoteRandomizer from "@/components/quote-randomizer";
+import ActivityRandomizer from "@/components/activity-randomizer";
+import AnimalRandomizer from "@/components/animal-randomizer";
+import AnimeMangaRandomizer from "@/components/anime-manga-randomizer";
+import ArtRandomizer from "@/components/art-randomizer";
+import BibleRandomizer from "@/components/bible-randomizer";
+import BookRandomizer from "@/components/book-randomizer";
+import ChemicalElementRandomizer from "@/components/chemical-element-randomizer";
 import CountryRandomizer from "@/components/country-randomizer";
+import DataObjectRandomizer from "@/components/data-object-randomizer";
 import GiftRandomizer from "@/components/gift-randomizer";
+import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
+import LocalMusicRandomizer from "@/components/local-music-randomizer";
 import MapsRandomizer from "@/components/maps-randomizer";
 import MemeRandomizer from "@/components/meme-randomizer";
-import SportRandomizer from "@/components/sport-randomizer";
-import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
-import RadioRandomizer from "@/components/radio-randomizer";
-import PlantRandomizer from "@/components/plant-randomizer";
-import ActivityRandomizer from "@/components/activity-randomizer";
-import ScienceFactRandomizer from "@/components/science-fact-randomizer";
-import BookRandomizer from "@/components/book-randomizer";
-import HistoricalEventRandomizer from "@/components/historical-event-randomizer";
-import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
 import PairRandomizer from "@/components/pair-randomizer";
-import WordRandomizer from "@/components/word-randomizer";
-import PoetryRandomizer from "@/components/poetry-randomizer";
-import AnimalRandomizer from "@/components/animal-randomizer";
-import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
-import ArtRandomizer from "@/components/art-randomizer";
-import DataObjectRandomizer from "@/components/data-object-randomizer";
-import SongRandomizer from "@/components/song-randomizer";
-import TarotRandomizer from "@/components/tarot-randomizer";
-import ChemicalElementRandomizer from "@/components/chemical-element-randomizer";
-import QuranRandomizer from "@/components/quran-randomizer";
-import BibleRandomizer from "@/components/bible-randomizer";
-import TanakhRandomizer from "@/components/tanakh-randomizer";
-import LocalMusicRandomizer from "@/components/local-music-randomizer";
 import PatternRandomizer from "@/components/pattern-randomizer";
+import PlantRandomizer from "@/components/plant-randomizer";
+import PoetryRandomizer from "@/components/poetry-randomizer";
+import QuoteRandomizer from "@/components/quote-randomizer";
+import QuranRandomizer from "@/components/quran-randomizer";
+import RadioRandomizer from "@/components/radio-randomizer";
 import RandomWalkGenerator from "@/components/random-walk-generator";
-import AnimeMangaRandomizer from "@/components/anime-manga-randomizer";
+import RoyaltyFreeMusicRandomizer from "@/components/royalty-free-music-randomizer";
+import ScienceFactRandomizer from "@/components/science-fact-randomizer";
+import SeatingChartRandomizer from "@/components/seating-chart-randomizer";
+import SongRandomizer from "@/components/song-randomizer";
+import SportRandomizer from "@/components/sport-randomizer";
+import TanakhRandomizer from "@/components/tanakh-randomizer";
+import TarotRandomizer from "@/components/tarot-randomizer";
 import TodayCookingRandomizer from "@/components/today-cooking-randomizer";
+import TruthOrDareRandomizer from "@/components/truth-or-dare-randomizer";
+import UnsplashImageRandomizer from "@/components/unsplash-image-randomizer";
+import WordRandomizer from "@/components/word-randomizer";
 
 import {
-  ListTodo, Shuffle, Lock, Newspaper, Dices, ListOrdered, Users, CalendarDays, CircleDollarSign, Disc, Spade, Ticket, Smile, Compass, Palette, Binary, Image as ImageIcon, Shirt, Plane, Youtube, Hand, Sheet, Quote, Flag, Gift, Map, Laugh, Music, FlameKindling, Radio, Sprout, ClipboardCheck, FlaskConical, BookOpen, BookIcon, Landmark, Armchair, Combine, FileText, Feather, Cat, PawPrint, Database, GitBranch, Beaker, Library,
+  Armchair,
+  Beaker,
+  Binary,
+  BookIcon,
   BookMarked,
+  BookOpen,
   BookPlus,
-  Wallpaper,
-  Layers,
-  Footprints,
-  Tv,
+  CalendarDays, CircleDollarSign,
+  ClipboardCheck,
+  Combine,
   CookingPot,
+  Database,
+  Dices,
+  Disc,
+  Feather,
+  FileText,
+  Flag,
+  FlameKindling,
+  FlaskConical,
+  Footprints,
+  Gift,
+  GitBranch,
+  Hand,
+  Headphones,
+  Image as ImageIcon,
+  Landmark,
+  Laugh,
+  Layers,
+  Library,
+  ListOrdered,
+  ListTodo,
+  Lock,
+  Map,
+  Music,
+  Palette,
+  PawPrint,
+  Plane,
+  Quote,
+  Radio,
+  Shirt,
+  Shuffle,
+  Smile,
+  Spade,
+  Sprout,
+  Ticket,
+  Tv,
+  Users,
+  Wallpaper,
+  Youtube
 } from "lucide-react";
 
 
@@ -380,6 +419,14 @@ export const triggerList = [
     icon: <Library className="h-5 w-5" />,
     content: <LocalMusicRandomizer />,
     contentGuard: false,
+  },
+  {
+    value: "royalty-free-music",
+    text: "Royalty Free Music",
+    hidden: false,
+    icon: <Headphones className="h-5 w-5" />,
+    content: <RoyaltyFreeMusicRandomizer />,
+    contentGuard: true,
   },
   {
     value: "radio",

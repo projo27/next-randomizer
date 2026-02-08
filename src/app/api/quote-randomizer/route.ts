@@ -1,6 +1,7 @@
 import { getRandomPexelsVideo } from '@/app/actions/pexels-randomizer-action';
 import { getRandomQuote } from '@/app/actions/quote-randomizer-action';
 import { getRandomUnsplashImage } from '@/app/actions/unsplash-randomizer-action';
+import { getRandomMusicTrack } from '@/services/free-music-service';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -18,8 +19,8 @@ export async function GET() {
       query = 'scenery';
     }
 
-    // Parallel fetch for Image and Video
-    const [imageResult, videoResult] = await Promise.all([
+    // Parallel fetch for Image, Video, and Music
+    const [imageResult, videoResult, musicResult] = await Promise.all([
       (async () => {
         try {
           return await getRandomUnsplashImage(query);
@@ -37,6 +38,14 @@ export async function GET() {
           console.warn(`Failed to fetch video for query "${query}", falling back to "nature"`);
           return await getRandomPexelsVideo('nature');
         }
+      })(),
+      (async () => {
+        try {
+          return await getRandomMusicTrack('freesound');
+        } catch (e) {
+          console.warn('Failed to fetch music from Freesound');
+          return null;
+        }
       })()
     ]);
 
@@ -44,6 +53,7 @@ export async function GET() {
       ...quoteData,
       backgroundUrl: imageResult.imageUrl, // Providing main URL here
       videoUrl: videoResult?.videoUrl || null,
+      audioUrl: musicResult?.audioUrl || null,
       unsplashData: {
         urls: {
           regular: imageResult.imageUrl,
@@ -65,7 +75,16 @@ export async function GET() {
           url: videoResult.photographerUrl
         },
         originalUrl: videoResult.originalUrl
-      } : null
+      } : null,
+      freeSoundData: musicResult ? {
+        audioUrl: musicResult.audioUrl,
+        title: musicResult.title,
+        artist: musicResult.artist,
+        duration: musicResult.duration,
+        license: musicResult.license,
+        licenseUrl: musicResult.licenseUrl,
+        source: musicResult.source,
+      } : null,
     });
 
   } catch (error: any) {

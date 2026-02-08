@@ -10,8 +10,6 @@ const withPWA = require("next-pwa")({
 });
 
 const nextConfig: NextConfig = {
-  /* experimental here */
-  experimental: {},
   /* config options here */
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -121,7 +119,7 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-       {
+      {
         protocol: "https",
         hostname: "bs.floristic.org",
         port: "",
@@ -148,6 +146,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'usercontent.jamendo.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.freesound.org',
         port: '',
         pathname: '/**',
       },
